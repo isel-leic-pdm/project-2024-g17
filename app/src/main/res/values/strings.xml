@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ChIMP</string>
+    <string name="log_in_button_text_en">Log In</string>
+    <string name="sign_up_button_text_en">Sign Up</string>
 </resources>
