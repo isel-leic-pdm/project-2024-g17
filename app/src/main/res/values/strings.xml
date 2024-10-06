@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">ChIMP</string>
+    <string name="app_version_number">0.0.1-beta</string>
+    <string name="about_send_email_button_text_en">Send us an email</string>
+    <string name="about_privacy_policy_button_text_en">Privacy Policy</string>
+    <string name="about_version_number_title_text_en">Version number</string>
+    <string name="about_authors_title_text_en">Authors</string>
 </resources>
