@@ -14,7 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,29 +37,37 @@ fun LandingView(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top,
-            modifier = modifier.padding(top = 100.dp)
+            modifier = modifier
+                .padding(top = 250.dp)
         ) {
+            val imageResource = R.mipmap.chimp_white_logo_foreground
+
             Image(
-                painter = ColorPainter(Color.Blue),
+                painter = painterResource(id = imageResource),
                 contentDescription = null,
-                modifier = modifier.size(200.dp)
+                modifier = modifier.size(300.dp)
             )
         }
 
-        Column {
+        Column(
+            modifier = modifier
+                .padding(bottom = 50.dp)
+        ) {
             Column {
                 Text(
                     text = stringResource(R.string.landing_welcome_message_en),
                     fontWeight = FontWeight.Bold,
                     fontSize = 35.sp,
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                 )
 
                 Text(
                     text = stringResource(R.string.landing_description_en),
                     fontSize = 15.sp,
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 5.dp)
                 )
