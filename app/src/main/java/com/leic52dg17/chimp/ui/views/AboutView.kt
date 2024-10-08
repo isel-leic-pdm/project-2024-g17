@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,14 +42,17 @@ fun AboutView() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Back button box
         Box(
             modifier = Modifier
-                .size(500.dp, 50.dp)
+                .size(500.dp, 80.dp)
 
         ) {
             IconButton(
                 onClick = { /*TODO*/ },
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .align(Alignment.BottomStart)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -60,7 +66,8 @@ fun AboutView() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .padding(vertical = 100.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 100.dp)
         ) {
             // Logo section
             Column(
@@ -68,7 +75,7 @@ fun AboutView() {
                 verticalArrangement = Arrangement.Center,
             ) {
                 Image(
-                    painter = ColorPainter(Color.Blue),
+                    painter = painterResource(id = R.drawable.chimp_blue_final),
                     contentDescription = null,
                     modifier = Modifier
                         .size(200.dp)
