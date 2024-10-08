@@ -16,10 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.components.AuthenticationButton
 
@@ -56,8 +54,8 @@ fun LandingView(
             Column {
                 Text(
                     text = stringResource(R.string.landing_welcome_message_en),
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 35.sp,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -65,7 +63,8 @@ fun LandingView(
 
                 Text(
                     text = stringResource(R.string.landing_description_en),
-                    fontSize = 15.sp,
+                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                    fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -84,7 +83,6 @@ fun LandingView(
                     backgroundColor = MaterialTheme.colorScheme.onPrimary,
                     textColor = MaterialTheme.colorScheme.secondary,
                     text = stringResource(R.string.log_in_button_text_en),
-                    border = BorderStroke(1.dp, Color.Black), // REMOVE LATER
                 )
 
                 AuthenticationButton(
