@@ -1,3 +1,7 @@
 <resources>
     <string name="app_name">ChIMP</string>
+    <string name="log_in_button_text_en">Log In</string>
+    <string name="sign_up_button_text_en">Sign Up</string>
+    <string name="landing_welcome_message_en">Welcome to ChIMP</string>
+    <string name="landing_description_en">The nº1 messaging application of Chelas Zone I. Enjoy free secure messaging with your friends and family!</string>
 </resources>
