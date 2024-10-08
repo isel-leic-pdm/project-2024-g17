@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.ui.components.AboutButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 
@@ -45,13 +46,13 @@ fun AboutView() {
         // Back button box
         Box(
             modifier = Modifier
-                .size(500.dp, 80.dp)
+                .size(500.dp, 100.dp)
 
         ) {
             IconButton(
                 onClick = { /*TODO*/ },
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 32.dp)
                     .align(Alignment.BottomStart)
             ) {
                 Icon(
@@ -66,6 +67,7 @@ fun AboutView() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 100.dp)
         ) {
@@ -140,33 +142,25 @@ fun AboutView() {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
-                Button(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
+                AboutButton(
+                    onClick = { /*TODO*/ },
+                    text = stringResource(id = R.string.about_send_email_button_text_en),
+                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                    textAlign = TextAlign.Center,
+                    buttonModifier = Modifier
                         .padding(bottom = 8.dp)
-                        .size(170.dp, 50.dp),
-                    onClick = { /*TODO*/ }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.about_send_email_button_text_en),
-                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
-                        textAlign = TextAlign.Center
-                    )
-                }
-                Button(
-                    shape = RoundedCornerShape(10.dp),
-                    modifier = Modifier
-                        .size(170.dp, 50.dp),
-                    onClick = { /*TODO*/ }
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.about_privacy_policy_button_text_en),
-                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
-                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
-                        textAlign = TextAlign.Center
-                    )
-                }
+                        .size(170.dp, 50.dp)
+                )
+                AboutButton(
+                    onClick = { /*TODO*/ },
+                    text = stringResource(id = R.string.about_privacy_policy_button_text_en),
+                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                    textAlign = TextAlign.Center,
+                    buttonModifier = Modifier
+                        .size(170.dp, 50.dp)
+                )
             }
         }
 

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.ui.components.AboutButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
@@ -42,12 +43,13 @@ fun SendEmailView() {
     ) {
         Box(
             modifier = Modifier
-                .size(500.dp, 50.dp)
+                .size(500.dp, 100.dp)
 
         ) {
             IconButton(
                 onClick = { /*TODO*/ },
-                modifier = Modifier.align(Alignment.TopStart)
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -56,50 +58,68 @@ fun SendEmailView() {
                 )
             }
         }
-        Text(
-            modifier = Modifier
-                .size(400.dp, 150.dp)
-                .padding(16.dp),
-            text = stringResource(id = R.string.about_send_email_title_text_en),
-            fontSize = MaterialTheme.typography.displaySmall.fontSize,
-            lineHeight = MaterialTheme.typography.displaySmall.lineHeight,
-            fontWeight = MaterialTheme.typography.displaySmall.fontWeight,
-            textAlign = TextAlign.Center
-        )
-        // Input section
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 100.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
-        ) {
-            TextField(
-                shape = RoundedCornerShape(10.dp),
+        ){
+            Text(
                 modifier = Modifier
-                    .size(300.dp, 80.dp)
-                    .padding(bottom = 16.dp),
-                value = currentEmailAddressValue,
-                onValueChange = { currentEmailAddressValue = it },
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.about_send_email_address_label_text_en),
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight
-                    )
-                },
+                    .size(400.dp, 150.dp)
+                    .padding(16.dp),
+                text = stringResource(id = R.string.about_send_email_title_text_en),
+                fontSize = MaterialTheme.typography.displaySmall.fontSize,
+                lineHeight = MaterialTheme.typography.displaySmall.lineHeight,
+                fontWeight = MaterialTheme.typography.displaySmall.fontWeight,
+                textAlign = TextAlign.Center
             )
-            TextField(
-                shape = RoundedCornerShape(10.dp),
-                modifier = Modifier
-                    .size(300.dp, 200.dp),
-                value = currentEmailContentValue,
-                onValueChange = { currentEmailContentValue = it },
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.about_send_email_content_label_text_en),
-                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight
-                    )
-                },
-            )
+            // Input section
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                TextField(
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .size(300.dp, 80.dp)
+                        .padding(bottom = 16.dp),
+                    value = currentEmailAddressValue,
+                    onValueChange = { currentEmailAddressValue = it },
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.about_send_email_address_label_text_en),
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight
+                        )
+                    },
+                )
+                TextField(
+                    shape = RoundedCornerShape(10.dp),
+                    modifier = Modifier
+                        .size(300.dp, 200.dp),
+                    value = currentEmailContentValue,
+                    onValueChange = { currentEmailContentValue = it },
+                    placeholder = {
+                        Text(
+                            text = stringResource(id = R.string.about_send_email_content_label_text_en),
+                            fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                            fontWeight = MaterialTheme.typography.bodyLarge.fontWeight
+                        )
+                    },
+                )
+                AboutButton(
+                    text = stringResource(id = R.string.send_email_send_button_text_en),
+                    fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                    fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                    textAlign = TextAlign.Center,
+                    onClick = { /*TODO*/ },
+                    buttonModifier = Modifier
+                        .size(170.dp, 80.dp)
+                        .padding(top = 16.dp)
+                )
+            }
         }
     }
 }
