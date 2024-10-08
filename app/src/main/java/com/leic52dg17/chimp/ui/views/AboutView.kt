@@ -22,11 +22,9 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
@@ -58,14 +56,14 @@ fun AboutView() {
             }
         }
 
-        Column (
+        Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .padding(vertical = 100.dp)
-        ){
+        ) {
             // Logo section
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -77,8 +75,8 @@ fun AboutView() {
                 )
                 Text(
                     text = stringResource(id = R.string.app_name),
-                    fontSize = 62.sp,
-                    fontWeight = FontWeight.SemiBold,
+                    fontSize = MaterialTheme.typography.displayLarge.fontSize,
+                    fontWeight = MaterialTheme.typography.displayLarge.fontWeight,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 16.dp)
@@ -87,7 +85,7 @@ fun AboutView() {
             }
 
             // App version section
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
@@ -95,8 +93,8 @@ fun AboutView() {
             ) {
                 Text(
                     text = stringResource(id = R.string.about_version_number_title_text_en),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                     textAlign = TextAlign.Center
                 )
                 Text(
@@ -108,7 +106,7 @@ fun AboutView() {
             }
 
             // Author section
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
@@ -116,8 +114,8 @@ fun AboutView() {
             ) {
                 Text(
                     text = stringResource(id = R.string.about_authors_title_text_en),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                     textAlign = TextAlign.Center
                 )
 
@@ -131,7 +129,7 @@ fun AboutView() {
                 }
             }
             // Button section
-            Column (
+            Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
@@ -143,7 +141,10 @@ fun AboutView() {
                     onClick = { /*TODO*/ }
                 ) {
                     Text(
-                        text = stringResource(R.string.about_send_email_button_text_en),
+                        text = stringResource(id = R.string.about_send_email_button_text_en),
+                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                        textAlign = TextAlign.Center
                     )
                 }
                 Button(
@@ -153,7 +154,10 @@ fun AboutView() {
                     onClick = { /*TODO*/ }
                 ) {
                     Text(
-                        text = stringResource(id = R.string.about_privacy_policy_button_text_en)
+                        text = stringResource(id = R.string.about_privacy_policy_button_text_en),
+                        fontSize = MaterialTheme.typography.titleSmall.fontSize,
+                        fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
+                        textAlign = TextAlign.Center
                     )
                 }
             }
