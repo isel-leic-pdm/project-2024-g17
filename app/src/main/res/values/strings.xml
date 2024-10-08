@@ -5,4 +5,7 @@
     <string name="about_privacy_policy_button_text_en">Privacy Policy</string>
     <string name="about_version_number_title_text_en">Version number</string>
     <string name="about_authors_title_text_en">Authors</string>
+    <string name="about_send_email_title_text_en">Send us an email, we\'ll reply :D</string>
+    <string name="about_send_email_address_label_text_en">Your email address</string>
+    <string name="about_send_email_content_label_text_en">Your email content</string>
 </resources>
