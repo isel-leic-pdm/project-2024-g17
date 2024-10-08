@@ -15,7 +15,22 @@ val ChIMPTypography = Typography(
     ),
     titleLarge = TextStyle(
         fontFamily = InterFontFamily,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 24.sp,
         fontSize = 22.sp
+    ),
+
+    displaySmall = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.SemiBold,
+        lineHeight = 38.sp,
+        fontSize = 36.sp
+    ),
+
+    displayLarge = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Bold,
+        lineHeight = 60.sp,
+        fontSize = 58.sp
     )
 )

@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.views
+package com.leic52dg17.chimp.ui.views.about
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -8,11 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -21,8 +19,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -86,10 +82,11 @@ fun AboutView() {
                     text = stringResource(id = R.string.app_name),
                     fontSize = MaterialTheme.typography.displayLarge.fontSize,
                     fontWeight = MaterialTheme.typography.displayLarge.fontWeight,
+                    lineHeight = MaterialTheme.typography.displayLarge.lineHeight,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(top = 16.dp)
-                        .size(200.dp, 80.dp)
+                        .size(400.dp, 80.dp)
                 )
             }
 
