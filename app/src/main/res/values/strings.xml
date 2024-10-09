@@ -23,4 +23,7 @@
     <string name="landing_welcome_message_en">Welcome to ChIMP</string>
     <string name="landing_description_en">The nº1 messaging application of Chelas Zone I. Enjoy free secure messaging with your friends and family!</string>
 
+    <!--Sign Up View-->
+    <string name="sign_up_page_welcome_en">Welcome to ChIMP</string>
+
 </resources>
