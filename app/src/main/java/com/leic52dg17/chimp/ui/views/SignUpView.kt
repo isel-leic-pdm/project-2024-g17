@@ -52,7 +52,7 @@ fun SignUpView(
                 .padding(bottom = 150.dp)
         ) {
             Text(
-                text = stringResource(R.string.sign_up_page_welcome_en),
+                text = stringResource(R.string.sign_up_welcome_en),
                 fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                 fontSize = MaterialTheme.typography.titleLarge.fontSize,
                 modifier = modifier
@@ -73,17 +73,17 @@ fun SignUpView(
                 AuthenticationField(
                     value = username,
                     onValueChange = { username = it },
-                    label = "Username",
+                    label = stringResource(R.string.sign_up_username_field_label_en),
                     leadingIcon = Icons.Outlined.PersonOutline,
-                    leadingIconContentDescription = "Username",
+                    leadingIconContentDescription = stringResource(R.string.sign_up_username_icon_cd_en),
                     modifier = modifier.fillMaxWidth()
                 )
                 AuthenticationPasswordField(
                     value = password,
                     onValueChange = { password = it },
-                    label = "Password",
+                    label = stringResource(R.string.sign_up_password_field_label_en),
                     leadingIcon = Icons.Outlined.Lock,
-                    leadingIconContentDescription = "Password",
+                    leadingIconContentDescription = stringResource(R.string.sign_up_password_icon_cd_en),
                     modifier = modifier
                 )
             }
