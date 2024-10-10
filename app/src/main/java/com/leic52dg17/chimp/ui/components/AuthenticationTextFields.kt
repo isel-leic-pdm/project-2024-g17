@@ -10,9 +10,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 
 @Composable
 fun AuthenticationField(
@@ -55,6 +61,8 @@ fun AuthenticationPasswordField(
     leadingIcon: ImageVector,
     leadingIconContentDescription: String = "",
 ) {
+    var showPassword by remember { mutableStateOf(false) }
+
     TextField(
         value = value,
         onValueChange = onValueChange,
@@ -75,7 +83,7 @@ fun AuthenticationPasswordField(
             )
         },
         trailingIcon = {
-            IconButton(onClick = { /* TODO */}) {
+            IconButton(onClick = { showPassword = !showPassword }) {
                 Icon(
                     imageVector = Icons.Outlined.Visibility,
                     tint = MaterialTheme.colorScheme.secondary,
@@ -83,6 +91,7 @@ fun AuthenticationPasswordField(
                 )
             }
         },
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        visualTransformation = if (!showPassword) PasswordVisualTransformation() else VisualTransformation.None
     )
 }
