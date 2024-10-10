@@ -6,10 +6,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,25 +24,32 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.components.AuthenticationButton
+import com.leic52dg17.chimp.ui.components.AuthenticationField
 import com.leic52dg17.chimp.ui.components.AuthenticationOrDivider
+import com.leic52dg17.chimp.ui.components.AuthenticationPasswordField
+import com.leic52dg17.chimp.ui.components.BackButton
 
 @Composable
 fun SignUpView(
     onSignUpClick: () -> Unit,
     onLogInClick: () -> Unit,
+    onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var username = ""
-    var password = ""
+    var username by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
         modifier = modifier.fillMaxSize(),
     ) {
+        BackButton(modifier = modifier, onBackClick = onBackClick)
+
         Column(
             modifier = modifier
                 .fillMaxWidth()
+                .padding(bottom = 150.dp)
         ) {
             Text(
                 text = stringResource(R.string.sign_up_page_welcome_en),
@@ -48,39 +61,53 @@ fun SignUpView(
         }
 
         Column(
-            modifier = modifier
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.padding(bottom = 25.dp)
         ) {
-            TextField(
-                value = username,
-                onValueChange = { username = it },
-                label = { Text("Username") },
-            )
-            TextField(
-                value = password,
-                onValueChange = { password = it },
-                label = { Text("Password") },
-            )
-        }
+            Column(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .padding(bottom = 50.dp)
+            ) {
+                AuthenticationField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = "Username",
+                    leadingIcon = Icons.Outlined.PersonOutline,
+                    leadingIconContentDescription = "Username",
+                    modifier = modifier.fillMaxWidth()
+                )
+                AuthenticationPasswordField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = "Password",
+                    leadingIcon = Icons.Outlined.Lock,
+                    leadingIconContentDescription = "Password",
+                    modifier = modifier
+                )
+            }
 
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier
-                .fillMaxWidth()
-        ) {
-            AuthenticationButton(
-                onClick = onLogInClick,
-                backgroundColor = MaterialTheme.colorScheme.primary,
-                textColor = MaterialTheme.colorScheme.onPrimary,
-                text = stringResource(R.string.log_in_button_text_en),
-            )
-            AuthenticationOrDivider(modifier = modifier)
-            AuthenticationButton(
-                onClick = onLogInClick,
-                backgroundColor = MaterialTheme.colorScheme.onPrimary,
-                textColor = MaterialTheme.colorScheme.secondary,
-                text = stringResource(R.string.log_in_button_text_en),
-                border = BorderStroke(1.dp, Color.Gray)
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier
+                    .fillMaxWidth()
+            ) {
+                AuthenticationButton(
+                    onClick = onSignUpClick,
+                    backgroundColor = MaterialTheme.colorScheme.primary,
+                    textColor = MaterialTheme.colorScheme.onPrimary,
+                    text = stringResource(R.string.sign_up_button_text_en),
+                )
+                AuthenticationOrDivider(modifier = modifier)
+                AuthenticationButton(
+                    onClick = onLogInClick,
+                    backgroundColor = MaterialTheme.colorScheme.onPrimary,
+                    textColor = MaterialTheme.colorScheme.secondary,
+                    text = stringResource(R.string.log_in_button_text_en),
+                    border = BorderStroke(1.dp, Color.Gray)
+                )
+            }
         }
     }
 }
@@ -92,5 +119,6 @@ fun SignUpViewPreview() {
     SignUpView(
         onSignUpClick = { },
         onLogInClick = { },
+        onBackClick = { }
     )
 }
