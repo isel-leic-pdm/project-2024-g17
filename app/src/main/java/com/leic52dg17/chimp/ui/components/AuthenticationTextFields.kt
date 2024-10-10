@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.components
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -62,6 +63,7 @@ fun AuthenticationPasswordField(
     leadingIconContentDescription: String = "",
 ) {
     var showPassword by remember { mutableStateOf(false) }
+    var passwordVisibilityIcon by remember { mutableStateOf(Icons.Outlined.Visibility) }
 
     TextField(
         value = value,
@@ -84,8 +86,14 @@ fun AuthenticationPasswordField(
         },
         trailingIcon = {
             IconButton(onClick = { showPassword = !showPassword }) {
+                passwordVisibilityIcon = if (showPassword) {
+                    Icons.Outlined.Visibility
+                } else {
+                    Icons.Outlined.VisibilityOff
+                }
+
                 Icon(
-                    imageVector = Icons.Outlined.Visibility,
+                    imageVector = passwordVisibilityIcon,
                     tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = "Show password"
                 )
