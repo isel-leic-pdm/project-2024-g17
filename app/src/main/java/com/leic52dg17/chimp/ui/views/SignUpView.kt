@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +26,7 @@ import com.leic52dg17.chimp.ui.components.AuthenticationButton
 import com.leic52dg17.chimp.ui.components.AuthenticationField
 import com.leic52dg17.chimp.ui.components.AuthenticationOrDivider
 import com.leic52dg17.chimp.ui.components.AuthenticationPasswordField
+import com.leic52dg17.chimp.ui.components.AuthenticationTitle
 import com.leic52dg17.chimp.ui.components.BackButton
 
 @Composable
@@ -40,35 +40,36 @@ fun SignUpView(
     var password by remember { mutableStateOf("") }
 
     Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround,
-        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier
+            .fillMaxSize(),
     ) {
-        BackButton(modifier = modifier, onBackClick = onBackClick)
+        Column(
+            modifier = modifier
+        ) {
+            BackButton(modifier = modifier, onBackClick = onBackClick)
+        }
 
         Column(
             modifier = modifier
                 .fillMaxWidth()
-                .padding(bottom = 150.dp)
         ) {
-            Text(
-                text = stringResource(R.string.sign_up_welcome_en),
-                fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                modifier = modifier
-                    .padding(horizontal = 16.dp)
+            AuthenticationTitle(
+                title = stringResource(R.string.sign_up_welcome_en),
+                modifier = modifier,
             )
         }
 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
-            modifier = modifier.padding(bottom = 25.dp)
+            modifier = modifier
+                .padding(bottom = 64.dp)
         ) {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 50.dp)
+                    .padding(bottom = 32.dp)
             ) {
                 AuthenticationField(
                     value = username,
