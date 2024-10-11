@@ -4,14 +4,20 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+
+
 import androidx.compose.foundation.layout.Row
+
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -41,10 +47,13 @@ fun MessageBarLayout() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(32.dp),
+                .padding(16.dp)
+                .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
-        ) {
+        )
+
+        {
             Icon(
                 imageVector = Icons.Filled.ArrowBackIosNew ,
                 contentDescription = "Back",
@@ -58,9 +67,50 @@ fun MessageBarLayout() {
             )
             Box(
                 modifier = Modifier
-                    .size(25.dp)
-                    .background(Color.Gray, CircleShape)
+                    .size(32.dp)
+                    .background(Color.LightGray, CircleShape)
             )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Column (
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.Center)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.Start),
+                shape = RoundedCornerShape(8.dp),
+                color = Color.LightGray
+            ) {
+                Text(
+                    text = "Hey man, how are you?",
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.Black
+                )
+            }
+
+
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .align(Alignment.End),
+                shape = RoundedCornerShape(8.dp),
+                color = Color.Blue
+            ) {
+                Text(
+                    text = "I'm doing well bro, thanks!",
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(8.dp),
+                    color = Color.White
+                )
+            }
         }
 
         Row(
