@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,8 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -71,7 +68,9 @@ fun MessageBarLayout() {
                     .background(Color.LightGray, CircleShape)
             )
         }
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(32.dp))
+
+
 
         Column (
             modifier = Modifier
@@ -80,11 +79,31 @@ fun MessageBarLayout() {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
-                    .align(Alignment.Start),
+                    .align(
+                        Alignment.CenterHorizontally
+                    ),
+                shape = RoundedCornerShape(12.dp),
+                color = Color.Black
+
+            ){
+                Text(
+                    text = "10 October",
+                    modifier = Modifier
+
+                        .padding(12.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    color = Color.White
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .wrapContentSize(),
+
                 shape = RoundedCornerShape(8.dp),
                 color = Color.LightGray
             ) {
