@@ -34,6 +34,7 @@ fun MessageBarLayout() {
         .fillMaxSize()
         .background(Color.White)) {
 
+
         // Message Bar at the bottom
         val shape = RoundedCornerShape(10.dp)
 
@@ -44,13 +45,13 @@ fun MessageBarLayout() {
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            Icon(
-                imageVector = Icons.Filled.Check,
-                contentDescription = "Clipboard",
-                tint = Color.LightGray,
-                modifier = Modifier.size(24.dp)
+            val imageResource = R.mipmap.chimp_white_logo_foreground
+            Image(
+                painter = painterResource(id = imageResource),
+                contentDescription = null,
+                modifier = Modifier.size(25.dp)
             )
+
             Spacer(modifier = Modifier.width(8.dp))
             Surface(
                 modifier = Modifier
