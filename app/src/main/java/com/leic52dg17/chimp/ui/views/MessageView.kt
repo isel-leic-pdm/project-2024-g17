@@ -45,9 +45,9 @@ fun MessageBarLayout() {
                 .align(Alignment.BottomCenter),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val imageResource = R.mipmap.chimp_white_logo_foreground
+            val imageResource = painterResource((R.drawable.paper_clip_icon))
             Image(
-                painter = painterResource(id = imageResource),
+                painter = imageResource,
                 contentDescription = null,
                 modifier = Modifier.size(25.dp)
             )
