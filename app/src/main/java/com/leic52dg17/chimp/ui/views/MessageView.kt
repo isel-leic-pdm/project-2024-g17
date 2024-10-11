@@ -161,18 +161,10 @@ fun MessageViewLayout() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
-/* Possibility of clip
-            Icon(
-                imageVector = Icons.Filled.AttachFile ,
-                contentDescription = "Back",
-                tint = Color.Black)
-
-
- */
-            Image(
+      Image(
                 painter = imageResource,
                 contentDescription = null,
-                modifier = Modifier.size(25.dp)
+                modifier = Modifier.size(35.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
