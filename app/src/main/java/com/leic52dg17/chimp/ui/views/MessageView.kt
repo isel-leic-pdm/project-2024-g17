@@ -86,7 +86,7 @@ fun MessageBarLayout() {
                         Alignment.CenterHorizontally
                     ),
                 shape = RoundedCornerShape(12.dp),
-                color = Color.Black
+                color = Color.Gray
 
             ){
                 Text(
@@ -107,12 +107,22 @@ fun MessageBarLayout() {
                 shape = RoundedCornerShape(8.dp),
                 color = Color.LightGray
             ) {
-                Text(
-                    text = "Hey man, how are you?",
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(8.dp),
-                    color = Color.Black
-                )
+                Column(modifier = Modifier.padding(8.dp)){
+                    Text(
+                        text = "Hey man, how are you?",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(8.dp),
+                        color = Color.Black
+                    )
+                    Text(
+                        text = "02:08 AM",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.End)
+                    )
+
+                }
+
             }
 
 
@@ -123,12 +133,21 @@ fun MessageBarLayout() {
                 shape = RoundedCornerShape(8.dp),
                 color = Color.Blue
             ) {
-                Text(
-                    text = "I'm doing well bro, thanks!",
-                    fontSize = 18.sp,
-                    modifier = Modifier.padding(8.dp),
-                    color = Color.White
-                )
+                Column(modifier = Modifier.padding(8.dp)){
+                    Text(
+                        text = "I'm doing well bro, thanks!",
+                        fontSize = 18.sp,
+                        modifier = Modifier.padding(8.dp),
+                        color = Color.White
+                    )
+                    Text(
+                        text = "02:55 AM",
+                        fontSize = 12.sp,
+                        color = Color.Gray,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
+
             }
         }
 
