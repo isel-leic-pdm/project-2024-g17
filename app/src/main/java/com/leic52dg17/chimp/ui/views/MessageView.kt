@@ -44,7 +44,7 @@ fun MessageBarLayout() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
+                .padding(30.dp)
                 .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
@@ -70,13 +70,13 @@ fun MessageBarLayout() {
         }
         Spacer(modifier = Modifier.height(32.dp))
 
+        // everything after this point has to be after the topbar
 
 
         Column (
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.Center)
-                .padding(16.dp),
+                .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Surface(
@@ -102,8 +102,8 @@ fun MessageBarLayout() {
 
             Surface(
                 modifier = Modifier
-                    .wrapContentSize(),
-
+                    .wrapContentSize()
+                    .padding(start = 14.dp),
                 shape = RoundedCornerShape(8.dp),
                 color = Color.LightGray
             ) {
@@ -129,6 +129,7 @@ fun MessageBarLayout() {
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
+                    .padding(end = 14.dp)
                     .align(Alignment.End),
                 shape = RoundedCornerShape(8.dp),
                 color = Color.Blue
