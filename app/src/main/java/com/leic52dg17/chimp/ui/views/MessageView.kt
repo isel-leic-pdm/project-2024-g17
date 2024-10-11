@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -36,7 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 
 @Composable
-fun MessageBarLayout() {
+fun MessageViewLayout() {
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)) {
@@ -160,6 +161,14 @@ fun MessageBarLayout() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
+/* Possibility of clip
+            Icon(
+                imageVector = Icons.Filled.AttachFile ,
+                contentDescription = "Back",
+                tint = Color.Black)
+
+
+ */
             Image(
                 painter = imageResource,
                 contentDescription = null,
@@ -188,6 +197,6 @@ fun MessageBarLayout() {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MessageBarLayoutPreview() {
-    MessageBarLayout()
+fun MessageViewLayoutPreview() {
+    MessageViewLayout()
 }
