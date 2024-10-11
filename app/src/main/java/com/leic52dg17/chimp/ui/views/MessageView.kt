@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,7 +41,7 @@ import com.leic52dg17.chimp.R
 fun MessageViewLayout() {
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(Color.White)) {
+        .background(MaterialTheme.colorScheme.onPrimary)) {
 
         Row(
             modifier = Modifier
@@ -66,7 +67,7 @@ fun MessageViewLayout() {
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .background(Color.LightGray, CircleShape)
+                    .background(MaterialTheme.colorScheme.onPrimary, CircleShape)
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -106,7 +107,7 @@ fun MessageViewLayout() {
                     .wrapContentSize()
                     .padding(start = 14.dp),
                 shape = RoundedCornerShape(8.dp),
-                color = Color.LightGray
+                color = MaterialTheme.colorScheme.onSecondary
             ) {
                 Column(modifier = Modifier.padding(8.dp)){
                     Text(
@@ -133,7 +134,7 @@ fun MessageViewLayout() {
                     .padding(end = 14.dp)
                     .align(Alignment.End),
                 shape = RoundedCornerShape(8.dp),
-                color = Color.Blue
+                color = MaterialTheme.colorScheme.primary
             ) {
                 Column(modifier = Modifier.padding(8.dp)){
                     Text(
