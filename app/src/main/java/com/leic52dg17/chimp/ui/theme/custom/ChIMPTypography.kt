@@ -43,6 +43,7 @@ val ChIMPTypography = Typography(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Bold,
         lineHeight = 60.sp,
-        fontSize = 58.sp
+        fontSize = 58.sp,
+        letterSpacing = 0.8.sp,
     )
 )
