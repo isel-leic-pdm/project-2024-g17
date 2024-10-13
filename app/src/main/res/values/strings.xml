@@ -1,26 +1,59 @@
 <resources>
+    <!-- Application -->
     <string name="app_name">ChIMP</string>
     <string name="app_version_number">0.0.1-beta</string>
+    <string name="app_logo_cd">ChiMP Logo</string>
 
+    <!-- Icons -->
+    <string name="search_icon_cd">Search Icon</string>
+    <string name="settings_icon_cd">Settings Icon</string>
+    <string name="profile_icon_cd">Profile Icon</string>
+    <string name="messages_icon_cd">Messages Icon</string>
+    <string name="pin_icon_cd">Pin Icon</string>
+    <string name="sign_up_username_icon_cd_en">Username</string>
+    <string name="sign_up_password_icon_cd_en">Password</string>
+    <string name="sign_up_visibility_icon_cd_en">Show password</string>
+    <string name="login_username_icon_cd_en">Username</string>
+    <string name="login_password_icon_cd_en">Password</string>
 
+    <!-- About page -->
     <string name="about_send_email_button_text_en">Send us an email</string>
     <string name="about_privacy_policy_button_text_en">Privacy Policy</string>
     <string name="about_version_number_title_text_en">Version number</string>
     <string name="about_authors_title_text_en">Authors</string>
 
-
+    <!-- About page / Send Email View -->
     <string name="about_send_email_title_text_en">Send us an email, we\'ll make sure to reply.</string>
     <string name="about_send_email_address_label_text_en">Your email address</string>
     <string name="about_send_email_content_label_text_en">Your email content</string>
     <string name="send_email_send_button_text_en">Send email</string>
 
-
+    <!-- About page / Privacy Policy View -->
     <string name="about_privacy_policy_title_text_en">Privacy Policy</string>
     <string name="about_privacy_policy_content_text_en">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using \'Content here, content here\', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for \'lorem ipsum\' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like). Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s\ standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</string>
 
+    <!-- Authentication / Landing page -->
     <string name="log_in_button_text_en">Log In</string>
     <string name="sign_up_button_text_en">Sign Up</string>
     <string name="landing_welcome_message_en">Welcome to ChIMP</string>
     <string name="landing_description_en">The nº1 messaging application of Chelas Zone I. Enjoy free secure messaging with your friends and family!</string>
+
+    <!-- Subscribed Channels Page -->
+    <string name="subscribed_channels_search_bar_text_en">Search</string>
+    <string name="subscribed_channel_title_text_en">Chats</string>
+
+    <!--Sign Up View-->
+    <string name="sign_up_welcome_en">Welcome to ChIMP</string>
+    <string name="sign_up_username_field_label_en">Username</string>
+    <string name="sign_up_password_field_label_en">Password</string>
+
+    <!--Log In View-->
+    <string name="login_welcome_en">Welcome Back!</string>
+    <string name="login_username_field_label_en">Username</string>
+    <string name="login_password_field_label_en">Password</string>
+    <string name="login_forgot_password_text_en">Forgot your password?</string>
+
+    <!--Common-->
+    <string name="back_button_text_cd">Back</string>
 
 </resources>

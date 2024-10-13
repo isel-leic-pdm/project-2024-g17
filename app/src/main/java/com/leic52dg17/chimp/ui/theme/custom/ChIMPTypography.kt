@@ -6,9 +6,21 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
 val ChIMPTypography = Typography(
-    bodyLarge = TextStyle(
+    bodySmall = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Light,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = TextStyle(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Normal,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyLarge = TextStyle(
+        fontFamily = InterFontFamily,
+        fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
@@ -31,6 +43,7 @@ val ChIMPTypography = Typography(
         fontFamily = InterFontFamily,
         fontWeight = FontWeight.Bold,
         lineHeight = 60.sp,
-        fontSize = 58.sp
+        fontSize = 58.sp,
+        letterSpacing = 0.8.sp,
     )
 )
