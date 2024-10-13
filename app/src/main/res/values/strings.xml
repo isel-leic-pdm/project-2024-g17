@@ -8,7 +8,8 @@
     <string name="search_icon_cd">Search Icon</string>
     <string name="settings_icon_cd">Settings Icon</string>
     <string name="profile_icon_cd">Profile Icon</string>
-    <string name="messages_icon_cd">Profile Icon</string>
+    <string name="messages_icon_cd">Messages Icon</string>
+    <string name="pin_icon_cd">Pin Icon</string>
 
     <!-- About page -->
     <string name="about_send_email_button_text_en">Send us an email</string>
@@ -34,5 +35,6 @@
 
     <!-- Subscribed Channels Page -->
     <string name="subscribed_channels_search_bar_text_en">Search</string>
+    <string name="subscribed_channel_title_text_en">Chats</string>
 
 </resources>

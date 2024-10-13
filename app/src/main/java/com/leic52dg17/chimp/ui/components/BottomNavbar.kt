@@ -7,7 +7,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +23,7 @@ import com.leic52dg17.chimp.R
 
 @Composable
 fun BottomNavbar(
+    selectedIcon: String = "chats",
     rowModifier: Modifier? = Modifier,
     onClickProfile : () -> Unit = {},
     onClickMessages : () -> Unit = {},
@@ -33,7 +39,7 @@ fun BottomNavbar(
                 .weight(1f),
             iconModifier = Modifier
                 .size(40.dp),
-            iconTint = Color.Blue,
+            iconTint = if(selectedIcon == "profile") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
             onClick = { onClickProfile() },
             imageVector = Icons.Default.AccountCircle,
             contentDescription = stringResource(id = R.string.profile_icon_cd)
@@ -43,7 +49,7 @@ fun BottomNavbar(
                 .weight(1f),
             iconModifier = Modifier
                 .size(40.dp),
-            iconTint = Color.Blue,
+            iconTint = if(selectedIcon == "chats") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
             onClick = { onClickMessages() },
             imageVector = Icons.Default.Email,
             contentDescription = stringResource(id = R.string.messages_icon_cd)
@@ -53,7 +59,7 @@ fun BottomNavbar(
                 .weight(1f),
             iconModifier = Modifier
                 .size(40.dp),
-            iconTint = Color.Blue,
+            iconTint = if(selectedIcon == "settings") MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
             onClick = { onClickSettings() },
             imageVector = Icons.Default.Settings,
             contentDescription = stringResource(id = R.string.settings_icon_cd)
