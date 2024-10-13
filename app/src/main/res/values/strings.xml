@@ -31,4 +31,14 @@
     <string name="sign_up_password_icon_cd_en">Password</string>
     <string name="sign_up_visibility_icon_cd_en">Show password</string>
 
+    <!--Log In View-->
+    <string name="login_welcome_en">Welcome Back!</string>
+    <string name="login_username_field_label_en">Username</string>
+    <string name="login_password_field_label_en">Password</string>
+    <string name="login_username_icon_cd_en">Username</string>
+    <string name="login_password_icon_cd_en">Password</string>
+    <string name="login_forgot_password_text_en">Forgot your password?</string>
+
+    <!--Common-->
+    <string name="back_button_text_cd">Back</string>
 </resources>
