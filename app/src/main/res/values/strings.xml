@@ -10,6 +10,9 @@
     <string name="profile_icon_cd">Profile Icon</string>
     <string name="messages_icon_cd">Messages Icon</string>
     <string name="pin_icon_cd">Pin Icon</string>
+    <string name="sign_up_username_icon_cd_en">Username</string>
+    <string name="sign_up_password_icon_cd_en">Password</string>
+    <string name="sign_up_visibility_icon_cd_en">Show password</string>
 
     <!-- About page -->
     <string name="about_send_email_button_text_en">Send us an email</string>
@@ -37,4 +40,9 @@
     <string name="subscribed_channels_search_bar_text_en">Search</string>
     <string name="subscribed_channel_title_text_en">Chats</string>
 
+    <!--Sign Up View-->
+    <string name="sign_up_welcome_en">Welcome to ChIMP</string>
+    <string name="sign_up_username_field_label_en">Username</string>
+    <string name="sign_up_password_field_label_en">Password</string>
+  
 </resources>
