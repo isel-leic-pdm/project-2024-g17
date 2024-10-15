@@ -67,7 +67,7 @@ fun MessageViewLayout() {
             Box(
                 modifier = Modifier
                     .size(32.dp)
-                    .background(MaterialTheme.colorScheme.onPrimary, CircleShape)
+                    .background(MaterialTheme.colorScheme.onSecondary, CircleShape)
             )
         }
         Spacer(modifier = Modifier.height(32.dp))
@@ -88,7 +88,7 @@ fun MessageViewLayout() {
                         Alignment.CenterHorizontally
                     ),
                 shape = RoundedCornerShape(12.dp),
-                color = Color.Gray
+                color = MaterialTheme.colorScheme.tertiary
 
             ){
                 Text(
@@ -98,7 +98,7 @@ fun MessageViewLayout() {
                         .padding(12.dp),
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp,
-                    color = Color.White
+                    color = MaterialTheme.colorScheme.onTertiary
                 )
             }
 
@@ -107,19 +107,19 @@ fun MessageViewLayout() {
                     .wrapContentSize()
                     .padding(start = 14.dp),
                 shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.onSecondary
+                color = MaterialTheme.colorScheme.secondary
             ) {
                 Column(modifier = Modifier.padding(8.dp)){
                     Text(
                         text = "Hey man, how are you?",
                         fontSize = 18.sp,
                         modifier = Modifier.padding(8.dp),
-                        color = Color.Black
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = "02:08 AM",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSecondary,
                         modifier = Modifier.align(Alignment.End)
                     )
 
@@ -141,12 +141,12 @@ fun MessageViewLayout() {
                         text = "I'm doing well bro, thanks!",
                         fontSize = 18.sp,
                         modifier = Modifier.padding(8.dp),
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                     Text(
                         text = "02:55 AM",
                         fontSize = 12.sp,
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.align(Alignment.Start)
                     )
                 }
@@ -162,7 +162,7 @@ fun MessageViewLayout() {
             verticalAlignment = Alignment.CenterVertically
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
-      Image(
+        Image(
                 painter = imageResource,
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
@@ -173,14 +173,14 @@ fun MessageViewLayout() {
                 modifier = Modifier
                     .weight(1f),
                 shape = RoundedCornerShape(10.dp),
-                color = Color(0xFFEEEEEE),
+                color = MaterialTheme.colorScheme.secondary
 
             ) {
                 Text(
                     text = "Message",
                     modifier = Modifier
                         .padding(16.dp),
-                    color = Color.LightGray,
+                    color = MaterialTheme.colorScheme.onSecondary,
                     fontSize = 24.sp
                 )
             }
