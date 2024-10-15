@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.AttachFile
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -31,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -111,7 +111,7 @@ fun MessageViewLayout() {
             ) {
                 Column(modifier = Modifier.padding(8.dp)){
                     Text(
-                        text = "Hey man, how are you?",
+                        text = stringResource(R.string.message_received_en),
                         fontSize = 18.sp,
                         modifier = Modifier.padding(8.dp),
                         color = MaterialTheme.colorScheme.onSecondary
@@ -138,7 +138,7 @@ fun MessageViewLayout() {
             ) {
                 Column(modifier = Modifier.padding(8.dp)){
                     Text(
-                        text = "I'm doing well bro, thanks!",
+                        text = stringResource(R.string.message_sent_en),
                         fontSize = 18.sp,
                         modifier = Modifier.padding(8.dp),
                         color = MaterialTheme.colorScheme.onPrimary
@@ -177,7 +177,7 @@ fun MessageViewLayout() {
 
             ) {
                 Text(
-                    text = "Message",
+                    text = stringResource(R.string.message_text_field_en),
                     modifier = Modifier
                         .padding(16.dp),
                     color = MaterialTheme.colorScheme.onSecondary,
