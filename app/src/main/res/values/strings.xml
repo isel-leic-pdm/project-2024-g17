@@ -56,4 +56,9 @@
     <!--Common-->
     <string name="back_button_text_cd">Back</string>
 
+    <string name="message_sent_en">Doing well bro, thanks!</string>">
+    <string name="message_received_en">"Hey man, how are you?"</string>
+    <string name="message_text_field_en">Message</string>
+
+
 </resources>
