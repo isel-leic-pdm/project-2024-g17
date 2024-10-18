@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.views
 
+import MessageTextField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -23,10 +24,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -51,46 +57,49 @@ val Joe_ID = 2
 fun MessageViewLayout(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
+    //messages: List<Message>,
+
 ) {
+    var messageText by remember { mutableStateOf("") }
     Box(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.onPrimary)) {
+// top bar
 
-        Column(
-            modifier = modifier
-                .background(Color.Red)
-                .padding(top = 10.dp)
-        ){
-            BackButton(modifier = modifier, onBackClick = onBackClick)
-
-        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(19.dp)
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .background(Color.Cyan)
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         )
 
         {
+            IconButton(onBackClick) {
+                Icon(
+                imageVector = Icons.Filled.ArrowBackIosNew ,
+                contentDescription = "Back",
+                modifier = Modifier.size(35.dp),
+                tint = Color.Black,
+            )}
+
             Text(
                 text = "Joe Biden",
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 fontSize = 27.sp
             )
-
+            IconButton(onClick = { /*TODO*/ }) {
             Icon(
                 imageVector = Icons.Filled.Circle ,
                 contentDescription = "Back",
                 modifier = Modifier.size(35.dp),
                 tint = Color.Black,
                 )
+            }
         }
 
         // everything after this point has to be after the topbar
-
 
         Column (
             modifier = Modifier
@@ -193,12 +202,10 @@ fun MessageViewLayout(
                 color = MaterialTheme.colorScheme.secondary
 
             ) {
-                Text(
-                    text = stringResource(R.string.message_text_field_en),
-                    modifier = Modifier
-                        .padding(16.dp),
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 24.sp
+                MessageTextField(
+                    messageText = messageText,
+                    onMessageTextChange = { messageText = it },
+                    modifier = Modifier.weight(1f) // Or adjust the modifier as needed
                 )
             }
         }
