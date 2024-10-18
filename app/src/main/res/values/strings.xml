@@ -42,6 +42,9 @@
     <string name="subscribed_channels_search_bar_text_en">Search</string>
     <string name="subscribed_channel_title_text_en">Chats</string>
 
+    <!-- Channel Info View -->
+    <string name="add_user_to_channel_en">Add a user</string>
+
     <!--Sign Up View-->
     <string name="sign_up_welcome_en">Welcome to ChIMP</string>
     <string name="sign_up_username_field_label_en">Username</string>
