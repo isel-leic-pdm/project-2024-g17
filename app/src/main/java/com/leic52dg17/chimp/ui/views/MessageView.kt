@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -36,41 +37,57 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.message.Message
+import com.leic52dg17.chimp.ui.components.BackButton
+
+
+val My_ID = 1
+val Joe_ID = 2
+
+
+// fazer array de mensagens
 
 @Composable
-fun MessageViewLayout() {
+fun MessageViewLayout(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+) {
     Box(modifier = Modifier
         .fillMaxSize()
         .background(MaterialTheme.colorScheme.onPrimary)) {
 
+        Column(
+            modifier = modifier
+                .background(Color.Red)
+                .padding(top = 10.dp)
+        ){
+            BackButton(modifier = modifier, onBackClick = onBackClick)
+
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(30.dp)
+                .padding(19.dp)
                 .align(Alignment.TopCenter),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         )
 
         {
-            Icon(
-                imageVector = Icons.Filled.ArrowBackIosNew ,
-                contentDescription = "Back",
-                tint = Color.Black
-            )
             Text(
                 text = "Joe Biden",
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 fontSize = 27.sp
             )
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(MaterialTheme.colorScheme.onSecondary, CircleShape)
-            )
+
+            Icon(
+                imageVector = Icons.Filled.Circle ,
+                contentDescription = "Back",
+                modifier = Modifier.size(35.dp),
+                tint = Color.Black,
+                )
         }
-        Spacer(modifier = Modifier.height(32.dp))
 
         // everything after this point has to be after the topbar
 
@@ -191,5 +208,5 @@ fun MessageViewLayout() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MessageViewLayoutPreview() {
-    MessageViewLayout()
+    MessageViewLayout(modifier = Modifier, onBackClick = {})
 }
