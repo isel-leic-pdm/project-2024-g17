@@ -14,7 +14,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.ui.components.BottomNavbar
+import com.leic52dg17.chimp.ui.screens.main.MainScreen
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
+import com.leic52dg17.chimp.ui.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,7 +42,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                     ) {
-
+                        MainScreen(viewModel = MainViewModel())
                     }
                 }
             }
