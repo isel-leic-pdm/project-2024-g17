@@ -53,20 +53,18 @@ val My_ID = 1
 val Joe_ID = 2
 
 
-
-
 @Composable
 fun MessageViewLayout(
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
-    //messages: List<Message>,
 
-) {
+    ) {
     var messageText by remember { mutableStateOf("") }
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.onPrimary)) {
-// top bar
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.onPrimary)
+    ) {
 
         Row(
             modifier = Modifier
@@ -79,11 +77,12 @@ fun MessageViewLayout(
         {
             IconButton(onBackClick) {
                 Icon(
-                imageVector = Icons.Filled.ArrowBackIosNew ,
-                contentDescription = "Back",
-                modifier = Modifier.size(35.dp),
-                tint = Color.Black,
-            )}
+                    imageVector = Icons.Filled.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.Black,
+                )
+            }
 
             Text(
                 text = "Joe Biden",
@@ -91,19 +90,17 @@ fun MessageViewLayout(
                 textAlign = TextAlign.Center,
                 fontSize = 27.sp
             )
-            IconButton(onClick = {  }) {
-            Icon(
-                imageVector = Icons.Filled.Circle ,
-                contentDescription = "Back",
-                modifier = Modifier.size(35.dp),
-                tint = Color.Black,
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Filled.Circle,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.Black,
                 )
             }
         }
 
-
-
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 100.dp),
@@ -118,7 +115,7 @@ fun MessageViewLayout(
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.tertiary
 
-            ){
+            ) {
                 Text(
                     text = "10 October",
                     modifier = Modifier
@@ -137,7 +134,7 @@ fun MessageViewLayout(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.secondary
             ) {
-                Column(modifier = Modifier.padding(8.dp)){
+                Column(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.message_received_en),
                         fontSize = 18.sp,
@@ -164,7 +161,7 @@ fun MessageViewLayout(
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.primary
             ) {
-                Column(modifier = Modifier.padding(8.dp)){
+                Column(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.message_sent_en),
                         fontSize = 18.sp,
