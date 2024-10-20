@@ -4,8 +4,7 @@ import java.math.BigInteger
 
 data class Message(
     val userId: Int,
-    val channelId : Int,
-    val messageId : Int,
+    val channelId: Int,
     val text: String,
-    val createdAt : BigInteger,
+    val createdAt: BigInteger
 )
