@@ -24,7 +24,7 @@ fun MessageTextField(
         onValueChange = onMessageTextChange,
         label = { Text(stringResource(R.string.message_text_field_en)) },
         modifier = modifier
-            .padding(6.dp),
+            .padding(1.dp),
         shape = RoundedCornerShape(10.dp),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             focusedBorderColor = MaterialTheme.colorScheme.primary,

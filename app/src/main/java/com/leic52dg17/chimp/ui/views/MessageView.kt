@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Circle
+import androidx.compose.material.icons.filled.KeyboardDoubleArrowUp
+import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -51,7 +53,7 @@ val My_ID = 1
 val Joe_ID = 2
 
 
-// fazer array de mensagens
+
 
 @Composable
 fun MessageViewLayout(
@@ -69,7 +71,7 @@ fun MessageViewLayout(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Color.Cyan)
+                .background(MaterialTheme.colorScheme.primary)
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         )
@@ -89,7 +91,7 @@ fun MessageViewLayout(
                 textAlign = TextAlign.Center,
                 fontSize = 27.sp
             )
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = {  }) {
             Icon(
                 imageVector = Icons.Filled.Circle ,
                 contentDescription = "Back",
@@ -99,7 +101,7 @@ fun MessageViewLayout(
             }
         }
 
-        // everything after this point has to be after the topbar
+
 
         Column (
             modifier = Modifier
@@ -183,30 +185,66 @@ fun MessageViewLayout(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.BottomCenter),
+                .background(MaterialTheme.colorScheme.onPrimary)
+                .align(Alignment.BottomEnd),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
-        Image(
+            Image(
                 painter = imageResource,
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
-            Surface(
-                modifier = Modifier
-                    .weight(1f),
-                shape = RoundedCornerShape(10.dp),
-                color = MaterialTheme.colorScheme.secondary
 
-            ) {
-                MessageTextField(
-                    messageText = messageText,
-                    onMessageTextChange = { messageText = it },
-                    modifier = Modifier.weight(1f) // Or adjust the modifier as needed
-                )
+
+            if (messageText.isEmpty()) {
+
+                Surface(
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(55.dp)
+                        .padding(bottom = 5.dp)
+                        .padding(end = 10.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                ) {
+                    MessageTextField(
+                        messageText = messageText,
+                        onMessageTextChange = { messageText = it },
+                    )
+                }
+            } else {
+
+                Row(
+                    modifier = Modifier
+                        .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(55.dp)
+                            .padding(bottom = 5.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.secondary
+                    ) {
+                        MessageTextField(
+                            messageText = messageText,
+                            onMessageTextChange = { messageText = it },
+                        )
+                    }
+
+
+                    val imageResource3 = painterResource((R.drawable.send_icon))
+                    Image(
+                        painter = imageResource3,
+                        contentDescription = null,
+                        modifier = Modifier.size(60.dp)
+                    )
+
+                }
             }
         }
     }
