@@ -4,6 +4,9 @@
     <string name="app_version_number">0.0.1-beta</string>
     <string name="app_logo_cd">ChiMP Logo</string>
 
+    <!-- Alert Dialog -->
+    <string name="channel_name_constraints_en">The channel name must have a maximum 50 characters.\nSpecial symbols and numbers are allowed.</string>
+
     <!-- Icons -->
     <string name="search_icon_cd">Search Icon</string>
     <string name="settings_icon_cd">Settings Icon</string>

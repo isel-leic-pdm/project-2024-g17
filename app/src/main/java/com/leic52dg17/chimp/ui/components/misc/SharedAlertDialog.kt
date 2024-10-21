@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.components
+package com.leic52dg17.chimp.ui.components.misc
 
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
