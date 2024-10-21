@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.components
+package com.leic52dg17.chimp.ui.components.inputs
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.text.KeyboardOptions

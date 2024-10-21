@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.components
+package com.leic52dg17.chimp.ui.components.buttons
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.Text
