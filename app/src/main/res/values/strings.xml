@@ -66,5 +66,7 @@
     <!--Create Channel View-->
     <string name="create_channel_title_en">Create a channel</string>
     <string name="give_a_name_to_channel_en">Give a name to your channel</string>
+    <string name="visibility_public_en">Public</string>
+    <string name="visibility_private_en">Private</string>
 
 </resources>
