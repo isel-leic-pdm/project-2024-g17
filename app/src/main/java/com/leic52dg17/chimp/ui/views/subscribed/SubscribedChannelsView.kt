@@ -4,29 +4,23 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -36,79 +30,107 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.ImageResource
-import com.leic52dg17.chimp.ui.components.BottomNavbar
-import com.leic52dg17.chimp.ui.components.SearchBar
+import com.leic52dg17.chimp.ui.components.inputs.SearchBar
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 
-val channelList = listOf<Channel>(
+val channelList = listOf(
     Channel(
-        "Channel 1",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 1 icon")
+        channelId = 1,
+        displayName = "Channel 1",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 1 Icon"
     ),
     Channel(
-        "Channel 2",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 2 icon")
+        channelId = 2,
+        displayName = "Channel 2",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 2 Icon"
     ),
     Channel(
-        "Channel 3",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 3 icon")
+        channelId = 3,
+        displayName = "Channel 3",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 3 Icon"
     ),
     Channel(
-        "Channel 5",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 4,
+        displayName = "Channel 4",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 4 Icon"
     ),
     Channel(
-        "Channel 6",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 5,
+        displayName = "Channel 4",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 5 Icon"
     ),
     Channel(
-        "Channel 7",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 6,
+        displayName = "Channel 6",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 6 Icon"
     ),
     Channel(
-        "Channel 8",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 7,
+        displayName = "Channel 7",
+        messages = emptyList(),
+        users = emptyList(),
+        "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 7 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 8,
+        displayName = "Channel 8",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 8 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 9,
+        displayName = "Channel 9",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 9 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 10,
+        displayName = "Channel 10",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 10 Icon"
     ),
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SubscribedChannelsView(
-
+    innerPadding: PaddingValues = PaddingValues(0.dp),
+    onCreateChannelClick: () -> Unit = {}
 ) {
 
     var searchValue by remember { mutableStateOf("") }
@@ -117,6 +139,7 @@ fun SubscribedChannelsView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
+            .padding(innerPadding)
             .background(MaterialTheme.colorScheme.tertiary)
             .fillMaxSize()
     ) {
@@ -142,7 +165,9 @@ fun SubscribedChannelsView(
                 text = stringResource(id = R.string.subscribed_channel_title_text_en),
             )
             IconButton(
-                onClick = { /*TODO*/ }
+                onClick = {
+                    onCreateChannelClick()
+                }
             ) {
                 Icon(
                     imageVector = Icons.Default.Create,
@@ -184,7 +209,7 @@ fun SubscribedChannelsView(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.chimp_blue_final),
-                        contentDescription = channel.channelIcon.contentDescription,
+                        contentDescription = channel.channelIconContentDescription,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .size(50.dp)
@@ -206,7 +231,7 @@ fun SubscribedChannelsView(
                             )
                             Text(
                                 fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                text = channel.latestMessage,
+                                text = channel.messages.last().text,
                                 modifier = Modifier
                                     .padding(bottom = 16.dp)
                                     .alpha(0.60f)

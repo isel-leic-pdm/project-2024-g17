@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.components
+package com.leic52dg17.chimp.ui.components.buttons
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,7 +23,7 @@ fun BackButton(
             .fillMaxWidth()
     ) {
         IconButton(
-            onClick = onBackClick,
+            onClick = { onBackClick() },
             modifier = modifier.align(Alignment.BottomStart)
         ) {
             Icon(
