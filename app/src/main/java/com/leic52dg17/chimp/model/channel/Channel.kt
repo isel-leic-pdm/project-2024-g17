@@ -1,7 +1,7 @@
 package com.leic52dg17.chimp.model.channel
 
-import com.leic52dg17.chimp.model.User
 import com.leic52dg17.chimp.model.message.Message
+import com.leic52dg17.chimp.model.user.User
 
 data class Channel(
     val channelId: Int,
