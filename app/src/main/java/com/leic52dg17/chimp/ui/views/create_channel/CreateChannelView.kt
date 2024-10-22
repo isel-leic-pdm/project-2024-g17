@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.views.create_channel
 
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -8,6 +9,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +29,9 @@ fun CreateChannelView(
     onBackClick: () -> Unit = {},
     onChannelNameInfoClick: (String) -> Unit = {}
 ) {
+    val configuration = LocalConfiguration.current
+    val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+
     var channelNameInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
         mutableStateOf("")
     }
@@ -60,9 +65,9 @@ fun CreateChannelView(
         )
         Column(
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .fillMaxSize()
-                .weight(1f),
+                .weight(1f)
+                .then(if (isLandscape) Modifier.verticalScroll(rememberScrollState()) else Modifier),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
