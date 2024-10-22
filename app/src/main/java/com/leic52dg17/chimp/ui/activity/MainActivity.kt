@@ -23,12 +23,9 @@ class MainActivity : ComponentActivity() {
                 MainScreenViewModelFactory()
             }
         )
-
-
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {
-
                 Scaffold { innerPadding ->
                     Column(
                         modifier = Modifier
