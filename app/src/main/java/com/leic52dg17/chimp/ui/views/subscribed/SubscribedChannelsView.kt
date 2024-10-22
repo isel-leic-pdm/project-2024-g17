@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
@@ -35,10 +36,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.common.ImageResource
+import com.leic52dg17.chimp.model.message.Message
+import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.ui.components.inputs.SearchBar
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
@@ -48,83 +49,55 @@ val channelList = listOf(
     Channel(
         channelId = 1,
         displayName = "Channel 1",
-        messages = emptyList(),
-        users = emptyList(),
+        messages = listOf(
+            Message(
+                userId = 1,
+                channelId = 1,
+                text = "Message 1",
+                createdAt = 1640995200.toBigInteger()
+            )
+        ),
+        users = listOf(
+            User(
+                userId = 1,
+                username = "user1",
+                displayName = "User 1"
+            ),
+            User(
+                userId = 2,
+                username = "user2",
+                displayName = "User 2"
+            )
+        ),
         channelIconUrl = "https://picsum.photos/300/300",
         channelIconContentDescription = "Channel 1 Icon"
     ),
     Channel(
         channelId = 2,
         displayName = "Channel 2",
-        messages = emptyList(),
-        users = emptyList(),
+        messages = listOf(
+            Message(
+                userId = 1,
+                channelId = 1,
+                text = "Message 1",
+                createdAt = 1640995200.toBigInteger()
+            )
+        ),
+        users = listOf(
+            User(
+                userId = 1,
+                username = "user1",
+                displayName = "User 1"
+            ),
+            User(
+                userId = 2,
+                username = "user2",
+                displayName = "User 2"
+            )
+        ),
         channelIconUrl = "https://picsum.photos/300/300",
         channelIconContentDescription = "Channel 2 Icon"
-    ),
-    Channel(
-        channelId = 3,
-        displayName = "Channel 3",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 3 Icon"
-    ),
-    Channel(
-        channelId = 4,
-        displayName = "Channel 4",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 4 Icon"
-    ),
-    Channel(
-        channelId = 5,
-        displayName = "Channel 4",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 5 Icon"
-    ),
-    Channel(
-        channelId = 6,
-        displayName = "Channel 6",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 6 Icon"
-    ),
-    Channel(
-        channelId = 7,
-        displayName = "Channel 7",
-        messages = emptyList(),
-        users = emptyList(),
-        "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 7 Icon"
-    ),
-    Channel(
-        channelId = 8,
-        displayName = "Channel 8",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 8 Icon"
-    ),
-    Channel(
-        channelId = 9,
-        displayName = "Channel 9",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 9 Icon"
-    ),
-    Channel(
-        channelId = 10,
-        displayName = "Channel 10",
-        messages = emptyList(),
-        users = emptyList(),
-        channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 10 Icon"
-    ),
+    )
 )
 
 @Composable
@@ -196,6 +169,7 @@ fun SubscribedChannelsView(
                 .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.background)
                 .topBottomBorder(2.dp, MaterialTheme.colorScheme.secondary)
+                .heightIn(min = 800.dp)
                 .fillMaxHeight()
                 .fillMaxWidth()
 
@@ -231,7 +205,7 @@ fun SubscribedChannelsView(
                             )
                             Text(
                                 fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                text = channel.messages.last().text,
+                                text = if(channel.messages.isEmpty()) "" else channel.messages.last().text,
                                 modifier = Modifier
                                     .padding(bottom = 16.dp)
                                     .alpha(0.60f)

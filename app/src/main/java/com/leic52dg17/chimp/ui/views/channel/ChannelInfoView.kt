@@ -1,3 +1,4 @@
+/*
 package com.leic52dg17.chimp.ui.views.channel
 
 import androidx.compose.foundation.layout.Column
@@ -41,4 +42,4 @@ fun ChannelInfoViewPreview() {
 
         )
     )
-}
+}*/
