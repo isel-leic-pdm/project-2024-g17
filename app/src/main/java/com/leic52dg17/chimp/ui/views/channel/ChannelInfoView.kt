@@ -1,4 +1,3 @@
-/*
 package com.leic52dg17.chimp.ui.views.channel
 
 import androidx.compose.foundation.Image
@@ -29,14 +28,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.model.User
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.message.Message
 import java.math.BigInteger
 import java.time.Instant
 import androidx.compose.material3.Icon
 import androidx.compose.ui.res.stringResource
-import com.leic52dg17.chimp.ui.components.BackButton
+import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 
 @Composable
@@ -168,4 +167,4 @@ fun ChannelInfoViewPreview() {
         onBackClick = { },
         onAddToUserChannelClick = {}
     )
-}*/
+}
