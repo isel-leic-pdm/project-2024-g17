@@ -1,3 +1,4 @@
+/*
 package com.leic52dg17.chimp.ui.views.channel
 
 import androidx.compose.foundation.Image
@@ -167,4 +168,4 @@ fun ChannelInfoViewPreview() {
         onBackClick = { },
         onAddToUserChannelClick = {}
     )
-}
+}*/

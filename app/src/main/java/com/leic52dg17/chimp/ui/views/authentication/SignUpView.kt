@@ -22,12 +22,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.ui.components.AuthenticationButton
-import com.leic52dg17.chimp.ui.components.AuthenticationField
-import com.leic52dg17.chimp.ui.components.AuthenticationOrDivider
-import com.leic52dg17.chimp.ui.components.AuthenticationPasswordField
-import com.leic52dg17.chimp.ui.components.AuthenticationTitle
-import com.leic52dg17.chimp.ui.components.BackButton
+import com.leic52dg17.chimp.ui.components.buttons.AuthenticationButton
+import com.leic52dg17.chimp.ui.components.inputs.AuthenticationField
+import com.leic52dg17.chimp.ui.components.misc.AuthenticationOrDivider
+import com.leic52dg17.chimp.ui.components.inputs.AuthenticationPasswordField
+import com.leic52dg17.chimp.ui.components.misc.AuthenticationTitle
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun SignUpView(

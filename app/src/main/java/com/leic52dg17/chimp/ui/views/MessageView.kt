@@ -1,14 +1,13 @@
 package com.leic52dg17.chimp.ui.views
 
+
+import MessageTextField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-
-
 import androidx.compose.foundation.layout.Row
-
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,15 +16,20 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,45 +41,59 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 
+
+val My_ID = 1
+val Joe_ID = 2
+
+
 @Composable
-fun MessageViewLayout() {
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(MaterialTheme.colorScheme.onPrimary)) {
+fun MessageViewLayout(
+    modifier: Modifier = Modifier,
+    onBackClick: () -> Unit,
+
+    ) {
+    var messageText by remember { mutableStateOf("") }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.onPrimary)
+    ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(30.dp)
-                .align(Alignment.TopCenter),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .background(MaterialTheme.colorScheme.primary)
+                .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         )
 
         {
-            Icon(
-                imageVector = Icons.Filled.ArrowBackIosNew ,
-                contentDescription = "Back",
-                tint = Color.Black
-            )
+            IconButton(onBackClick) {
+                Icon(
+                    imageVector = Icons.Filled.ArrowBackIosNew,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.Black,
+                )
+            }
+
             Text(
                 text = "Joe Biden",
                 modifier = Modifier.weight(1f),
                 textAlign = TextAlign.Center,
                 fontSize = 27.sp
             )
-            Box(
-                modifier = Modifier
-                    .size(32.dp)
-                    .background(MaterialTheme.colorScheme.onSecondary, CircleShape)
-            )
+            IconButton(onClick = { }) {
+                Icon(
+                    imageVector = Icons.Filled.Circle,
+                    contentDescription = "Back",
+                    modifier = Modifier.size(35.dp),
+                    tint = Color.Black,
+                )
+            }
         }
-        Spacer(modifier = Modifier.height(32.dp))
 
-        // everything after this point has to be after the topbar
-
-
-        Column (
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 100.dp),
@@ -90,7 +108,7 @@ fun MessageViewLayout() {
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.tertiary
 
-            ){
+            ) {
                 Text(
                     text = "10 October",
                     modifier = Modifier
@@ -109,7 +127,7 @@ fun MessageViewLayout() {
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.secondary
             ) {
-                Column(modifier = Modifier.padding(8.dp)){
+                Column(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.message_received_en),
                         fontSize = 18.sp,
@@ -136,7 +154,7 @@ fun MessageViewLayout() {
                 shape = RoundedCornerShape(8.dp),
                 color = MaterialTheme.colorScheme.primary
             ) {
-                Column(modifier = Modifier.padding(8.dp)){
+                Column(modifier = Modifier.padding(8.dp)) {
                     Text(
                         text = stringResource(R.string.message_sent_en),
                         fontSize = 18.sp,
@@ -157,32 +175,66 @@ fun MessageViewLayout() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp)
-                .align(Alignment.BottomCenter),
+                .background(MaterialTheme.colorScheme.onPrimary)
+                .align(Alignment.BottomEnd),
             verticalAlignment = Alignment.CenterVertically
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
-        Image(
+            Image(
                 painter = imageResource,
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
             )
 
             Spacer(modifier = Modifier.width(8.dp))
-            Surface(
-                modifier = Modifier
-                    .weight(1f),
-                shape = RoundedCornerShape(10.dp),
-                color = MaterialTheme.colorScheme.secondary
 
-            ) {
-                Text(
-                    text = stringResource(R.string.message_text_field_en),
+
+            if (messageText.isEmpty()) {
+
+                Surface(
                     modifier = Modifier
-                        .padding(16.dp),
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    fontSize = 24.sp
-                )
+                        .weight(1f)
+                        .height(55.dp)
+                        .padding(bottom = 5.dp)
+                        .padding(end = 10.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                ) {
+                    MessageTextField(
+                        messageText = messageText,
+                        onMessageTextChange = { messageText = it },
+                    )
+                }
+            } else {
+
+                Row(
+                    modifier = Modifier
+                        .weight(1f),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Surface(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(55.dp)
+                            .padding(bottom = 5.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.secondary
+                    ) {
+                        MessageTextField(
+                            messageText = messageText,
+                            onMessageTextChange = { messageText = it },
+                        )
+                    }
+
+
+                    val imageResource3 = painterResource((R.drawable.send_icon))
+                    Image(
+                        painter = imageResource3,
+                        contentDescription = null,
+                        modifier = Modifier.size(60.dp)
+                    )
+
+                }
             }
         }
     }
@@ -191,5 +243,5 @@ fun MessageViewLayout() {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MessageViewLayoutPreview() {
-    MessageViewLayout()
+    MessageViewLayout(modifier = Modifier, onBackClick = {})
 }

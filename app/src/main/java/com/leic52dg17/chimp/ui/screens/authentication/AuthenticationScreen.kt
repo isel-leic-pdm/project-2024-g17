@@ -3,13 +3,13 @@ package com.leic52dg17.chimp.ui.screens.authentication
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.AuthenticationViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationScreenViewModel
 import com.leic52dg17.chimp.ui.views.LandingView
 import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
 
 @Composable
-fun AuthenticationScreen(viewModel: AuthenticationViewModel) {
+fun AuthenticationScreen(viewModel: AuthenticationScreenViewModel) {
     ChIMPTheme {
         val currentState = viewModel.state
 
@@ -36,5 +36,5 @@ fun AuthenticationScreen(viewModel: AuthenticationViewModel) {
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AuthenticationScreenPreview() {
-    AuthenticationScreen(viewModel = AuthenticationViewModel())
+    AuthenticationScreen(viewModel = AuthenticationScreenViewModel())
 }

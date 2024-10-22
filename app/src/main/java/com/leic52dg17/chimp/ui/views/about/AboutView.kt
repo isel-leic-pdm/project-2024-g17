@@ -25,7 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.ui.components.AboutButton
+import com.leic52dg17.chimp.ui.components.buttons.AboutButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 
