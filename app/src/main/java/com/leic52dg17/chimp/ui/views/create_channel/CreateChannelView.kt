@@ -31,7 +31,7 @@ fun CreateChannelView(
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
+  
     var channelNameInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
         mutableStateOf("")
     }

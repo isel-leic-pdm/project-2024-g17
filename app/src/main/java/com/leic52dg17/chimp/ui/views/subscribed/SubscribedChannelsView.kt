@@ -35,6 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.ImageResource
@@ -43,56 +44,86 @@ import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 
-val channelList = listOf<Channel>(
+val channelList = listOf(
     Channel(
-        "Channel 1",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 1 icon")
+        channelId = 1,
+        displayName = "Channel 1",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 1 Icon"
     ),
     Channel(
-        "Channel 2",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 2 icon")
+        channelId = 2,
+        displayName = "Channel 2",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 2 Icon"
     ),
     Channel(
-        "Channel 3",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 3 icon")
+        channelId = 3,
+        displayName = "Channel 3",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 3 Icon"
     ),
     Channel(
-        "Channel 5",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 4,
+        displayName = "Channel 4",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 4 Icon"
     ),
     Channel(
-        "Channel 6",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 5,
+        displayName = "Channel 4",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 5 Icon"
     ),
     Channel(
-        "Channel 7",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 6,
+        displayName = "Channel 6",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 6 Icon"
     ),
     Channel(
-        "Channel 8",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 7,
+        displayName = "Channel 7",
+        messages = emptyList(),
+        users = emptyList(),
+        "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 7 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 8,
+        displayName = "Channel 8",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 8 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 9,
+        displayName = "Channel 9",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 9 Icon"
     ),
     Channel(
-        "Channel 9",
-        "This is the latest message",
-        ImageResource("https://picsum.photos/300/300", 300, 300, "Channel 4 icon")
+        channelId = 10,
+        displayName = "Channel 10",
+        messages = emptyList(),
+        users = emptyList(),
+        channelIconUrl = "https://picsum.photos/300/300",
+        channelIconContentDescription = "Channel 10 Icon"
     ),
 )
 
@@ -178,7 +209,7 @@ fun SubscribedChannelsView(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.chimp_blue_final),
-                        contentDescription = channel.channelIcon.contentDescription,
+                        contentDescription = channel.channelIconContentDescription,
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .size(50.dp)
@@ -200,7 +231,7 @@ fun SubscribedChannelsView(
                             )
                             Text(
                                 fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                text = channel.latestMessage,
+                                text = channel.messages.last().text,
                                 modifier = Modifier
                                     .padding(bottom = 16.dp)
                                     .alpha(0.60f)

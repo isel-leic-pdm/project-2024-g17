@@ -1,3 +1,10 @@
 package com.leic52dg17.chimp.model.message
 
-// data class Message()
+import java.math.BigInteger
+
+data class Message(
+    val userId: Int,
+    val channelId: Int,
+    val text: String,
+    val createdAt: BigInteger
+)
