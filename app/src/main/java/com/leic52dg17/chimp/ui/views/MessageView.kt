@@ -74,6 +74,42 @@ val messages = listOf(
         channelId = 1,
         text = "I'm great, i'm learning PDM!",
         createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "How about the elections!",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "You think ur team is winning?",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Not sure as of now dude",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Trump dodged a bullet, wild",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Wow, that's amazing! Matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Yeah, matrix",
+        createdAt = 123.toBigInteger()
     )
 
 )
@@ -170,9 +206,6 @@ fun MessageViewLayout(
                 }
                 val horizontalAlignment = if (message.userId == My_ID) Alignment.End else Alignment.Start
 
-
-
-
                 Surface(
                     modifier = Modifier
                         .wrapContentSize()
@@ -180,7 +213,7 @@ fun MessageViewLayout(
                             if (message.userId == My_ID) Alignment.End else Alignment.Start
                         ),
                     shape = RoundedCornerShape(8.dp),
-                    color = MaterialTheme.colorScheme.secondary
+                    color = backgroundColor
                 ) {
                     Column(modifier = Modifier.padding(8.dp)) {
                         Text(
