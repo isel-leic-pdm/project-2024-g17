@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.screens.main
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -13,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
+import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
@@ -68,10 +70,13 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 }
 
                 is MainScreenState.SubscribedChannels -> {
-                    viewModel.getCurrentUserSubscribedChannels()
+                    LaunchedEffect(Unit) {
+                        val channels = viewModel.getCurrentUserSubscribedChannels()
+                        viewModel.transition(MainScreenState.SubscribedChannels(false, channels = channels))
+                    }
                     isNavBarShown = true
                     SubscribedChannelsView(
-                        viewModel.currentUserSubscribedChannels,
+                        (viewModel.state as MainScreenState.SubscribedChannels).channels,
                         innerPadding,
                         onCreateChannelClick = {
                             viewModel.transition(MainScreenState.CreateChannel(false))
