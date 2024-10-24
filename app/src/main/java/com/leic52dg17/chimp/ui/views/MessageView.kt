@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -41,6 +42,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.message.Message
+import java.math.BigInteger
+import java.text.SimpleDateFormat
+import java.util.Date
 
 
 val My_ID = 1
@@ -74,6 +78,14 @@ val messages = listOf(
 
 )
 
+fun formatDate(timestamp: BigInteger): String {
+
+    val millis = timestamp.toLong() * 1000
+
+    val date = Date(millis)
+    val format = SimpleDateFormat("HH:mm")
+    return format.format(date)
+}
 
 @Composable
 fun MessageViewLayout(
@@ -128,11 +140,12 @@ fun MessageViewLayout(
                 .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
                     .align(
-                        Alignment.CenterHorizontally
+                       CenterHorizontally
                     ),
                 shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.tertiary
@@ -149,54 +162,44 @@ fun MessageViewLayout(
                 )
             }
 
-            Surface(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(start = 14.dp),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.secondary
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.message_received_en),
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(8.dp),
-                        color = MaterialTheme.colorScheme.onSecondary
-                    )
-                    Text(
-                        text = "02:08 AM",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onSecondary,
-                        modifier = Modifier.align(Alignment.End)
-                    )
+            messages.forEach { message ->
+                val backgroundColor = if (message.userId == My_ID) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.secondary
+                }
+                val horizontalAlignment = if (message.userId == My_ID) Alignment.End else Alignment.Start
+
+
+
+
+                Surface(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .align(
+                            if (message.userId == My_ID) Alignment.End else Alignment.Start
+                        ),
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(
+                            text = message.text,
+                            fontSize = 18.sp,
+                            modifier = Modifier.padding(8.dp),
+                            color = MaterialTheme.colorScheme.onSecondary
+                        )
+                        Text(
+                            text = formatDate(message.createdAt),
+                            fontSize = 12.sp,
+                            color = MaterialTheme.colorScheme.onSecondary,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+
+                    }
 
                 }
 
-            }
-
-
-            Surface(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(end = 14.dp)
-                    .align(Alignment.End),
-                shape = RoundedCornerShape(8.dp),
-                color = MaterialTheme.colorScheme.primary
-            ) {
-                Column(modifier = Modifier.padding(8.dp)) {
-                    Text(
-                        text = stringResource(R.string.message_sent_en),
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(8.dp),
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                    Text(
-                        text = "02:55 AM",
-                        fontSize = 12.sp,
-                        color = MaterialTheme.colorScheme.onPrimary,
-                        modifier = Modifier.align(Alignment.Start)
-                    )
-                }
 
             }
         }
@@ -230,7 +233,7 @@ fun MessageViewLayout(
                     color = MaterialTheme.colorScheme.secondary
                 ) {
                     MessageTextField(
-                        messageText = messageText,
+                        messageText = "",
                         onMessageTextChange = { messageText = it },
                     )
                 }
