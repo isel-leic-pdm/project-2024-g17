@@ -6,8 +6,9 @@ import androidx.compose.runtime.saveable.Saver
 
 sealed interface MainScreenState {
     data object SubscribedChannels: MainScreenState
-    data object CreateChannel: MainScreenState
-
+    data class CreateChannel(val showDialog: Boolean, val dialogMessage: String? = null): MainScreenState
+    data object CreatingChannel: MainScreenState
+    data class ChannelChat(val channelId: Int): MainScreenState
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(
             save = { it.value },

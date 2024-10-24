@@ -4,7 +4,7 @@ import com.leic52dg17.chimp.model.common.Either
 import com.leic52dg17.chimp.model.common.Error
 
 sealed class ChannelCreationError: Error {
-    data class UserCouldNotBeFound(val message: String) : ChannelCreationError()
+    data class UserCouldNotBeFound(override val message: String?) : ChannelCreationError()
 }
 
 typealias ChannelCreationResult = Either<Error, Int>

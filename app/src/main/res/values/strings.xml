@@ -6,6 +6,7 @@
 
     <!-- Alert Dialog -->
     <string name="channel_name_constraints_en">The channel name must have a maximum 50 characters.\nSpecial symbols and numbers are allowed.</string>
+    <string name="generic_error_en">An unknown error has occurred, please try again.</string>
 
     <!-- Icons -->
     <string name="search_icon_cd">Search Icon</string>
@@ -68,5 +69,6 @@
     <string name="give_a_name_to_channel_en">Give a name to your channel</string>
     <string name="visibility_public_en">Public</string>
     <string name="visibility_private_en">Private</string>
+    <string name="authenticated_user_has_null_values_en">Some information couldn\'t\ be gathered for the current authenticated user.</string>
 
 </resources>
