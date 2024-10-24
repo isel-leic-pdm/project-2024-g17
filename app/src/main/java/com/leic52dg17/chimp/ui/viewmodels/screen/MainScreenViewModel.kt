@@ -17,6 +17,7 @@ import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.MainScreenState
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
@@ -71,6 +72,7 @@ class MainScreenViewModel(
             transition(MainScreenState.CreatingChannel)
             viewModelScope.launch {
                 try {
+                    delay(2000)
                     val result = channelService.createChannel(
                         ownerId,
                         name,

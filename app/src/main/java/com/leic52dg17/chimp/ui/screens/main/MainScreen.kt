@@ -14,9 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
-import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
+import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -28,6 +28,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainScreenState.BooleanSaver) {
             mutableStateOf(false)
         }
+
+        var isLoading by rememberSaveable(saver = MainScreenState.BooleanSaver) {
+            mutableStateOf(false)
+        }
+
         var alertDialogText by rememberSaveable(saver = MainScreenState.StringSaver) {
             mutableStateOf("")
         }
@@ -50,6 +55,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 alertDialogText = alertDialogText
             )
         }
+
         Scaffold(
             bottomBar = {
                 if (isNavBarShown) {
@@ -64,19 +70,46 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 }
             }
         ) { innerPadding ->
+            if (isLoading) {
+                LoadingOverlay()
+            }
             when (viewModel.state) {
                 is MainScreenState.GettingChannels -> {
-
+                    isLoading = true
                 }
 
                 is MainScreenState.SubscribedChannels -> {
+                    isLoading = false
+
+                    val currentState = (viewModel.state as MainScreenState.SubscribedChannels)
+                    if (currentState.showDialog) {
+                        alertDialogText = currentState.dialogMessage
+                            ?: stringResource(id = R.string.generic_error_en)
+                        handleDialogVisibilitySwitch()
+                    }
+
                     LaunchedEffect(Unit) {
                         val channels = viewModel.getCurrentUserSubscribedChannels()
-                        viewModel.transition(MainScreenState.SubscribedChannels(false, channels = channels))
+                        if (channels != null) {
+                            viewModel.transition(
+                                MainScreenState.SubscribedChannels(
+                                    false,
+                                    channels = channels
+                                )
+                            )
+                        } else {
+                            viewModel.transition(
+                                MainScreenState.CreateChannel(
+                                    true,
+                                    "Error getting channels"
+                                )
+                            )
+                        }
                     }
+
                     isNavBarShown = true
                     SubscribedChannelsView(
-                        (viewModel.state as MainScreenState.SubscribedChannels).channels,
+                        currentState.channels,
                         innerPadding,
                         onCreateChannelClick = {
                             viewModel.transition(MainScreenState.CreateChannel(false))
@@ -85,13 +118,17 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                 }
 
                 is MainScreenState.CreateChannel -> {
+                    isLoading = false
+
+                    isNavBarShown = false
+
                     val currentState = (viewModel.state as MainScreenState.CreateChannel)
-                    if (viewModel.state is MainScreenState.CreateChannel && currentState.showDialog) {
-                        isSharedAlertDialogShown = true
+                    if (currentState.showDialog) {
                         alertDialogText = currentState.dialogMessage
                             ?: stringResource(id = R.string.generic_error_en)
+                        handleDialogVisibilitySwitch()
                     }
-                    isNavBarShown = false
+
                     CreateChannelView(
                         onBackClick = {
                             viewModel.transition(MainScreenState.SubscribedChannels(false))
@@ -112,7 +149,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         authenticatedUser = viewModel.authenticatedUser
                     )
                 }
-                is MainScreenState.CreatingChannel -> TODO()
+
+                is MainScreenState.CreatingChannel -> {
+                    isNavBarShown = false
+                    isLoading = false
+                }
             }
         }
     }
