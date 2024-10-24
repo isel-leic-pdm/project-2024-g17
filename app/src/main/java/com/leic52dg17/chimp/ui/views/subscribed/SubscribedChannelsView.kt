@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
@@ -48,7 +50,7 @@ import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 val mockChannelList = listOf(
     Channel(
         channelId = 1,
-        displayName = "Channel 1",
+        displayName = "very very long name",
         messages = listOf(
             Message(
                 userId = 1,
@@ -75,7 +77,7 @@ val mockChannelList = listOf(
     ),
     Channel(
         channelId = 2,
-        displayName = "Channel 2",
+        displayName = "short",
         messages = listOf(
             Message(
                 userId = 1,
@@ -194,18 +196,25 @@ fun SubscribedChannelsView(
                                 .clip(CircleShape)
                         )
                         Row(
-                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            horizontalArrangement = Arrangement.Center,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .bottomBorder(0.5.dp, MaterialTheme.colorScheme.secondary)
                         ) {
-                            Column {
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier
+                                    .width(200.dp)
+                            ) {
                                 Text(
                                     textAlign = TextAlign.Center,
                                     text = channel.displayName,
                                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                                     fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily
+                                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
                                 )
                                 Text(
                                     fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
