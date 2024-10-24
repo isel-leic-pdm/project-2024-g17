@@ -40,10 +40,39 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.message.Message
 
 
 val My_ID = 1
 val Joe_ID = 2
+
+val messages = listOf(
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Hey!",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Hello!",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "How are you man!",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "I'm great, i'm learning PDM!",
+        createdAt = 123.toBigInteger()
+    )
+
+)
 
 
 @Composable
@@ -244,4 +273,5 @@ fun MessageViewLayout(
 @Composable
 fun MessageViewLayoutPreview() {
     MessageViewLayout(modifier = Modifier, onBackClick = {})
+
 }
