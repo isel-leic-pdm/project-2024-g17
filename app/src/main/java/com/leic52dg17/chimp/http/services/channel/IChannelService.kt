@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.http.services.channel
 
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
+import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.PermissionLevels
 import java.util.UUID
 
@@ -26,4 +27,6 @@ interface IChannelService {
         senderId: Int,
         permissionLevel: PermissionLevels
     ): Boolean
+
+    suspend fun getUserSubscribedChannels(userId: Int): List<Channel>?
 }

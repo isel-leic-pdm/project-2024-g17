@@ -78,6 +78,11 @@ class FakeChannelService : IChannelService {
         return true
     }
 
+    override suspend fun getUserSubscribedChannels(userId: Int): List<Channel>? {
+        if (users.isEmpty() || !users.any { it.userId == userId }) return null
+        return channels.filter { it.users.any { user -> user.userId == userId } }
+    }
+
     companion object {
 
         val users = mutableListOf(

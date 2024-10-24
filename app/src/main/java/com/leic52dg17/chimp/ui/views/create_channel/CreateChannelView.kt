@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.ui.views.create_channel
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -135,10 +136,13 @@ fun CreateChannelView(
                 Button(
                     modifier = Modifier.padding(16.dp),
                     onClick = {
+                        Log.i("CreateChannelView", "Create channel button clicked")
+                        Log.i("CreateChannelView", "Authenticated user: $authenticatedUser")
                         if (authenticatedUser.user == null) {
                             onError(userInformationErrorText)
                             return@Button
                         }
+                        Log.i("CreateChannelView", "Creating channel")
                         onCreateChannelRequest(
                             authenticatedUser.user.userId,
                             channelNameInputValue,

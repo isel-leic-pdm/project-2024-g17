@@ -63,9 +63,15 @@ fun MainScreen(viewModel: MainScreenViewModel) {
             }
         ) { innerPadding ->
             when (viewModel.state) {
+                is MainScreenState.GettingChannels -> {
+
+                }
+
                 is MainScreenState.SubscribedChannels -> {
+                    viewModel.getCurrentUserSubscribedChannels()
                     isNavBarShown = true
                     SubscribedChannelsView(
+                        viewModel.currentUserSubscribedChannels,
                         innerPadding,
                         onCreateChannelClick = {
                             viewModel.transition(MainScreenState.CreateChannel(false))
@@ -83,7 +89,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     isNavBarShown = false
                     CreateChannelView(
                         onBackClick = {
-                            viewModel.transition(MainScreenState.SubscribedChannels)
+                            viewModel.transition(MainScreenState.SubscribedChannels(false))
                         },
                         onChannelNameInfoClick = { text ->
                             alertDialogText = text
@@ -101,8 +107,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         authenticatedUser = viewModel.authenticatedUser
                     )
                 }
-
-                is MainScreenState.ChannelChat -> TODO()
                 is MainScreenState.CreatingChannel -> TODO()
             }
         }
