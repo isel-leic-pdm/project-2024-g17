@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -198,43 +200,51 @@ fun MessageViewLayout(
                 )
             }
 
-            messages.forEach { message ->
-                val backgroundColor = if (message.userId == My_ID) {
-                    MaterialTheme.colorScheme.primary
-                } else {
-                    MaterialTheme.colorScheme.secondary
-                }
-                val horizontalAlignment = if (message.userId == My_ID) Alignment.End else Alignment.Start
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                items(messages) { message ->
 
-                Surface(
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .align(
-                            if (message.userId == My_ID) Alignment.End else Alignment.Start
-                        ),
-                    shape = RoundedCornerShape(8.dp),
-                    color = backgroundColor
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            text = message.text,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colorScheme.onSecondary
-                        )
-                        Text(
-                            text = formatDate(message.createdAt),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier.align(Alignment.End)
-                        )
-
+                    val backgroundColor = if (message.userId == My_ID) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.secondary
                     }
 
+                    val aligned =  if (message.userId == My_ID) Alignment.End else Alignment.Start
+
+                    Surface(
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .align(
+                                aligned
+                            ),
+                        shape = RoundedCornerShape(8.dp),
+                        color = backgroundColor
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = message.text,
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(8.dp),
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = formatDate(message.createdAt),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.align(Alignment.End)
+                            )
+
+                        }
+
+                    }
                 }
-
-
             }
+
         }
 
         Row(
