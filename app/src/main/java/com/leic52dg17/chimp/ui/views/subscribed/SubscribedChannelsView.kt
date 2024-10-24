@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -34,6 +35,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
@@ -45,10 +47,10 @@ import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 
-val channelList = listOf(
+val mockChannelList = listOf(
     Channel(
         channelId = 1,
-        displayName = "Channel 1",
+        displayName = "very very long name",
         messages = listOf(
             Message(
                 userId = 1,
@@ -70,11 +72,12 @@ val channelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 1 Icon"
+        channelIconContentDescription = "Channel 1 Icon",
+        isPrivate = false
     ),
     Channel(
         channelId = 2,
-        displayName = "Channel 2",
+        displayName = "short",
         messages = listOf(
             Message(
                 userId = 1,
@@ -96,12 +99,14 @@ val channelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 2 Icon"
+        channelIconContentDescription = "Channel 2 Icon",
+        isPrivate = true
     )
 )
 
 @Composable
 fun SubscribedChannelsView(
+    channels: List<Channel>? = mockChannelList,
     innerPadding: PaddingValues = PaddingValues(0.dp),
     onCreateChannelClick: () -> Unit = {}
 ) {
@@ -174,52 +179,61 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            for (channel in channelList) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.chimp_blue_final),
-                        contentDescription = channel.channelIconContentDescription,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .size(50.dp)
-                            .clip(CircleShape)
-                    )
+            if (channels != null) {
+                for (channel in channels) {
                     Row(
-                        horizontalArrangement = Arrangement.SpaceEvenly,
+                        horizontalArrangement = Arrangement.Start,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .bottomBorder(0.5.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(16.dp)
                     ) {
-                        Column {
-                            Text(
-                                textAlign = TextAlign.Center,
-                                text = channel.displayName,
-                                fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                                fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                                fontFamily = MaterialTheme.typography.titleLarge.fontFamily
-                            )
-                            Text(
-                                fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                text = if(channel.messages.isEmpty()) "" else channel.messages.last().text,
-                                modifier = Modifier
-                                    .padding(bottom = 16.dp)
-                                    .alpha(0.60f)
-                            )
-                        }
-                        IconButton(
-                            onClick = { /*TODO*/ }
+                        Image(
+                            painter = painterResource(id = R.drawable.chimp_blue_final),
+                            contentDescription = channel.channelIconContentDescription,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .size(50.dp)
+                                .clip(CircleShape)
+                        )
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .bottomBorder(0.5.dp, MaterialTheme.colorScheme.secondary)
                         ) {
-                            Icon(
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Center,
                                 modifier = Modifier
-                                    .size(20.dp),
-                                imageVector = Icons.Default.Add,
-                                contentDescription = stringResource(id = R.string.pin_icon_cd)
-                            )
+                                    .width(200.dp)
+                            ) {
+                                Text(
+                                    textAlign = TextAlign.Center,
+                                    text = channel.displayName,
+                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                                    overflow = TextOverflow.Ellipsis,
+                                    maxLines = 1,
+                                )
+                                Text(
+                                    fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
+                                    text = if(channel.messages.isEmpty()) "" else channel.messages.last().text,
+                                    modifier = Modifier
+                                        .padding(bottom = 16.dp)
+                                        .alpha(0.60f)
+                                )
+                            }
+                            IconButton(
+                                onClick = { /*TODO*/ }
+                            ) {
+                                Icon(
+                                    modifier = Modifier
+                                        .size(20.dp),
+                                    imageVector = Icons.Default.Add,
+                                    contentDescription = stringResource(id = R.string.pin_icon_cd)
+                                )
+                            }
                         }
                     }
                 }
