@@ -8,6 +8,7 @@ data class Channel(
     val displayName: String,
     val messages: List<Message>,
     val users: List<User>,
+    val isPrivate: Boolean,
     val channelIconUrl: String,
-    val channelIconContentDescription: String?,
+    val channelIconContentDescription: String? = "Channel Icon",
 )

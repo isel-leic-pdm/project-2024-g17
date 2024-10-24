@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.activity
+package com.leic52dg17.chimp.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
