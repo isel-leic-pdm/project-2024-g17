@@ -70,7 +70,8 @@ val channelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 1 Icon"
+        channelIconContentDescription = "Channel 1 Icon",
+        isPrivate = false
     ),
     Channel(
         channelId = 2,
@@ -96,7 +97,8 @@ val channelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 2 Icon"
+        channelIconContentDescription = "Channel 2 Icon",
+        isPrivate = true
     )
 )
 
