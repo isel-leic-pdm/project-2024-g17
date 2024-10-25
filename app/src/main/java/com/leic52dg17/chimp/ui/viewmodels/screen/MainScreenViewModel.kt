@@ -24,10 +24,8 @@ class MainScreenViewModel(
     private val channelService: IChannelService
 ) : ViewModel() {
     var state: MainScreenState by mutableStateOf(MainScreenState.SubscribedChannels(false))
-    
-    private val mockUser = AuthenticatedUser(
 
-    val mockUser = AuthenticatedUser(
+    private val mockUser = AuthenticatedUser(
         "example_token",
         User(
             1,
@@ -92,14 +90,6 @@ class MainScreenViewModel(
                         is Success -> {
                             val channels = getCurrentUserSubscribedChannels()
                             transition(MainScreenState.SubscribedChannels(false, channels = channels))
-                            getCurrentUserSubscribedChannels()
-                            transition(
-                                MainScreenState.SubscribedChannels(
-                                    false,
-                                    null,
-                                    currentUserSubscribedChannels
-                                )
-                            )
                         }
                     }
                 } catch (e: Exception) {
