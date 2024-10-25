@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.activity
+package com.leic52dg17.chimp.core.activity
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
+import com.leic52dg17.chimp.core.ChimpApplication
 import com.leic52dg17.chimp.ui.screens.main.MainScreen
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
@@ -20,7 +21,7 @@ class MainActivity : ComponentActivity() {
 
         val mainScreenViewModel by viewModels<MainScreenViewModel>(
             factoryProducer = {
-                MainScreenViewModelFactory()
+                MainScreenViewModelFactory((application as ChimpApplication).channelService)
             }
         )
         enableEdgeToEdge()

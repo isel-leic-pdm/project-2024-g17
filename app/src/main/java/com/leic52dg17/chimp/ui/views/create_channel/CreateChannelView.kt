@@ -1,12 +1,24 @@
 package com.leic52dg17.chimp.ui.views.create_channel
 
 import android.content.res.Configuration
-import androidx.compose.foundation.layout.*
+import android.util.Log
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -15,28 +27,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.LabelAndInputWithSuggestion
-import com.leic52dg17.chimp.ui.components.inputs.SearchBar
-import com.leic52dg17.chimp.ui.components.misc.UserPool
 import com.leic52dg17.chimp.ui.components.toggles.ToggleWithLabel
 import com.leic52dg17.chimp.ui.screens.main.MainScreenState
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun CreateChannelView(
+    authenticatedUser: AuthenticatedUser,
     innerPadding: PaddingValues = PaddingValues(0.dp),
     onBackClick: () -> Unit = {},
-    onChannelNameInfoClick: (String) -> Unit = {}
+    onChannelNameInfoClick: (String) -> Unit = {},
+    onError: (String) -> Unit = {},
+    onCreateChannelRequest: (
+        ownerId: Int,
+        name: String,
+        isPrivate: Boolean,
+        channelIconUrl: String,
+        channelIconContentDescription: String
+    ) -> Unit = { _, _, _, _, _ -> }
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-  
-    var channelNameInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
-        mutableStateOf("")
-    }
 
-    var userSearchInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
+    var channelNameInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
         mutableStateOf("")
     }
 
@@ -51,6 +67,8 @@ fun CreateChannelView(
     val privateText = stringResource(id = R.string.visibility_private_en)
     val publicText = stringResource(id = R.string.visibility_public_en)
     val channelNameInfoText = stringResource(id = R.string.channel_name_constraints_en)
+    val userInformationErrorText =
+        stringResource(id = R.string.authenticated_user_has_null_values_en)
 
     Column(
         modifier = Modifier
@@ -114,39 +132,29 @@ fun CreateChannelView(
                             }
                         }
                     )
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(vertical = 16.dp),
-                            fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
-                            fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                            fontWeight = MaterialTheme.typography.bodyMedium.fontWeight,
-                            text = "Add Users to the channel"
-                        )
-                        SearchBar(
-                            onValueChange = { userSearchInputValue = it },
-                            searchValue = userSearchInputValue,
-                        )
-                        Box(
-                            modifier = Modifier.padding(top = 16.dp)
-                        ) {
-                            UserPool(
-                                boxModifier = Modifier
-                                    .padding(16.dp)
-                                    .fillMaxWidth()
-                                    .height(300.dp)
-                            )
+                }
+                Button(
+                    modifier = Modifier.padding(16.dp),
+                    onClick = {
+                        Log.i("CreateChannelView", "Create channel button clicked")
+                        Log.i("CreateChannelView", "Authenticated user: $authenticatedUser")
+                        if (authenticatedUser.user == null) {
+                            onError(userInformationErrorText)
+                            return@Button
                         }
+                        Log.i("CreateChannelView", "Creating channel")
+                        onCreateChannelRequest(
+                            authenticatedUser.user.userId,
+                            channelNameInputValue,
+                            isPrivate,
+                            "",
+                            "Channel Icon"
+                        )
                     }
+                ) {
+                    Text(text = "Create")
                 }
             }
-        }
-        Button(
-            modifier = Modifier.padding(16.dp),
-            onClick = { /*TODO*/ }
-        ) {
-            Text(text = "Create")
         }
     }
 }
@@ -155,6 +163,8 @@ fun CreateChannelView(
 @Composable
 fun CreateChannelViewPreview() {
     ChIMPTheme {
-        CreateChannelView()
+        CreateChannelView(
+            AuthenticatedUser()
+        )
     }
 }
