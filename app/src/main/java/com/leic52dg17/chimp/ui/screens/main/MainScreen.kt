@@ -28,11 +28,9 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainScreenState.BooleanSaver) {
             mutableStateOf(false)
         }
-
         var isLoading by rememberSaveable(saver = MainScreenState.BooleanSaver) {
             mutableStateOf(false)
         }
-
         var alertDialogText by rememberSaveable(saver = MainScreenState.StringSaver) {
             mutableStateOf("")
         }
@@ -42,7 +40,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         var selectedNavIcon by rememberSaveable(saver = MainScreenState.StringSaver) {
             mutableStateOf("chats")
         }
-
+        
         fun handleDialogVisibilitySwitch() {
             val currentVisibility = isSharedAlertDialogShown
             val newVisibility = !currentVisibility
@@ -129,6 +127,57 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         handleDialogVisibilitySwitch()
                     }
 
+        fun handleDialogVisibilitySwitch() {
+            val currentVisibility = isSharedAlertDialogShown
+            val newVisibility = !currentVisibility
+            isSharedAlertDialogShown = newVisibility
+        }
+
+        if (isSharedAlertDialogShown) {
+            SharedAlertDialog(
+                onDismissRequest = { handleDialogVisibilitySwitch() },
+                alertDialogText = alertDialogText
+            )
+        }
+        Scaffold(
+            bottomBar = {
+                if (isNavBarShown) {
+                    BottomNavbar(
+                        selectedNavIcon,
+                        Modifier
+                            .padding(bottom = 32.dp),
+                        { selectedNavIcon = "profile" },
+                        { selectedNavIcon = "chats" },
+                        { selectedNavIcon = "settings" }
+                    )
+                }
+            }
+        ) { innerPadding ->
+            when (viewModel.state) {
+                is MainScreenState.GettingChannels -> {
+
+                }
+
+                is MainScreenState.SubscribedChannels -> {
+                    viewModel.getCurrentUserSubscribedChannels()
+                    isNavBarShown = true
+                    SubscribedChannelsView(
+                        viewModel.currentUserSubscribedChannels,
+                        innerPadding,
+                        onCreateChannelClick = {
+                            viewModel.transition(MainScreenState.CreateChannel(false))
+                        }
+                    )
+                }
+
+                is MainScreenState.CreateChannel -> {
+                    val currentState = (viewModel.state as MainScreenState.CreateChannel)
+                    if (viewModel.state is MainScreenState.CreateChannel && currentState.showDialog) {
+                        isSharedAlertDialogShown = true
+                        alertDialogText = currentState.dialogMessage
+                            ?: stringResource(id = R.string.generic_error_en)
+                    }
+                    isNavBarShown = false
                     CreateChannelView(
                         onBackClick = {
                             viewModel.transition(MainScreenState.SubscribedChannels(false))
@@ -154,6 +203,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     isNavBarShown = false
                     isLoading = false
                 }
+                is MainScreenState.CreatingChannel -> TODO()
             }
         }
     }
