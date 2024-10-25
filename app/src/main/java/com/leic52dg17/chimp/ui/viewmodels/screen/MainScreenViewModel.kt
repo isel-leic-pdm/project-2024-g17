@@ -4,20 +4,16 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
-import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.model.channel.Channel
+import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.MainScreenState
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
@@ -44,18 +40,17 @@ class MainScreenViewModel(
     /**
      *  Channel functions
      */
-    suspend fun getCurrentUserSubscribedChannels(): List<Channel>? {
-        val userInfo = authenticatedUser.user
-        if (userInfo == null) {
-            return null
-        } else {
-            val userId = userInfo.userId
-            transition(MainScreenState.GettingChannels)
-            return try {
-                channelService.getUserSubscribedChannels(userId)
-            } catch (e: Exception) {
-                null
+
+    fun loadSubscribedChannels() {
+        transition(MainScreenState.GettingChannels)
+        viewModelScope.launch {
+            val currentUser = authenticatedUser.user
+            if(currentUser == null) {
+                transition(MainScreenState.SubscribedChannels(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+                return@launch
             }
+            val channels = channelService.getUserSubscribedChannels(currentUser.userId)
+            transition(MainScreenState.SubscribedChannels(false, channels = channels))
         }
     }
 
@@ -66,12 +61,16 @@ class MainScreenViewModel(
         channelIconUrl: String,
         channelIconContentDescription: String
     ) {
+        val currentUser = authenticatedUser.user
+        if(currentUser == null) {
+            transition(MainScreenState.CreateChannel(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+            return
+        }
         if (state is MainScreenState.CreateChannel) {
             Log.i("MainScreenViewModel", "Creating channel")
             transition(MainScreenState.CreatingChannel)
             viewModelScope.launch {
                 try {
-                    delay(2000)
                     val result = channelService.createChannel(
                         ownerId,
                         name,
@@ -88,7 +87,8 @@ class MainScreenViewModel(
                         )
 
                         is Success -> {
-                            val channels = getCurrentUserSubscribedChannels()
+                            transition(MainScreenState.GettingChannels)
+                            val channels = channelService.getUserSubscribedChannels(currentUser.userId)
                             transition(MainScreenState.SubscribedChannels(false, channels = channels))
                         }
                     }
