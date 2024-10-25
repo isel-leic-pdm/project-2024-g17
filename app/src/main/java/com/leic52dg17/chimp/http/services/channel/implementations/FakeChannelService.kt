@@ -78,6 +78,14 @@ class FakeChannelService : IChannelService {
         return true
     }
 
+    override suspend fun getChannelInfo(channelId: Int): Channel? {
+        return if (channels.any { channel -> channel.channelId == channelId }) {
+            channels[channelId]
+        } else {
+            null
+        }
+    }
+
     override suspend fun getUserSubscribedChannels(userId: Int): List<Channel>? {
         if (users.isEmpty() || !users.any { it.userId == userId }) return null
         return channels.filter { it.users.any { user -> user.userId == userId } }

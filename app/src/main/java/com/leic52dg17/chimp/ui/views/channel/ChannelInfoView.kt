@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.ui.views.channel
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -8,10 +9,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
@@ -29,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.channel.Channel
+
 import com.leic52dg17.chimp.model.message.Message
 import java.math.BigInteger
 import java.time.Instant
@@ -36,7 +41,8 @@ import androidx.compose.ui.res.stringResource
 import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
-
+import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
+import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 
 @Composable
 fun ChannelInfoView(
@@ -53,7 +59,7 @@ fun ChannelInfoView(
         modifier = modifier.fillMaxSize()
     ) {
         Column(
-            modifier = modifier
+            modifier = modifier,
         ) {
             BackButton(modifier = modifier, onBackClick = onBackClick)
         }
@@ -85,7 +91,8 @@ fun ChannelInfoView(
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = modifier.fillMaxWidth()
+            modifier = modifier
+                .fillMaxWidth()
         ) {
             Text(
                 text = "Users subscribed to ${channel.displayName}:",
@@ -96,55 +103,73 @@ fun ChannelInfoView(
                     .align(Alignment.Start)
                     .padding(horizontal = 16.dp)
             )
-            for (user in channel.users) {
-                Box(
+            Column(
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = modifier.fillMaxWidth()
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.SpaceBetween,
                     modifier = modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .clickable(onClick = onUserClick)
+                        .verticalScroll(rememberScrollState())
+                        .background(MaterialTheme.colorScheme.background)
+                        .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
+                        .heightIn(min = 300.dp, max = 300.dp)
+                        .padding(bottom = 15.dp)
                 ) {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Column {
-                            Text(
-                                text = user.displayName,
-                                fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
-                                fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
-                                fontSize = MaterialTheme.typography.bodyLarge.fontSize,
-                            )
-                            Text(
-                                text = user.username,
-                                fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
-                                fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
-                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
-                            )
-                        }
-                        Column {
-                            IconButton(onClick = onRemoveUser) {
-                                Icon(
-                                    imageVector = Icons.Filled.Remove,
-                                    contentDescription = "More"
-                                )
+                    for (user in channel.users) {
+                        Box(
+                            modifier = modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp)
+                                .clickable(onClick = onUserClick)
+                                .bottomBorder(0.2.dp, MaterialTheme.colorScheme.secondary)
+                        ) {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = modifier.fillMaxWidth()
+                            ) {
+                                Column {
+                                    Text(
+                                        text = user.displayName,
+                                        fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
+                                        fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                                        fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                                    )
+                                    Text(
+                                        text = user.username,
+                                        fontFamily = MaterialTheme.typography.bodySmall.fontFamily,
+                                        fontWeight = MaterialTheme.typography.bodySmall.fontWeight,
+                                        fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                    )
+                                }
+                                Column {
+                                    IconButton(onClick = onRemoveUser) {
+                                        Icon(
+                                            imageVector = Icons.Filled.Remove,
+                                            contentDescription = "More"
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
+                Column {
+                    Button(
+                        onClick = onAddToUserChannelClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary,
+                        ),
+                        shape = RoundedCornerShape(20),
+                        modifier = modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                    ) { Text(stringResource(R.string.add_user_to_channel_en)) }
+                }
             }
-
-            Button(
-                onClick = onAddToUserChannelClick,
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onPrimary,
-                ),
-                shape = RoundedCornerShape(20),
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 10.dp)
-            ) { Text(stringResource(R.string.add_user_to_channel_en)) }
         }
     }
 }
@@ -160,7 +185,13 @@ fun ChannelInfoViewPreview() {
             users = listOf(
                 User(1, "User1", "displayName1"),
                 User(2, "User2", "displayName2"),
-                User(3, "User3", "displayName3")
+                User(3, "User3", "displayName3"),
+                User(4, "User4", "displayName4"),
+                User(5, "User5", "displayName5"),
+                User(6, "User6", "displayName6"),
+                User(7, "User7", "displayName7"),
+                User(8, "User8", "displayName8"),
+                User(9, "User9", "displayName9")
             ),
             messages = listOf(
                 Message(1,1, "Hello", BigInteger.valueOf(Instant.now().toEpochMilli())),
@@ -168,7 +199,7 @@ fun ChannelInfoViewPreview() {
                 Message(1, 1, "How are you", BigInteger.valueOf(Instant.now().toEpochMilli()))
             ),
             channelIconContentDescription = null,
-            isPrivate = false
+            isPrivate = true,
         ),
         onBackClick = { },
         onAddToUserChannelClick = {},
