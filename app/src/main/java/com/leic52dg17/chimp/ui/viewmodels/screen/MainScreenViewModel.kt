@@ -4,13 +4,10 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
-import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.Failure
@@ -105,6 +102,21 @@ class MainScreenViewModel(
                 } catch (e: Exception) {
                     transition(MainScreenState.CreateChannel(true, e.message))
                 }
+            }
+        }
+    }
+
+    fun getChannelById(channelId: Int) {
+        viewModelScope.launch {
+            try {
+                val channel = channelService.getChannelInfo(channelId)
+                if (channel != null) {
+                    transition(MainScreenState.ChannelInfo(channel))
+                } else {
+                    transition(MainScreenState.SubscribedChannels(true, "Channel does not exist."))
+                }
+            } catch (e: Exception) {
+                transition(MainScreenState.SubscribedChannels(true, e.message))
             }
         }
     }

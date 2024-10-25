@@ -28,5 +28,7 @@ interface IChannelService {
         permissionLevel: PermissionLevels
     ): Boolean
 
+    suspend fun getChannelInfo(channelId: Int): Channel?
+
     suspend fun getUserSubscribedChannels(userId: Int): List<Channel>?
 }
