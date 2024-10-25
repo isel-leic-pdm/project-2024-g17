@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.channel.Channel
+
 import com.leic52dg17.chimp.model.message.Message
 import java.math.BigInteger
 import java.time.Instant
@@ -42,7 +43,6 @@ import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
-
 
 @Composable
 fun ChannelInfoView(
