@@ -25,7 +25,7 @@ class FakeChannelService : IChannelService {
     ): ChannelCreationResult {
 
         val owner = users.find { it.userId == ownerId }
-            ?: return failure(ChannelCreationError.UserCouldNotBeFound(ErrorMessages.FakeChannelService.USER_NOT_FOUND))
+            ?: return failure(ChannelCreationError.UserCouldNotBeFound(ErrorMessages.USER_NOT_FOUND))
 
         val newChannel = Channel(
             channels.size + 1,

@@ -87,22 +87,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     }
 
                     LaunchedEffect(Unit) {
-                        val channels = viewModel.getCurrentUserSubscribedChannels()
-                        if (channels != null) {
-                            viewModel.transition(
-                                MainScreenState.SubscribedChannels(
-                                    false,
-                                    channels = channels
-                                )
-                            )
-                        } else {
-                            viewModel.transition(
-                                MainScreenState.CreateChannel(
-                                    true,
-                                    "Error getting channels"
-                                )
-                            )
-                        }
+                        viewModel.loadSubscribedChannels()
                     }
 
                     isNavBarShown = true
