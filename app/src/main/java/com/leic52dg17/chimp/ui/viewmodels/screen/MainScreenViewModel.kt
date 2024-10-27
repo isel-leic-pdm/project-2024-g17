@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.http.services.channel.IChannelService
+import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
@@ -17,7 +18,8 @@ import com.leic52dg17.chimp.ui.screens.main.MainScreenState
 import kotlinx.coroutines.launch
 
 class MainScreenViewModel(
-    private val channelService: IChannelService
+    private val channelService: IChannelService,
+    private val messageService: IMessageService
 ) : ViewModel() {
     var state: MainScreenState by mutableStateOf(MainScreenState.SubscribedChannels(false))
 
@@ -40,6 +42,16 @@ class MainScreenViewModel(
     /**
      *  Channel functions
      */
+
+    fun loadChannelMessages() {
+        val channel = (state as? MainScreenState.ChannelMessages)?.channel
+        transition(MainScreenState.GettingChannelMessages(channel))
+        viewModelScope.launch {
+            //val channel = channelService.getChannel(channelId)
+            if(channel == null) transition(MainScreenState.SubscribedChannels(true, ErrorMessages.CHANNEL_NOT_FOUND))
+            else transition(MainScreenState.ChannelMessages(false, channel = channel))
+        }
+    }
 
     fun loadSubscribedChannels() {
         transition(MainScreenState.GettingChannels)
@@ -117,11 +129,13 @@ class MainScreenViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class MainScreenViewModelFactory(
-    private val channelService: IChannelService
+    private val channelService: IChannelService,
+    private val messageService: IMessageService
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainScreenViewModel(
-            channelService
+            channelService,
+            messageService
         ) as T
     }
 }
