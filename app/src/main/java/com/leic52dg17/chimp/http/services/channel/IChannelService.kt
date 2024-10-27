@@ -31,4 +31,6 @@ interface IChannelService {
     suspend fun getChannelInfo(channelId: Int): Channel?
 
     suspend fun getUserSubscribedChannels(userId: Int): List<Channel>?
+
+    suspend fun getChannel(channelId: Int): Channel?
 }

@@ -21,7 +21,10 @@ class MainActivity : ComponentActivity() {
 
         val mainScreenViewModel by viewModels<MainScreenViewModel>(
             factoryProducer = {
-                MainScreenViewModelFactory((application as ChimpApplication).channelService)
+                MainScreenViewModelFactory(
+                    (application as ChimpApplication).channelService,
+                    (application as ChimpApplication).messageService
+                )
             }
         )
         enableEdgeToEdge()
