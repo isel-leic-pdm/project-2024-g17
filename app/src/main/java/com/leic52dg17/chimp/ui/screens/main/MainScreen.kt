@@ -108,7 +108,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                 viewModel.transition(MainScreenState.CreateChannel(false))
                             },
                             onChannelClick = {
-                                viewModel.transition(MainScreenState.ChannelMessages(false, channel = it))
+                                viewModel.transition(
+                                    MainScreenState.ChannelMessages(
+                                        false,
+                                        channel = it
+                                    )
+                                )
                             }
                         )
                     }
@@ -158,29 +163,31 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         LaunchedEffect(Unit) {
                             viewModel.loadChannelMessages()
                         }
-                        if(currentState.showDialog) {
+                        if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
                             handleDialogVisibilitySwitch()
                         }
                         val currentChannel = currentState.channel
-                        if(currentChannel != null) {
+                        if (currentChannel != null) {
                             // TODO : Add Channel message view by passing it currentChannel.
                         }
                     }
+
                     is MainScreenState.GettingChannelMessages -> {
                         isLoading = true
                     }
-                    
-                is MainScreenState.ChannelInfo -> {
-                    val currentState = (viewModel.state as MainScreenState.ChannelInfo)
-                    ChannelInfoView(
-                        channel = currentState.channel,
-                        onBackClick = { /*TODO()*/ },
-                        onAddToUserChannelClick = { /*TODO()*/ },
-                        onRemoveUser = { /*TODO()*/ },
-                        onUserClick = { /*TODO()*/ },
-                    )
+
+                    is MainScreenState.ChannelInfo -> {
+                        val currentState = (viewModel.state as MainScreenState.ChannelInfo)
+                        ChannelInfoView(
+                            channel = currentState.channel,
+                            onBackClick = { /*TODO()*/ },
+                            onAddToUserChannelClick = { /*TODO()*/ },
+                            onRemoveUser = { /*TODO()*/ },
+                            onUserClick = { /*TODO()*/ },
+                        )
+                    }
                 }
             }
         }

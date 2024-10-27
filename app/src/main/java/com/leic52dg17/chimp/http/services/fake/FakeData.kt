@@ -45,6 +45,12 @@ object FakeData {
                     1,
                     "Hello world",
                     BigInteger("21031239131231298")
+                ),
+                Message(
+                    2,
+                    1,
+                    "Hello universe.",
+                    BigInteger("21031239131231350")
                 )
             ),
             users = listOf(
@@ -52,11 +58,15 @@ object FakeData {
                     1,
                     "username1",
                     "User 1"
+                ),
+                User(
+                    2,
+                    "username1",
+                    "User 2"
                 )
             ),
             channelIconUrl = "https://fake.com/not-real",
             isPrivate = false
-
         )
     )
 }
