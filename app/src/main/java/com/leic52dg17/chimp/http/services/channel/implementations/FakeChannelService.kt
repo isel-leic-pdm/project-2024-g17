@@ -80,8 +80,8 @@ class FakeChannelService : IChannelService {
     }
 
     override suspend fun getChannelInfo(channelId: Int): Channel? {
-        return if (channels.any { channel -> channel.channelId == channelId }) {
-            channels[channelId]
+        return if (FakeData.channels.any { channel -> channel.channelId == channelId }) {
+            FakeData.channels[channelId]
         } else {
             null
         }
