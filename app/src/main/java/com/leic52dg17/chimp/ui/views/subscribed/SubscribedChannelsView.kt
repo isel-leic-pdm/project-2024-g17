@@ -2,9 +2,9 @@ package com.leic52dg17.chimp.ui.views.subscribed
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -107,8 +107,8 @@ val mockChannelList = listOf(
 @Composable
 fun SubscribedChannelsView(
     channels: List<Channel>? = mockChannelList,
-    innerPadding: PaddingValues = PaddingValues(0.dp),
-    onCreateChannelClick: () -> Unit = {}
+    onCreateChannelClick: () -> Unit = {},
+    onChannelClick: (Channel) -> Unit = {}
 ) {
 
     var searchValue by remember { mutableStateOf("") }
@@ -117,7 +117,6 @@ fun SubscribedChannelsView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .padding(innerPadding)
             .background(MaterialTheme.colorScheme.tertiary)
             .fillMaxSize()
     ) {
@@ -162,6 +161,10 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
         ) {
             SearchBar(
+                textFieldModifier = Modifier
+                    .padding(horizontal = 32.dp)
+                    .size(500.dp, 50.dp),
+                placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
                 onValueChange = { searchValue = it },
                 searchValue = searchValue
             )
@@ -184,6 +187,7 @@ fun SubscribedChannelsView(
                     Row(
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier
+                            .clickable { onChannelClick(channel) }
                             .fillMaxWidth()
                             .padding(16.dp)
                     ) {

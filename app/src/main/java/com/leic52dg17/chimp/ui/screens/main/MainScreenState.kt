@@ -8,6 +8,8 @@ import com.leic52dg17.chimp.model.channel.Channel
 sealed interface MainScreenState {
     data class SubscribedChannels(val showDialog: Boolean, val dialogMessage: String? = null, val channels: List<Channel>? = null): MainScreenState
     data class CreateChannel(val showDialog: Boolean, val dialogMessage: String? = null): MainScreenState
+    data class ChannelMessages(val showDialog: Boolean, val dialogMessage: String? = null, val channel: Channel? = null): MainScreenState
+    data class GettingChannelMessages(val channel: Channel? = null): MainScreenState
     data object CreatingChannel: MainScreenState
     data object GettingChannels: MainScreenState
 

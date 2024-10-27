@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.leic52dg17.chimp.http.services.auth.implementations.FakeAuthenticationService
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
+import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationScreenViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
@@ -44,7 +45,8 @@ fun AuthenticationScreenPreview() {
     AuthenticationScreen(viewModel = AuthenticationScreenViewModel(
         FakeAuthenticationService(),
         MainScreenViewModel(
-            FakeChannelService()
+            FakeChannelService(),
+            FakeMessageService()
         )
     ))
 }
