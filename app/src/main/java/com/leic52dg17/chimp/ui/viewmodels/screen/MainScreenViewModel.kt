@@ -110,6 +110,21 @@ class MainScreenViewModel(
             }
         }
     }
+
+    fun getChannelById(channelId: Int) {
+        viewModelScope.launch {
+            try {
+                val channel = channelService.getChannelInfo(channelId)
+                if (channel != null) {
+                    transition(MainScreenState.ChannelInfo(channel))
+                } else {
+                    transition(MainScreenState.SubscribedChannels(true, "Channel does not exist."))
+                }
+            } catch (e: Exception) {
+                transition(MainScreenState.SubscribedChannels(true, e.message))
+            }
+        }
+    }
 }
 
 @Suppress("UNCHECKED_CAST")

@@ -12,6 +12,7 @@ sealed interface MainScreenState {
     data class GettingChannelMessages(val channel: Channel? = null): MainScreenState
     data object CreatingChannel: MainScreenState
     data object GettingChannels: MainScreenState
+    data class ChannelInfo(val channel: Channel): MainScreenState
 
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(

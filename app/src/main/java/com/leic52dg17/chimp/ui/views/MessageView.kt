@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -109,6 +113,60 @@ val messages = listOf(
         channelId = 1,
         text = "Yeah, matrix",
         createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Trump dodged a bullet, wild",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Wow, that's amazing! Matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Yeah, matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Trump dodged a bullet, wild",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Wow, that's amazing! Matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Yeah, matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Trump dodged a bullet, wild",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Wow, that's amazing! Matrix",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Yeah, matrix",
+        createdAt = 123.toBigInteger()
     )
 
 )
@@ -175,7 +233,6 @@ fun MessageViewLayout(
                 .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
@@ -196,43 +253,68 @@ fun MessageViewLayout(
                     color = MaterialTheme.colorScheme.onTertiary
                 )
             }
+        }
 
-            messages.forEach { message ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+
+
+            items(messages) { message ->
                 val backgroundColor = if (message.userId == My_ID) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 }
-                val horizontalAlignment =
-                    if (message.userId == My_ID) Alignment.End else Alignment.Start
+                val horizontalArrangement =
+                    if (message.userId == My_ID) Arrangement.End else Arrangement.Start
 
-                Surface(
+                val paddingVal = if (message.userId == My_ID) {
+                    PaddingValues(end = 10.dp)
+                } else {
+                    PaddingValues(start = 10.dp)
+                }
+
+                Row(
                     modifier = Modifier
-                        .wrapContentSize()
-                        .align(horizontalAlignment),
-                    shape = RoundedCornerShape(8.dp),
-                    color = backgroundColor
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            text = message.text,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colorScheme.onSecondary
-                        )
-                        Text(
-                            text = formatDate(message.createdAt),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier.align(Alignment.End)
-                        )
+                        .padding(paddingVal)
+                        .fillMaxWidth(),
+                    horizontalArrangement = horizontalArrangement,
+
+                    ) {
+                    Surface(
+                        modifier = Modifier
+                            .wrapContentSize(),
+
+                        shape = RoundedCornerShape(8.dp),
+                        color = backgroundColor
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = message.text,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = formatDate(message.createdAt),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.align(Alignment.End)
+                            )
+
+                        }
 
                     }
-
                 }
             }
 
+
         }
+
+
 
         Row(
             modifier = Modifier

@@ -23,6 +23,7 @@ import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
+import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 
@@ -32,9 +33,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainScreenState.BooleanSaver) {
             mutableStateOf(false)
         }
+
         var isLoading by rememberSaveable(saver = MainScreenState.BooleanSaver) {
             mutableStateOf(false)
         }
+
         var alertDialogText by rememberSaveable(saver = MainScreenState.StringSaver) {
             mutableStateOf("")
         }
@@ -168,6 +171,16 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     is MainScreenState.GettingChannelMessages -> {
                         isLoading = true
                     }
+                    
+                is MainScreenState.ChannelInfo -> {
+                    val currentState = (viewModel.state as MainScreenState.ChannelInfo)
+                    ChannelInfoView(
+                        channel = currentState.channel,
+                        onBackClick = { /*TODO()*/ },
+                        onAddToUserChannelClick = { /*TODO()*/ },
+                        onRemoveUser = { /*TODO()*/ },
+                        onUserClick = { /*TODO()*/ },
+                    )
                 }
             }
         }
