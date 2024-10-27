@@ -19,13 +19,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
+    textFieldModifier: Modifier = Modifier,
+    placeHolderFontSize: TextUnit = 16.sp,
+    placeHolderFontWeight: FontWeight = FontWeight.Medium,
     onValueChange : (String) -> Unit,
     searchValue: String,
 ) {
@@ -41,8 +47,7 @@ fun SearchBar(
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        modifier = Modifier
-            .size(300.dp, 50.dp),
+        modifier = textFieldModifier,
         shape = RoundedCornerShape(10.dp),
         value = searchValue,
         placeholder = {
@@ -57,9 +62,9 @@ fun SearchBar(
                     contentDescription = stringResource(id = R.string.search_icon_cd)
                 )
                 Text(
-                    fontSize = MaterialTheme.typography.bodyLarge.fontSize,
+                    fontSize = placeHolderFontSize,
                     fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
-                    fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                    fontWeight = placeHolderFontWeight,
                     color = MaterialTheme.colorScheme.onBackground,
                     textAlign = TextAlign.Center,
                     text = stringResource(id = R.string.subscribed_channels_search_bar_text_en)

@@ -7,6 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +17,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -40,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.message.Message
 import java.math.BigInteger
 import java.text.SimpleDateFormat
@@ -53,64 +58,87 @@ val messages = listOf(
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "Hey!",
+        text = "Hey Joe, wanna grab a coffee?",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = Joe_ID,
         channelId = 1,
-        text = "Hello!",
+        text = "Sure, but I'm broke. You're buying, right?",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "How are you man!",
+        text = "Of course, I'm the generous one. Where do you want to go?",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = Joe_ID,
         channelId = 1,
-        text = "I'm great, i'm learning PDM!",
+        text = "How about that new coffee shop downtown? They have a great selection of pastries.",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "How about the elections!",
+        text = "Sounds good! I'll meet you there in 30 minutes.",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Great! I'll be there waiting with a table for two.",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "You think ur team is winning?",
+        text = "Cool. See you soon! \uD83D\uDE0E",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = Joe_ID,
         channelId = 1,
-        text = "Not sure as of now dude",
-        createdAt = 123.toBigInteger()
-    ),
-    Message(
-        userId = Joe_ID,
-        channelId = 1,
-        text = "Trump dodged a bullet, wild",
+        text = "Later!",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "Wow, that's amazing! Matrix",
+        text = "So, how was your coffee?",
         createdAt = 123.toBigInteger()
     ),
     Message(
         userId = Joe_ID,
         channelId = 1,
-        text = "Yeah, matrix",
+        text = "The coffee was great, but the pastries were even better! You owe me one ",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "Deal! Next time I'm buying. Want to go see that new movie this weekend?",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Sure, I'm down. Which one are you thinking of?",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = My_ID,
+        channelId = 1,
+        text = "That sci-fi action movie everyone's been talking about. You know, the one with the robots and aliens?",
+        createdAt = 123.toBigInteger()
+    ),
+    Message(
+        userId = Joe_ID,
+        channelId = 1,
+        text = "Oh, that one! Yeah, I heard it's pretty good. Let's do it!",
         createdAt = 123.toBigInteger()
     )
-
 )
 
 fun formatDate(timestamp: BigInteger): String {
@@ -123,7 +151,8 @@ fun formatDate(timestamp: BigInteger): String {
 }
 
 @Composable
-fun MessageViewLayout(
+fun ChannelMessageViewLayout(
+    channel: Channel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 
@@ -175,7 +204,6 @@ fun MessageViewLayout(
                 .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-
             Surface(
                 modifier = Modifier
                     .wrapContentSize()
@@ -189,6 +217,7 @@ fun MessageViewLayout(
                 Text(
                     text = "10 October",
                     modifier = Modifier
+                        .weight(1f)
 
                         .padding(12.dp),
                     textAlign = TextAlign.Center,
@@ -196,43 +225,68 @@ fun MessageViewLayout(
                     color = MaterialTheme.colorScheme.onTertiary
                 )
             }
+        }
 
-            messages.forEach { message ->
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+
+
+            items(channel.messages) { message ->
                 val backgroundColor = if (message.userId == My_ID) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 }
-                val horizontalAlignment =
-                    if (message.userId == My_ID) Alignment.End else Alignment.Start
+                val horizontalArrangement =
+                    if (message.userId == My_ID) Arrangement.End else Arrangement.Start
 
-                Surface(
+                val paddingVal = if (message.userId == My_ID) {
+                    PaddingValues(end = 10.dp, start = 40.dp)
+                } else {
+                    PaddingValues(start = 10.dp, end = 40.dp)
+                }
+
+                Row(
                     modifier = Modifier
-                        .wrapContentSize()
-                        .align(horizontalAlignment),
-                    shape = RoundedCornerShape(8.dp),
-                    color = backgroundColor
-                ) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        Text(
-                            text = message.text,
-                            fontSize = 18.sp,
-                            modifier = Modifier.padding(8.dp),
-                            color = MaterialTheme.colorScheme.onSecondary
-                        )
-                        Text(
-                            text = formatDate(message.createdAt),
-                            fontSize = 12.sp,
-                            color = MaterialTheme.colorScheme.onSecondary,
-                            modifier = Modifier.align(Alignment.End)
-                        )
+                        .padding(paddingVal)
+                        .fillMaxWidth(),
+                    horizontalArrangement = horizontalArrangement,
+
+                    ) {
+                    Surface(
+                        modifier = Modifier
+                            .wrapContentSize(),
+
+                        shape = RoundedCornerShape(8.dp),
+                        color = backgroundColor
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp)) {
+                            Text(
+                                text = message.text,
+                                fontSize = 18.sp,
+                                color = MaterialTheme.colorScheme.onSecondary
+                            )
+                            Text(
+                                text = formatDate(message.createdAt),
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSecondary,
+                                modifier = Modifier.align(Alignment.End)
+                            )
+
+                        }
 
                     }
-
                 }
             }
 
+
         }
+
+
 
         Row(
             modifier = Modifier
@@ -304,7 +358,10 @@ fun MessageViewLayout(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MessageViewLayoutPreview() {
-    MessageViewLayout(modifier = Modifier, onBackClick = {})
+fun ChannelMessageViewLayoutPreview() {
+    ChannelMessageViewLayout(
+        modifier = Modifier,
+        onBackClick = {},
+        channel = Channel(1, "Joe Biden", messages, emptyList(), false, ""))
 
 }

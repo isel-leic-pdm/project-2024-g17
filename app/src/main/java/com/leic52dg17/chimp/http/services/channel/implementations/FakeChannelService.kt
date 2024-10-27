@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.http.services.channel.implementations
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationError
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
+import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.model.common.ErrorMessages
@@ -24,11 +25,11 @@ class FakeChannelService : IChannelService {
         channelIconContentDescription: String
     ): ChannelCreationResult {
 
-        val owner = users.find { it.userId == ownerId }
-            ?: return failure(ChannelCreationError.UserCouldNotBeFound(ErrorMessages.USER_NOT_FOUND))
+        val owner = FakeData.users.find { it.userId == ownerId }
+            ?: return failure(ChannelCreationError(message = ErrorMessages.USER_NOT_FOUND))
 
         val newChannel = Channel(
-            channels.size + 1,
+            FakeData.channels.size + 1,
             name,
             mutableListOf<Message>(),
             mutableListOf(owner),
@@ -36,7 +37,7 @@ class FakeChannelService : IChannelService {
             channelIconUrl,
             channelIconContentDescription
         )
-        channels.add(newChannel)
+        FakeData.channels.add(newChannel)
         return success(newChannel.channelId)
     }
 
@@ -53,7 +54,7 @@ class FakeChannelService : IChannelService {
             permissionLevel,
             maxUses
         )
-        channelInvitations.add(newChannelInvitation)
+        FakeData.channelInvitations.add(newChannelInvitation)
         return newChannelInvitation.invitationId
     }
 
@@ -70,69 +71,28 @@ class FakeChannelService : IChannelService {
             1
         )
         val newUserRequest = UserRequest(
-            userRequests.size + 1,
+            FakeData.userRequests.size + 1,
             userId,
             inviteId
         )
-        userRequests.add(newUserRequest)
+        FakeData.userRequests.add(newUserRequest)
         return true
     }
 
-    override suspend fun getUserSubscribedChannels(userId: Int): List<Channel>? {
-        if (users.isEmpty() || !users.any { it.userId == userId }) return null
-        return channels.filter { it.users.any { user -> user.userId == userId } }
+    override suspend fun getChannelInfo(channelId: Int): Channel? {
+        return if (channels.any { channel -> channel.channelId == channelId }) {
+            channels[channelId]
+        } else {
+            null
+        }
     }
 
-    companion object {
+    override suspend fun getUserSubscribedChannels(userId: Int): List<Channel>? {
+        if (FakeData.users.isEmpty() || !FakeData.users.any { it.userId == userId }) return null
+        return FakeData.channels.filter { it.users.any { user -> user.userId == userId } }
+    }
 
-        val users = mutableListOf(
-            User(
-                1,
-                "username1",
-                "User 1"
-            ),
-            User(
-                2,
-                "username2",
-                "User 2"
-            )
-        )
-
-        val channelInvitations = mutableListOf(
-            ChannelInvitation(
-                UUID.randomUUID(),
-                1,
-                1,
-                PermissionLevels.RW,
-                1
-            )
-        )
-
-        val userRequests = mutableListOf<UserRequest>()
-
-        val channels = mutableListOf(
-            Channel(
-                channelId = 1,
-                displayName = "Channel 1",
-                messages = listOf(
-                    Message(
-                        1,
-                        1,
-                        "Hello world",
-                        BigInteger("21031239131231298")
-                    )
-                ),
-                users = listOf(
-                    User(
-                        1,
-                        "username1",
-                        "User 1"
-                    )
-                ),
-                channelIconUrl = "https://fake.com/not-real",
-                isPrivate = false
-
-            )
-        )
+    override suspend fun getChannel(channelId: Int): Channel? {
+        return FakeData.channels.firstOrNull { it.channelId == channelId }
     }
 }
