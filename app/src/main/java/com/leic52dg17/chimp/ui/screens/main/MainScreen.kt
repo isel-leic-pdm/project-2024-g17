@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -24,6 +23,7 @@ import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
+import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 
@@ -170,7 +170,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         }
                         val currentChannel = currentState.channel
                         if (currentChannel != null) {
-                            // TODO : Add Channel message view by passing it currentChannel.
+                            ChannelMessageView(
+                                channel = currentChannel,
+                                onBackClick = {
+                                    viewModel.transition(MainScreenState.SubscribedChannels(false))
+                                }
+                            )
                         }
                     }
 
