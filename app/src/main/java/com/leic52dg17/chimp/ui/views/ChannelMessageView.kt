@@ -151,7 +151,7 @@ fun formatDate(timestamp: BigInteger): String {
 }
 
 @Composable
-fun MessageViewLayout(
+fun ChannelMessageViewLayout(
     channel: Channel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
@@ -358,8 +358,8 @@ fun MessageViewLayout(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MessageViewLayoutPreview() {
-    MessageViewLayout(
+fun ChannelMessageViewLayoutPreview() {
+    ChannelMessageViewLayout(
         modifier = Modifier,
         onBackClick = {},
         channel = Channel(1, "Joe Biden", messages, emptyList(), false, ""))
