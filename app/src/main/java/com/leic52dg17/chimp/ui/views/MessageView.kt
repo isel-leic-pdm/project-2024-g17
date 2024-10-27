@@ -44,6 +44,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.message.Message
 import java.math.BigInteger
 import java.text.SimpleDateFormat
@@ -93,7 +94,7 @@ val messages = listOf(
     Message(
         userId = My_ID,
         channelId = 1,
-        text = "Cool. See you soon!",
+        text = "Cool. See you soon! \uD83D\uDE0E",
         createdAt = 123.toBigInteger()
     ),
     Message(
@@ -111,7 +112,7 @@ val messages = listOf(
     Message(
         userId = Joe_ID,
         channelId = 1,
-        text = "The coffee was great, but the pastries were even better! You owe me one.",
+        text = "The coffee was great, but the pastries were even better! You owe me one ",
         createdAt = 123.toBigInteger()
     ),
     Message(
@@ -151,6 +152,7 @@ fun formatDate(timestamp: BigInteger): String {
 
 @Composable
 fun MessageViewLayout(
+    channel: Channel,
     modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 
@@ -233,7 +235,7 @@ fun MessageViewLayout(
         ) {
 
 
-            items(messages) { message ->
+            items(channel.messages) { message ->
                 val backgroundColor = if (message.userId == My_ID) {
                     MaterialTheme.colorScheme.primary
                 } else {
@@ -357,6 +359,9 @@ fun MessageViewLayout(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MessageViewLayoutPreview() {
-    MessageViewLayout(modifier = Modifier, onBackClick = {})
+    MessageViewLayout(
+        modifier = Modifier,
+        onBackClick = {},
+        channel = Channel(1, "Joe Biden", messages, emptyList(), false, ""))
 
 }
