@@ -15,6 +15,5 @@ class LauncherActivity : ComponentActivity() {
             Intent(this, MainActivity::class.java)
         }
         startActivity(intent)
-        finish()
     }
 }
