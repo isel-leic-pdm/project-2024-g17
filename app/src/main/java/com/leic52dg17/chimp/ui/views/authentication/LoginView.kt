@@ -33,7 +33,7 @@ import com.leic52dg17.chimp.ui.components.buttons.ForgotPasswordButton
 
 @Composable
 fun LoginView(
-    onLogInClick: () -> Unit,
+    onLogInClick: (String, String) -> Unit,
     onSignUpClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -108,7 +108,7 @@ fun LoginView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = onLogInClick,
+                    onClick = { onLogInClick(username, password) },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.log_in_button_text_en),
@@ -130,8 +130,8 @@ fun LoginView(
 @Composable
 fun LoginViewPreview() {
     LoginView(
-        onSignUpClick = { },
-        onLogInClick = { },
-        onBackClick = { }
+        onSignUpClick = {},
+        onLogInClick = { username, password -> println(username); println(password) },
+        onBackClick = {}
     )
 }

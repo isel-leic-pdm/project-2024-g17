@@ -9,10 +9,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,17 +48,19 @@ import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.formatHours
 
 
-val My_ID = 1
+const val My_ID = 1
 
 @Composable
-fun ChannelMessageViewLayout(
+fun ChannelMessageView(
     channel: Channel,
-    modifier: Modifier = Modifier,
     onBackClick: () -> Unit,
 
     ) {
+    var textFieldWidth by remember { mutableStateOf(400.dp) }
     var messageText by remember { mutableStateOf("") }
-    Box(
+    var isSendIconVisible = messageText.isNotEmpty()
+
+        Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary)
@@ -194,7 +195,8 @@ fun ChannelMessageViewLayout(
                 .fillMaxWidth()
                 .background(MaterialTheme.colorScheme.onPrimary)
                 .align(Alignment.BottomEnd),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             val imageResource = painterResource((R.drawable.paper_clip_icon))
             Image(
@@ -202,56 +204,21 @@ fun ChannelMessageViewLayout(
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-
-            if (messageText.isEmpty()) {
-
-                Surface(
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(55.dp)
-                        .padding(bottom = 5.dp)
-                        .padding(end = 10.dp),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.secondary
-                ) {
-                    MessageTextField(
-                        messageText = "",
-                        onMessageTextChange = { messageText = it },
-                    )
-                }
-            } else {
-
-                Row(
-                    modifier = Modifier
-                        .weight(1f),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Surface(
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(55.dp)
-                            .padding(bottom = 5.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        color = MaterialTheme.colorScheme.secondary
-                    ) {
-                        MessageTextField(
-                            messageText = messageText,
-                            onMessageTextChange = { messageText = it },
-                        )
-                    }
-
-
-                    val imageResource3 = painterResource((R.drawable.send_icon))
-                    Image(
-                        painter = imageResource3,
-                        contentDescription = null,
-                        modifier = Modifier.size(60.dp)
-                    )
-
-                }
+            if(isSendIconVisible) textFieldWidth = 300.dp
+            MessageTextField(
+                modifier = Modifier
+                    .width(textFieldWidth)
+                    .heightIn(min = 56.dp, max = 128.dp),
+                messageText = messageText,
+                onMessageTextChange = { messageText = it }
+            )
+            val imageResource3 = painterResource((R.drawable.send_icon))
+            if(isSendIconVisible) {
+                Image(
+                    painter = imageResource3,
+                    contentDescription = "Send message",
+                    modifier = Modifier.size(35.dp)
+                )
             }
         }
     }
@@ -260,9 +227,9 @@ fun ChannelMessageViewLayout(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChannelMessageViewLayoutPreview() {
-    ChannelMessageViewLayout(
-        modifier = Modifier,
+    ChannelMessageView(
         onBackClick = {},
-        channel = FakeData.channels[0])
+        channel = FakeData.channels[0]
+    )
 
 }

@@ -17,7 +17,7 @@ class AuthenticationScreenViewModel(
 ) : ViewModel() {
     var state: AuthenticationScreenState by mutableStateOf(AuthenticationScreenState.Landing)
 
-    private fun transition(newState: AuthenticationScreenState) {
+    fun transition(newState: AuthenticationScreenState) {
         state = newState
     }
 
@@ -28,6 +28,23 @@ class AuthenticationScreenViewModel(
                 when(val result = authenticationService.loginUser(username, password)) {
                     is Failure -> {
                         transition(AuthenticationScreenState.Login(true, result.value.message))
+                    }
+                    is Success -> {
+                        mainScreenViewModel.authenticatedUser = result.value
+                        transition(AuthenticationScreenState.Authenticated)
+                    }
+                }
+            }
+        }
+    }
+
+    fun signUpUser(username: String, password: String) {
+        if (state is AuthenticationScreenState.SignUp) {
+            transition(AuthenticationScreenState.LoggingIn)
+            viewModelScope.launch {
+                when (val result = authenticationService.signUpUser(username, password)) {
+                    is Failure -> {
+                        transition(AuthenticationScreenState.SignUp(true, result.value.message))
                     }
                     is Success -> {
                         mainScreenViewModel.authenticatedUser = result.value

@@ -31,7 +31,7 @@ import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun SignUpView(
-    onSignUpClick: () -> Unit,
+    onSignUpClick: (String, String) -> Unit,
     onLogInClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
@@ -95,7 +95,7 @@ fun SignUpView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = onSignUpClick,
+                    onClick = { onSignUpClick(username, password) },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.sign_up_button_text_en),
@@ -118,7 +118,7 @@ fun SignUpView(
 @Composable
 fun SignUpViewPreview() {
     SignUpView(
-        onSignUpClick = { },
+        onSignUpClick = { username, password -> println(username); println(password) },
         onLogInClick = { },
         onBackClick = { }
     )
