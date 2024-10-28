@@ -15,36 +15,37 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.core.shared.SharedData
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
 import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 
 @Composable
-fun MainScreen(viewModel: MainScreenViewModel) {
+fun MainViewSelector(viewModel: MainViewSelectorViewModel) {
     ChIMPTheme {
-        var isSharedAlertDialogShown by rememberSaveable(saver = MainScreenState.BooleanSaver) {
+        var isSharedAlertDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(false)
         }
 
-        var isLoading by rememberSaveable(saver = MainScreenState.BooleanSaver) {
+        var isLoading by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(false)
         }
 
-        var alertDialogText by rememberSaveable(saver = MainScreenState.StringSaver) {
+        var alertDialogText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
             mutableStateOf("")
         }
-        var isNavBarShown by rememberSaveable(saver = MainScreenState.BooleanSaver) {
+        var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
         }
-        var selectedNavIcon by rememberSaveable(saver = MainScreenState.StringSaver) {
+        var selectedNavIcon by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
             mutableStateOf("chats")
         }
 
@@ -83,14 +84,14 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                     LoadingOverlay()
                 }
                 when (viewModel.state) {
-                    is MainScreenState.GettingChannels -> {
+                    is MainViewSelectorState.GettingChannels -> {
                         isLoading = true
                     }
 
-                    is MainScreenState.SubscribedChannels -> {
+                    is MainViewSelectorState.SubscribedChannels -> {
                         isLoading = false
 
-                        val currentState = (viewModel.state as MainScreenState.SubscribedChannels)
+                        val currentState = (viewModel.state as MainViewSelectorState.SubscribedChannels)
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
@@ -105,11 +106,11 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         SubscribedChannelsView(
                             currentState.channels,
                             onCreateChannelClick = {
-                                viewModel.transition(MainScreenState.CreateChannel(false))
+                                viewModel.transition(MainViewSelectorState.CreateChannel(false))
                             },
                             onChannelClick = {
                                 viewModel.transition(
-                                    MainScreenState.ChannelMessages(
+                                    MainViewSelectorState.ChannelMessages(
                                         false,
                                         channel = it
                                     )
@@ -118,12 +119,12 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                         )
                     }
 
-                    is MainScreenState.CreateChannel -> {
+                    is MainViewSelectorState.CreateChannel -> {
                         isLoading = false
 
                         isNavBarShown = false
 
-                        val currentState = (viewModel.state as MainScreenState.CreateChannel)
+                        val currentState = (viewModel.state as MainViewSelectorState.CreateChannel)
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
@@ -132,7 +133,7 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 
                         CreateChannelView(
                             onBackClick = {
-                                viewModel.transition(MainScreenState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
                             onChannelNameInfoClick = { text ->
                                 alertDialogText = text
@@ -147,19 +148,19 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                                     channelIconContentDescription
                                 )
                             },
-                            authenticatedUser = viewModel.authenticatedUser
+                            authenticatedUser = SharedData.authenticatedUser
                         )
                     }
 
-                    is MainScreenState.CreatingChannel -> {
+                    is MainViewSelectorState.CreatingChannel -> {
                         isNavBarShown = false
                         isLoading = true
                     }
 
-                    is MainScreenState.ChannelMessages -> {
+                    is MainViewSelectorState.ChannelMessages -> {
                         isLoading = false
                         isNavBarShown = false
-                        val currentState = (viewModel.state as MainScreenState.ChannelMessages)
+                        val currentState = (viewModel.state as MainViewSelectorState.ChannelMessages)
                         LaunchedEffect(Unit) {
                             viewModel.loadChannelMessages()
                         }
@@ -173,18 +174,18 @@ fun MainScreen(viewModel: MainScreenViewModel) {
                             ChannelMessageView(
                                 channel = currentChannel,
                                 onBackClick = {
-                                    viewModel.transition(MainScreenState.SubscribedChannels(false))
+                                    viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                                 }
                             )
                         }
                     }
 
-                    is MainScreenState.GettingChannelMessages -> {
+                    is MainViewSelectorState.GettingChannelMessages -> {
                         isLoading = true
                     }
 
-                    is MainScreenState.ChannelInfo -> {
-                        val currentState = (viewModel.state as MainScreenState.ChannelInfo)
+                    is MainViewSelectorState.ChannelInfo -> {
+                        val currentState = (viewModel.state as MainViewSelectorState.ChannelInfo)
                         ChannelInfoView(
                             channel = currentState.channel,
                             onBackClick = { /*TODO()*/ },
@@ -201,6 +202,6 @@ fun MainScreen(viewModel: MainScreenViewModel) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainScreenPreview() {
-    MainScreen(viewModel = MainScreenViewModel(FakeChannelService(), FakeMessageService()))
+fun MainViewSelectorPreview() {
+    MainViewSelector(viewModel = MainViewSelectorViewModel(FakeChannelService(), FakeMessageService()))
 }

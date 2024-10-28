@@ -7,18 +7,15 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.leic52dg17.chimp.http.services.auth.implementations.FakeAuthenticationService
-import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
-import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationScreenViewModel
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.LandingView
 import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
 
 @Composable
-fun AuthenticationScreen(viewModel: AuthenticationScreenViewModel) {
+fun AuthenticationViewSelector(viewModel: AuthenticationViewSelectorViewModel) {
     ChIMPTheme {
         val currentState = viewModel.state
 
@@ -31,37 +28,37 @@ fun AuthenticationScreen(viewModel: AuthenticationScreenViewModel) {
         }
 
         when (currentState) {
-            is AuthenticationScreenState.Landing -> {
+            is AuthenticationViewSelectorState.Landing -> {
                 isLoading = false
                 LandingView(
-                    onLogInClick = { viewModel.transition(AuthenticationScreenState.Login(false)) },
-                    onSignUpClick = { viewModel.transition(AuthenticationScreenState.SignUp(false)) },
+                    onLogInClick = { viewModel.transition(AuthenticationViewSelectorState.Login(false)) },
+                    onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
                 )
             }
 
-            is AuthenticationScreenState.Login -> {
+            is AuthenticationViewSelectorState.Login -> {
                 isLoading = false
                 LoginView(
                     onLogInClick = { username, password -> viewModel.loginUser(username, password) },
-                    onSignUpClick = { viewModel.transition(AuthenticationScreenState.SignUp(false)) },
-                    onBackClick = { viewModel.transition(AuthenticationScreenState.Landing) },
+                    onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
+                    onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
             }
 
-            is AuthenticationScreenState.SignUp -> {
+            is AuthenticationViewSelectorState.SignUp -> {
                 isLoading = false
                 SignUpView(
                     onSignUpClick = { username, password -> viewModel.signUpUser(username, password) },
-                    onLogInClick = { viewModel.transition(AuthenticationScreenState.Login(false)) },
-                    onBackClick = { viewModel.transition(AuthenticationScreenState.Landing) },
+                    onLogInClick = { viewModel.transition(AuthenticationViewSelectorState.Login(false)) },
+                    onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
             }
 
-            is AuthenticationScreenState.ForgotPassword -> throw NotImplementedError()
+            is AuthenticationViewSelectorState.ForgotPassword -> throw NotImplementedError()
 
-            is AuthenticationScreenState.Authenticated -> TODO()
+            is AuthenticationViewSelectorState.Authenticated -> TODO()
 
-            is AuthenticationScreenState.LoggingIn -> {
+            is AuthenticationViewSelectorState.LoggingIn -> {
                 isLoading = true
             }
         }
@@ -70,12 +67,8 @@ fun AuthenticationScreen(viewModel: AuthenticationScreenViewModel) {
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun AuthenticationScreenPreview() {
-    AuthenticationScreen(viewModel = AuthenticationScreenViewModel(
-        FakeAuthenticationService(),
-        MainScreenViewModel(
-            FakeChannelService(),
-            FakeMessageService()
-        )
+fun AuthenticationViewSelectorPreview() {
+    AuthenticationViewSelector(viewModel = AuthenticationViewSelectorViewModel(
+        FakeAuthenticationService()
     ))
 }

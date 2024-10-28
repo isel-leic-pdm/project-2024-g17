@@ -31,7 +31,7 @@ import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.LabelAndInputWithSuggestion
 import com.leic52dg17.chimp.ui.components.toggles.ToggleWithLabel
-import com.leic52dg17.chimp.ui.screens.main.MainScreenState
+import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
@@ -52,15 +52,15 @@ fun CreateChannelView(
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
-    var channelNameInputValue by rememberSaveable(saver = MainScreenState.StringSaver) {
+    var channelNameInputValue by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
         mutableStateOf("")
     }
 
-    var isPrivateToggleText by rememberSaveable(saver = MainScreenState.StringSaver) {
+    var isPrivateToggleText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
         mutableStateOf("Public")
     }
 
-    var isPrivate by rememberSaveable(saver = MainScreenState.BooleanSaver) {
+    var isPrivate by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
         mutableStateOf(false)
     }
 

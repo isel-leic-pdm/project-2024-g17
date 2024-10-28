@@ -10,18 +10,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.leic52dg17.chimp.core.ChimpApplication
-import com.leic52dg17.chimp.ui.screens.main.MainScreen
+import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModel
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainScreenViewModelFactory
+import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModelFactory
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainScreenViewModel by viewModels<MainScreenViewModel>(
+        val mainViewSelectorViewModel by viewModels<MainViewSelectorViewModel>(
             factoryProducer = {
-                MainScreenViewModelFactory(
+                MainViewSelectorViewModelFactory(
                     (application as ChimpApplication).channelService,
                     (application as ChimpApplication).messageService
                 )
@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                     ) {
-                        MainScreen(mainScreenViewModel)
+                        MainViewSelector(mainViewSelectorViewModel)
                     }
                 }
             }
