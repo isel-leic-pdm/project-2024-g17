@@ -1,12 +1,13 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedData
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.model.common.ErrorMessages
@@ -17,12 +18,10 @@ import kotlinx.coroutines.launch
 
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
-    private val messageService: IMessageService
+    private val messageService: IMessageService,
+    private val context: Context
 ) : ViewModel() {
     var state: MainViewSelectorState by mutableStateOf(MainViewSelectorState.SubscribedChannels(false))
-
-    // HAS TO BE CHANGED ONCE LOGIN WORKS
-
 
     fun transition(newState: MainViewSelectorState) {
         state = newState
@@ -45,7 +44,7 @@ class MainViewSelectorViewModel(
     fun loadSubscribedChannels() {
         transition(MainViewSelectorState.GettingChannels)
         viewModelScope.launch {
-            val currentUser = SharedData.authenticatedUser.user
+            val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
             if(currentUser == null) {
                 transition(MainViewSelectorState.SubscribedChannels(true, ErrorMessages.AUTHENTICATED_USER_NULL))
                 return@launch
@@ -62,7 +61,7 @@ class MainViewSelectorViewModel(
         channelIconUrl: String,
         channelIconContentDescription: String
     ) {
-        val currentUser = SharedData.authenticatedUser.user
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
         if(currentUser == null) {
             transition(MainViewSelectorState.CreateChannel(true, ErrorMessages.AUTHENTICATED_USER_NULL))
             return
@@ -118,12 +117,14 @@ class MainViewSelectorViewModel(
 @Suppress("UNCHECKED_CAST")
 class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
-    private val messageService: IMessageService
+    private val messageService: IMessageService,
+    private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
             channelService,
-            messageService
+            messageService,
+            context
         ) as T
     }
 }

@@ -1,12 +1,13 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen
 
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedData
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
@@ -15,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class AuthenticationViewSelectorViewModel(
     private val authenticationService: IAuthenticationService,
+    private val context: Context
 ) : ViewModel() {
     var state: AuthenticationViewSelectorState by mutableStateOf(AuthenticationViewSelectorState.Landing)
 
@@ -31,7 +33,7 @@ class AuthenticationViewSelectorViewModel(
                         transition(AuthenticationViewSelectorState.Login(true, result.value.message))
                     }
                     is Success -> {
-                        SharedData.authenticatedUser = result.value
+                        SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
                         transition(AuthenticationViewSelectorState.Authenticated)
                     }
                 }
@@ -48,7 +50,7 @@ class AuthenticationViewSelectorViewModel(
                         transition(AuthenticationViewSelectorState.SignUp(true, result.value.message))
                     }
                     is Success -> {
-                        SharedData.authenticatedUser = result.value
+                        SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
                         transition(AuthenticationViewSelectorState.Authenticated)
                     }
                 }
@@ -59,11 +61,13 @@ class AuthenticationViewSelectorViewModel(
 
 @Suppress("UNCHECKED_CAST")
 class AuthenticationViewSelectorViewModelFactory(
-    private val authenticationService: IAuthenticationService
+    private val authenticationService: IAuthenticationService,
+    private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AuthenticationViewSelectorViewModel(
-            authenticationService
+            authenticationService,
+            context
         ) as T
     }
 }

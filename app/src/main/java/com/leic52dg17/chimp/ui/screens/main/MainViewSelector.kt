@@ -15,9 +15,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.core.shared.SharedData
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
 import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
+import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
@@ -29,7 +30,10 @@ import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 
 @Composable
-fun MainViewSelector(viewModel: MainViewSelectorViewModel) {
+fun MainViewSelector(
+    viewModel: MainViewSelectorViewModel,
+    authenticatedUser: AuthenticatedUser?
+) {
     ChIMPTheme {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(false)
@@ -148,7 +152,7 @@ fun MainViewSelector(viewModel: MainViewSelectorViewModel) {
                                     channelIconContentDescription
                                 )
                             },
-                            authenticatedUser = SharedData.authenticatedUser
+                            authenticatedUser = authenticatedUser
                         )
                     }
 
@@ -200,8 +204,10 @@ fun MainViewSelector(viewModel: MainViewSelectorViewModel) {
     }
 }
 
+/*
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainViewSelectorPreview() {
     MainViewSelector(viewModel = MainViewSelectorViewModel(FakeChannelService(), FakeMessageService()))
 }
+*/

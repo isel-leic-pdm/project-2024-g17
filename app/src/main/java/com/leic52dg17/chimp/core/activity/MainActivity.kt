@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
 import com.leic52dg17.chimp.core.ChimpApplication
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
@@ -23,7 +24,8 @@ class MainActivity : ComponentActivity() {
             factoryProducer = {
                 MainViewSelectorViewModelFactory(
                     (application as ChimpApplication).channelService,
-                    (application as ChimpApplication).messageService
+                    (application as ChimpApplication).messageService,
+                    applicationContext
                 )
             }
         )
@@ -35,7 +37,10 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                     ) {
-                        MainViewSelector(mainViewSelectorViewModel)
+                        MainViewSelector(
+                            mainViewSelectorViewModel,
+                            SharedPreferencesHelper.getAuthenticatedUser(applicationContext)
+                        )
                     }
                 }
             }

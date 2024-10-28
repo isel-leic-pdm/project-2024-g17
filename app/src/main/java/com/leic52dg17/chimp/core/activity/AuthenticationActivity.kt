@@ -18,7 +18,8 @@ class AuthenticationActivity : ComponentActivity() {
         val authViewSelectorViewModel by viewModels<AuthenticationViewSelectorViewModel>(
             factoryProducer = {
                 AuthenticationViewSelectorViewModelFactory(
-                    (application as ChimpApplication).authenticationService
+                    (application as ChimpApplication).authenticationService,
+                    applicationContext
                 )
             }
         )

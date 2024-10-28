@@ -36,7 +36,7 @@ import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun CreateChannelView(
-    authenticatedUser: AuthenticatedUser,
+    authenticatedUser: AuthenticatedUser?,
     innerPadding: PaddingValues = PaddingValues(0.dp),
     onBackClick: () -> Unit = {},
     onChannelNameInfoClick: (String) -> Unit = {},
@@ -138,7 +138,7 @@ fun CreateChannelView(
                     onClick = {
                         Log.i("CreateChannelView", "Create channel button clicked")
                         Log.i("CreateChannelView", "Authenticated user: $authenticatedUser")
-                        if (authenticatedUser.user == null) {
+                        if (authenticatedUser?.user == null) {
                             onError(userInformationErrorText)
                             return@Button
                         }
