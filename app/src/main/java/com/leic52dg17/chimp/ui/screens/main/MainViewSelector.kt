@@ -12,12 +12,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
-import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
-import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
@@ -88,7 +84,7 @@ fun MainViewSelector(
                     LoadingOverlay()
                 }
                 when (viewModel.state) {
-                    is MainViewSelectorState.GettingChannels -> {
+                    is MainViewSelectorState.Loading -> {
                         isLoading = true
                     }
 
