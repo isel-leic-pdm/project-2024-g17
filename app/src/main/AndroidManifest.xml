@@ -10,14 +10,14 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/chimp_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/chimp_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChIMP"
         tools:targetApi="31">
         <activity
-            android:name=".core.activity.MainActivity"
+            android:name=".core.activity.LauncherActivity"
             android:exported="true"
             android:theme="@style/Theme.ChIMP">
             <intent-filter>
@@ -28,6 +28,11 @@
         </activity>
         <activity
             android:name=".core.activity.AuthenticationActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ChIMP">
+        </activity>
+        <activity
+            android:name=".core.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.ChIMP">
         </activity>
