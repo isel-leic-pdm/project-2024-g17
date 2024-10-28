@@ -20,6 +20,7 @@ import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -192,6 +193,17 @@ fun MainViewSelector(
                             onAddToUserChannelClick = { /*TODO()*/ },
                             onRemoveUser = { /*TODO()*/ },
                             onUserClick = { /*TODO()*/ },
+                        )
+                    }
+
+                    is MainViewSelectorState.UserInfo -> {
+                        val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
+                        UserInfoView(
+                            user = currentState.user,
+                            onBackClick = {
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                            },
+                            onLogoutClick = { viewModel.logout() },
                         )
                     }
                 }
