@@ -42,7 +42,7 @@ class MainViewSelectorViewModel(
     }
 
     fun loadSubscribedChannels() {
-        transition(MainViewSelectorState.GettingChannels)
+        transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
             if(currentUser == null) {
@@ -86,7 +86,7 @@ class MainViewSelectorViewModel(
                         )
 
                         is Success -> {
-                            transition(MainViewSelectorState.GettingChannels)
+                            transition(MainViewSelectorState.Loading)
                             val channels = channelService.getUserSubscribedChannels(currentUser.userId)
                             transition(MainViewSelectorState.SubscribedChannels(false, channels = channels))
                         }
@@ -111,6 +111,11 @@ class MainViewSelectorViewModel(
                 transition(MainViewSelectorState.SubscribedChannels(true, e.message))
             }
         }
+    }
+
+    fun logout() {
+        transition(MainViewSelectorState.Loading)
+        SharedPreferencesHelper.logout(context)
     }
 }
 
