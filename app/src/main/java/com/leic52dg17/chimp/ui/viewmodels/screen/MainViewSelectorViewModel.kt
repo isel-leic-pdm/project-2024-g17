@@ -1,41 +1,29 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen
 
-import android.util.Log
+import android.content.Context
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.message.IMessageService
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
-import com.leic52dg17.chimp.model.user.User
-import com.leic52dg17.chimp.ui.screens.main.MainScreenState
+import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
 
-class MainScreenViewModel(
+class MainViewSelectorViewModel(
     private val channelService: IChannelService,
-    private val messageService: IMessageService
+    private val messageService: IMessageService,
+    private val context: Context
 ) : ViewModel() {
-    var state: MainScreenState by mutableStateOf(MainScreenState.SubscribedChannels(false))
+    var state: MainViewSelectorState by mutableStateOf(MainViewSelectorState.SubscribedChannels(false))
 
-    private val mockUser = AuthenticatedUser(
-        "example_token",
-        User(
-            1,
-            "username1",
-            "User 1"
-        )
-    )
-
-    // HAS TO BE CHANGED ONCE LOGIN WORKS
-    var authenticatedUser: AuthenticatedUser by mutableStateOf(mockUser)
-
-    fun transition(newState: MainScreenState) {
+    fun transition(newState: MainViewSelectorState) {
         state = newState
     }
 
@@ -44,25 +32,25 @@ class MainScreenViewModel(
      */
 
     fun loadChannelMessages() {
-        val channel = (state as? MainScreenState.ChannelMessages)?.channel
-        transition(MainScreenState.GettingChannelMessages(channel))
+        val channel = (state as? MainViewSelectorState.ChannelMessages)?.channel
+        transition(MainViewSelectorState.GettingChannelMessages(channel))
         viewModelScope.launch {
             //val channel = channelService.getChannel(channelId)
-            if(channel == null) transition(MainScreenState.SubscribedChannels(true, ErrorMessages.CHANNEL_NOT_FOUND))
-            else transition(MainScreenState.ChannelMessages(false, channel = channel))
+            if(channel == null) transition(MainViewSelectorState.SubscribedChannels(true, ErrorMessages.CHANNEL_NOT_FOUND))
+            else transition(MainViewSelectorState.ChannelMessages(false, channel = channel))
         }
     }
 
     fun loadSubscribedChannels() {
-        transition(MainScreenState.GettingChannels)
+        transition(MainViewSelectorState.GettingChannels)
         viewModelScope.launch {
-            val currentUser = authenticatedUser.user
+            val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
             if(currentUser == null) {
-                transition(MainScreenState.SubscribedChannels(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+                transition(MainViewSelectorState.SubscribedChannels(true, ErrorMessages.AUTHENTICATED_USER_NULL))
                 return@launch
             }
             val channels = channelService.getUserSubscribedChannels(currentUser.userId)
-            transition(MainScreenState.SubscribedChannels(false, channels = channels))
+            transition(MainViewSelectorState.SubscribedChannels(false, channels = channels))
         }
     }
 
@@ -73,14 +61,13 @@ class MainScreenViewModel(
         channelIconUrl: String,
         channelIconContentDescription: String
     ) {
-        val currentUser = authenticatedUser.user
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
         if(currentUser == null) {
-            transition(MainScreenState.CreateChannel(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+            transition(MainViewSelectorState.CreateChannel(true, ErrorMessages.AUTHENTICATED_USER_NULL))
             return
         }
-        if (state is MainScreenState.CreateChannel) {
-            Log.i("MainScreenViewModel", "Creating channel")
-            transition(MainScreenState.CreatingChannel)
+        if (state is MainViewSelectorState.CreateChannel) {
+            transition(MainViewSelectorState.CreatingChannel)
             viewModelScope.launch {
                 try {
                     val result = channelService.createChannel(
@@ -92,20 +79,20 @@ class MainScreenViewModel(
                     )
                     when (result) {
                         is Failure -> transition(
-                            MainScreenState.CreateChannel(
+                            MainViewSelectorState.CreateChannel(
                                 true,
                                 result.value.message
                             )
                         )
 
                         is Success -> {
-                            transition(MainScreenState.GettingChannels)
+                            transition(MainViewSelectorState.GettingChannels)
                             val channels = channelService.getUserSubscribedChannels(currentUser.userId)
-                            transition(MainScreenState.SubscribedChannels(false, channels = channels))
+                            transition(MainViewSelectorState.SubscribedChannels(false, channels = channels))
                         }
                     }
                 } catch (e: Exception) {
-                    transition(MainScreenState.CreateChannel(true, e.message))
+                    transition(MainViewSelectorState.CreateChannel(true, e.message))
                 }
             }
         }
@@ -116,26 +103,28 @@ class MainScreenViewModel(
             try {
                 val channel = channelService.getChannelInfo(channelId)
                 if (channel != null) {
-                    transition(MainScreenState.ChannelInfo(channel))
+                    transition(MainViewSelectorState.ChannelInfo(channel))
                 } else {
-                    transition(MainScreenState.SubscribedChannels(true, "Channel does not exist."))
+                    transition(MainViewSelectorState.SubscribedChannels(true, "Channel does not exist."))
                 }
             } catch (e: Exception) {
-                transition(MainScreenState.SubscribedChannels(true, e.message))
+                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
             }
         }
     }
 }
 
 @Suppress("UNCHECKED_CAST")
-class MainScreenViewModelFactory(
+class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
-    private val messageService: IMessageService
+    private val messageService: IMessageService,
+    private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return MainScreenViewModel(
+        return MainViewSelectorViewModel(
             channelService,
-            messageService
+            messageService,
+            context
         ) as T
     }
 }

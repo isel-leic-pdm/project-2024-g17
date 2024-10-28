@@ -5,19 +5,28 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationScreen
+import com.leic52dg17.chimp.core.ChimpApplication
+import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationScreenViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModelFactory
 
 class AuthenticationActivity : ComponentActivity() {
-    private val viewModel by viewModels<AuthenticationScreenViewModel>()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val authViewSelectorViewModel by viewModels<AuthenticationViewSelectorViewModel>(
+            factoryProducer = {
+                AuthenticationViewSelectorViewModelFactory(
+                    (application as ChimpApplication).authenticationService,
+                    applicationContext
+                )
+            }
+        )
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {
-                AuthenticationScreen(viewModel = viewModel)
+                AuthenticationViewSelector(viewModel = authViewSelectorViewModel)
             }
         }
     }
