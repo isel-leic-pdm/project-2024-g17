@@ -7,9 +7,9 @@ import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.channel.Channel
 
 sealed interface MainViewSelectorState {
-    data class SubscribedChannels(val showDialog: Boolean, val dialogMessage: String? = null, val channels: List<Channel>? = null): MainViewSelectorState
-    data class CreateChannel(val showDialog: Boolean, val dialogMessage: String? = null): MainViewSelectorState
-    data class ChannelMessages(val showDialog: Boolean, val dialogMessage: String? = null, val channel: Channel? = null): MainViewSelectorState
+    data class SubscribedChannels(val showDialog: Boolean = false, val dialogMessage: String? = null, val channels: List<Channel>? = null): MainViewSelectorState
+    data class CreateChannel(val showDialog: Boolean = false, val dialogMessage: String? = null): MainViewSelectorState
+    data class ChannelMessages(val showDialog: Boolean = false, val dialogMessage: String? = null, val channel: Channel? = null): MainViewSelectorState
     data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
     data object CreatingChannel: MainViewSelectorState
     data object GettingChannels: MainViewSelectorState
@@ -22,6 +22,11 @@ sealed interface MainViewSelectorState {
             restore = { mutableStateOf(it) }
         )
         val StringSaver: Saver<MutableState<String>, *> = Saver(
+            save = { it.value },
+            restore = { mutableStateOf(it) }
+        )
+
+        val FunctionSaver: Saver<MutableState<() -> Unit>, *> = Saver(
             save = { it.value },
             restore = { mutableStateOf(it) }
         )

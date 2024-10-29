@@ -55,8 +55,7 @@ fun ChannelInfoView(
     onUserClick: () -> Unit = {},
     modifier: Modifier = Modifier,
     authenticatedUser: AuthenticatedUser? = null,
-    onLeaveChannelClick: () -> Unit = {},
-    onCreateInvitationClick: () -> Unit = {}
+    onLeaveChannelClick: () -> Unit = {}
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,15 +68,6 @@ fun ChannelInfoView(
                 .fillMaxWidth()
         ) {
             BackButton(onBackClick = onBackClick)
-            IconButton(
-                onClick = { onCreateInvitationClick() }
-            ) {
-                Icon(
-                    imageVector = Icons.Default.AddReaction,
-                    contentDescription = "Create invitation",
-                    tint = MaterialTheme.colorScheme.primary,
-                )
-            }
         }
 
         Column(

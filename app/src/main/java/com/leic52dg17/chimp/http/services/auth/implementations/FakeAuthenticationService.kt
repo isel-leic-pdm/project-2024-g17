@@ -10,7 +10,6 @@ import kotlinx.coroutines.delay
 
 class FakeAuthenticationService : IAuthenticationService {
     override suspend fun loginUser(username: String, password: String): UserLoginResult {
-        delay(2000)
         return success(
             AuthenticatedUser(
                 "example_token",
