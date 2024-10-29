@@ -61,7 +61,7 @@ fun AuthenticationScreen(viewModel: AuthenticationScreenViewModel) {
 
             is AuthenticationScreenState.Authenticated -> TODO()
 
-            is AuthenticationScreenState.LoggingIn -> {
+            is AuthenticationScreenState.AuthenticationLoading -> {
                 isLoading = true
             }
         }

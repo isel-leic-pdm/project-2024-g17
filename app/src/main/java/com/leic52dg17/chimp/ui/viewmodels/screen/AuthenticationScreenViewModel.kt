@@ -23,7 +23,7 @@ class AuthenticationScreenViewModel(
 
     fun loginUser(username: String, password: String) {
         if(state is AuthenticationScreenState.Login) {
-            transition(AuthenticationScreenState.LoggingIn)
+            transition(AuthenticationScreenState.AuthenticationLoading)
             viewModelScope.launch {
                 when(val result = authenticationService.loginUser(username, password)) {
                     is Failure -> {
@@ -40,7 +40,7 @@ class AuthenticationScreenViewModel(
 
     fun signUpUser(username: String, password: String) {
         if (state is AuthenticationScreenState.SignUp) {
-            transition(AuthenticationScreenState.LoggingIn)
+            transition(AuthenticationScreenState.AuthenticationLoading)
             viewModelScope.launch {
                 when (val result = authenticationService.signUpUser(username, password)) {
                     is Failure -> {
