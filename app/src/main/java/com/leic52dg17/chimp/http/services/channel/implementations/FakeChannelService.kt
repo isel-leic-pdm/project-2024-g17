@@ -3,6 +3,8 @@ package com.leic52dg17.chimp.http.services.channel.implementations
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationError
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
+import com.leic52dg17.chimp.http.services.channel.results.ChannelUpdateError
+import com.leic52dg17.chimp.http.services.channel.results.RemoveUserFromChannelResult
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.channel.ChannelInvitation
@@ -31,6 +33,7 @@ class FakeChannelService : IChannelService {
         val newChannel = Channel(
             FakeData.channels.size + 1,
             name,
+            ownerId,
             mutableListOf<Message>(),
             mutableListOf(owner),
             isPrivate,
@@ -92,7 +95,27 @@ class FakeChannelService : IChannelService {
         return FakeData.channels.filter { it.users.any { user -> user.userId == userId } }
     }
 
-    override suspend fun getChannel(channelId: Int): Channel? {
+    override suspend fun getChannelById(channelId: Int): Channel? {
         return FakeData.channels.firstOrNull { it.channelId == channelId }
+    }
+
+    override suspend fun removeUserFromChannel(
+        userId: Int,
+        channelId: Int
+    ): RemoveUserFromChannelResult {
+
+        val channelIndex = FakeData.channels.indexOfFirst { it.channelId == channelId }
+        if(channelIndex == -1) return failure(
+            ChannelUpdateError(ErrorMessages.CHANNEL_NOT_FOUND)
+        )
+        val channel = FakeData.channels[channelIndex]
+        val isUserInChannel = channel.users.any { it.userId == userId }
+        if(!isUserInChannel) return failure(
+            ChannelUpdateError(ErrorMessages.USER_NOT_IN_CHANNEL)
+        )
+        val updatedChannel = channel.copy(users = channel.users.filter { user -> user.userId != userId })
+        FakeData.channels[channelIndex] = updatedChannel
+
+        return success(userId)
     }
 }

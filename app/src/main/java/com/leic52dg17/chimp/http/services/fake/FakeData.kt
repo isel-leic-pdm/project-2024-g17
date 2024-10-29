@@ -66,7 +66,8 @@ object FakeData {
                 )
             ),
             channelIconUrl = "https://fake.com/not-real",
-            isPrivate = false
+            isPrivate = false,
+            ownerId = 1
         )
     )
 }

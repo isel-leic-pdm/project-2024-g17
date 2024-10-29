@@ -12,12 +12,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
-import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
-import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
@@ -179,6 +175,9 @@ fun MainViewSelector(
                                 channel = currentChannel,
                                 onBackClick = {
                                     viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                },
+                                onChannelNameClick = {
+                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel))
                                 }
                             )
                         }
@@ -189,25 +188,36 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.ChannelInfo -> {
+                        isLoading = false
+                        isNavBarShown = false
                         val currentState = (viewModel.state as MainViewSelectorState.ChannelInfo)
-                        ChannelInfoView(
-                            channel = currentState.channel,
-                            onBackClick = { /*TODO()*/ },
-                            onAddToUserChannelClick = { /*TODO()*/ },
-                            onRemoveUser = { /*TODO()*/ },
-                            onUserClick = { /*TODO()*/ },
-                        )
+
+                        LaunchedEffect(Unit) {
+                            viewModel.loadChannelInfo()
+                        }
+
+                        currentState.channel?.let {
+                            ChannelInfoView(
+                                channel = it,
+                                onBackClick = { /*TODO()*/ },
+                                onAddToUserChannelClick = { /*TODO()*/ },
+                                onRemoveUser = { userId, channelId ->
+                                    viewModel.removeUserFromChannel(userId, channelId)
+                                },
+                                onUserClick = { /*TODO()*/ },
+                                onLeaveChannelClick = {/*TODO()*/},
+                                onCreateInvitationClick = {/*TODO()*/},
+                                authenticatedUser = currentState.authenticatedUser
+                            )
+                        }
+                    }
+
+                    MainViewSelectorState.GettingChannelInfo -> {
+                        isLoading = true
+                        isNavBarShown = false
                     }
                 }
             }
         }
     }
 }
-
-/*
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainViewSelectorPreview() {
-    MainViewSelector(viewModel = MainViewSelectorViewModel(FakeChannelService(), FakeMessageService()))
-}
-*/
