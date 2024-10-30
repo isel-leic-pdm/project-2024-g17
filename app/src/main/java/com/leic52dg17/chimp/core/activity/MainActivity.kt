@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
                 MainViewSelectorViewModelFactory(
                     (application as ChimpApplication).channelService,
                     (application as ChimpApplication).messageService,
+                    (application as ChimpApplication).userService,
                     applicationContext
                 )
             }

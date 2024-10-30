@@ -75,4 +75,8 @@
     <string name="visibility_private_en">Private</string>
     <string name="authenticated_user_has_null_values_en">Some information couldn\'t\ be gathered for the current authenticated user.</string>
 
+    <!--User info View-->
+    <string name="user_profile_picture_cd_en">"User's profile picture."</string>
+    <string name="logout_en">Log out</string>
+
 </resources>

@@ -56,6 +56,10 @@ fun ChannelInfoView(
     modifier: Modifier = Modifier,
     authenticatedUser: AuthenticatedUser? = null,
     onLeaveChannelClick: () -> Unit = {}
+    onAddToUserChannelClick: () -> Unit = {},
+    onRemoveUser: () -> Unit = {},
+    onUserClick: (Int) -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -127,7 +131,7 @@ fun ChannelInfoView(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .clickable(onClick = onUserClick)
+                                .clickable(onClick = { onUserClick(user.userId) })
                                 .bottomBorder(0.2.dp, MaterialTheme.colorScheme.secondary)
                         ) {
                             Row(
