@@ -12,10 +12,10 @@ sealed interface MainViewSelectorState {
     data class ChannelMessages(val showDialog: Boolean = false, val dialogMessage: String? = null, val channel: Channel? = null): MainViewSelectorState
     data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
     data object CreatingChannel: MainViewSelectorState
-    data object GettingChannels: MainViewSelectorState
     data class ChannelInfo(val channel: Channel? = null, val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser? = null): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
-
+    data object Loading: MainViewSelectorState
+  
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(
             save = { it.value },

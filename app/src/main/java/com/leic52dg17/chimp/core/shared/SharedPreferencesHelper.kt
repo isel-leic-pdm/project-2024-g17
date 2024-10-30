@@ -1,7 +1,9 @@
 package com.leic52dg17.chimp.core.shared
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
+import com.leic52dg17.chimp.core.activity.AuthenticationActivity
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -26,5 +28,14 @@ object SharedPreferencesHelper {
         val prefs = getPreferences(context)
         val userJson = prefs.getString(KEY_AUTHENTICATED_USER, null)
         return userJson?.let { Json.decodeFromString(it) }
+    }
+
+    fun logout(context: Context) {
+        val prefs = getPreferences(context)
+        val editor = prefs.edit()
+        editor.remove(KEY_AUTHENTICATED_USER)
+        editor.apply()
+        val intent = Intent(context, AuthenticationActivity::class.java)
+        context.startActivity(intent)
     }
 }

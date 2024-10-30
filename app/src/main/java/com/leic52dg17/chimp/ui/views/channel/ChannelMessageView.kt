@@ -107,35 +107,6 @@ fun ChannelMessageView(
             }
         }
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 100.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            Surface(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .align(
-                        CenterHorizontally
-                    ),
-                shape = RoundedCornerShape(12.dp),
-                color = MaterialTheme.colorScheme.tertiary
-
-            ) {
-                Text(
-                    text = "10 October", // TODO: Replace with the actual date
-                    modifier = Modifier
-                        .weight(1f)
-
-                        .padding(12.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
-            }
-        }
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -194,7 +165,34 @@ fun ChannelMessageView(
 
 
         }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 100.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Surface(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .align(
+                            CenterHorizontally
+                        ),
+                    shape = RoundedCornerShape(12.dp),
+                    color = MaterialTheme.colorScheme.tertiary
 
+                ) {
+                    Text(
+                        text = "10 October", // TODO: Replace with the actual date
+                        modifier = Modifier
+                            .weight(1f)
+
+                            .padding(12.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
+                }
+            }
 
 
         Row(

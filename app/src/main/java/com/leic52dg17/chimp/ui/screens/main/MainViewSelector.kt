@@ -128,7 +128,7 @@ fun MainViewSelector(
                     LoadingOverlay()
                 }
                 when (viewModel.state) {
-                    is MainViewSelectorState.GettingChannels -> {
+                    is MainViewSelectorState.Loading -> {
                         isLoading = true
                     }
 
@@ -283,3 +283,4 @@ fun MainViewSelector(
         }
     }
 }
+

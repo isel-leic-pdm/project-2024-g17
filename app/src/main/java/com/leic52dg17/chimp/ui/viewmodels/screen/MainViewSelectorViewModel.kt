@@ -80,7 +80,7 @@ class MainViewSelectorViewModel(
     }
 
     fun loadSubscribedChannels() {
-        transition(MainViewSelectorState.GettingChannels)
+        transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
             if (currentUser == null) {
@@ -134,15 +134,9 @@ class MainViewSelectorViewModel(
                         )
 
                         is Success -> {
-                            transition(MainViewSelectorState.GettingChannels)
-                            val channels =
-                                channelService.getUserSubscribedChannels(currentUser.userId)
-                            transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    false,
-                                    channels = channels
-                                )
-                            )
+                            transition(MainViewSelectorState.Loading)
+                            val channels = channelService.getUserSubscribedChannels(currentUser.userId)
+                            transition(MainViewSelectorState.SubscribedChannels(false, channels = channels))
                         }
                     }
                 } catch (e: Exception) {
@@ -207,7 +201,6 @@ class MainViewSelectorViewModel(
         }
 
         viewModelScope.launch {
-            logger.info("Entered!!!!")
             val channels = channelService.getUserSubscribedChannels(userId)
             when(val result = channelService.removeUserFromChannel(userId, channel.channelId)) {
                 is Failure -> {
@@ -231,10 +224,10 @@ class MainViewSelectorViewModel(
         }
     }
 
-    companion object {
-        val logger = Logger.getLogger("MAIN_VIEW_MODEL")
+    fun logout() {
+        transition(MainViewSelectorState.Loading)
+        SharedPreferencesHelper.logout(context)
     }
-}
 
 @Suppress("UNCHECKED_CAST")
 class MainViewSelectorViewModelFactory(
