@@ -26,7 +26,7 @@ class AuthenticationViewSelectorViewModel(
 
     fun loginUser(username: String, password: String) {
         if(state is AuthenticationViewSelectorState.Login) {
-            transition(AuthenticationViewSelectorState.LoggingIn)
+            transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
                 when(val result = authenticationService.loginUser(username, password)) {
                     is Failure -> {
@@ -43,7 +43,7 @@ class AuthenticationViewSelectorViewModel(
 
     fun signUpUser(username: String, password: String) {
         if (state is AuthenticationViewSelectorState.SignUp) {
-            transition(AuthenticationViewSelectorState.LoggingIn)
+            transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
                 when (val result = authenticationService.signUpUser(username, password)) {
                     is Failure -> {
