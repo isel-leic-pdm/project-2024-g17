@@ -24,11 +24,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun UserInfoView(
     user: User,
+    authenticatedUser: AuthenticatedUser?,
     onBackClick: () -> Unit,
     onLogoutClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -45,7 +48,14 @@ fun UserInfoView(
                 .fillMaxWidth()
         ) {
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                modifier = modifier,
+            ) {
+                BackButton(modifier = modifier, onBackClick = onBackClick)
+            }
+
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.padding(top = 32.dp)
             ) {
                 Image(
                     painter = rememberAsyncImagePainter("https://picsum.photos/300/300"),
@@ -82,17 +92,19 @@ fun UserInfoView(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             ) {
-                Button(
-                    onClick = onLogoutClick,
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary,
-                        contentColor = MaterialTheme.colorScheme.onPrimary
-                    ),
-                    shape = RoundedCornerShape(20),
-                    modifier = modifier
-                        .width(100.dp)
-                ) {
-                    Text(stringResource(R.string.logout_en))
+                if (authenticatedUser?.user?.userId == user.userId) {
+                    Button(
+                        onClick = onLogoutClick,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
+                        ),
+                        shape = RoundedCornerShape(20),
+                        modifier = modifier
+                            .width(100.dp)
+                    ) {
+                        Text(stringResource(R.string.logout_en))
+                    }
                 }
             }
         }
@@ -104,7 +116,11 @@ fun UserInfoView(
 fun UserInfoViewPreview() {
     UserInfoView(
         user = User(1, "username", "Harvyyyy"),
+        authenticatedUser = AuthenticatedUser(
+            authenticationToken = "token",
+            user = User(1, "username", "Harvyyyy")
+        ),
         onBackClick = { },
-        onLogoutClick = { }
+        onLogoutClick = { },
     )
 }

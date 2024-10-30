@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.message.IMessageService
+import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
@@ -19,6 +20,7 @@ import kotlinx.coroutines.launch
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
+    private val userService: IUserService,
     private val context: Context
 ) : ViewModel() {
     var state: MainViewSelectorState by mutableStateOf(MainViewSelectorState.SubscribedChannels(false))
@@ -117,19 +119,37 @@ class MainViewSelectorViewModel(
         transition(MainViewSelectorState.Loading)
         SharedPreferencesHelper.logout(context)
     }
+
+    fun getUserProfile(id: Int) {
+        transition(MainViewSelectorState.Loading)
+        viewModelScope.launch {
+            try {
+                val user = userService.getUserById(id)
+                if (user != null) {
+                    transition(MainViewSelectorState.UserInfo(user))
+                } else {
+                    transition(MainViewSelectorState.SubscribedChannels(true, "Unexpected error occurred when navigating to user info"))
+                }
+            } catch (e: Exception) {
+                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
+            }
+        }
+    }
 }
 
 @Suppress("UNCHECKED_CAST")
 class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
+    private val userService: IUserService,
     private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
             channelService,
             messageService,
-            context
+            userService,
+            context,
         ) as T
     }
 }

@@ -66,12 +66,22 @@ fun MainViewSelector(
             bottomBar = {
                 if (isNavBarShown) {
                     BottomNavbar(
-                        selectedNavIcon,
-                        Modifier
+                        selectedIcon = selectedNavIcon,
+                        onClickProfile = {
+                            selectedNavIcon = "profile"
+                            val currentUser = authenticatedUser?.user
+                            if (currentUser != null) {
+                                viewModel.getUserProfile(currentUser.userId)
+                            }
+                        },
+                        onClickMessages = {
+                            selectedNavIcon = "chats"
+                        },
+                        onClickSettings = {
+                            selectedNavIcon = "settings"
+                        },
+                        rowModifier = Modifier
                             .padding(bottom = 32.dp),
-                        { selectedNavIcon = "profile" },
-                        { selectedNavIcon = "chats" },
-                        { selectedNavIcon = "settings" }
                     )
                 }
             }
@@ -192,7 +202,7 @@ fun MainViewSelector(
                             onBackClick = { /*TODO()*/ },
                             onAddToUserChannelClick = { /*TODO()*/ },
                             onRemoveUser = { /*TODO()*/ },
-                            onUserClick = { /*TODO()*/ },
+                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
                         )
                     }
 
@@ -200,6 +210,7 @@ fun MainViewSelector(
                         val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
                         UserInfoView(
                             user = currentState.user,
+                            authenticatedUser = authenticatedUser,
                             onBackClick = {
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
