@@ -7,9 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import com.leic52dg17.chimp.core.activity.MainActivity
-import com.leic52dg17.chimp.http.services.auth.implementations.FakeAuthenticationService
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
@@ -65,7 +63,7 @@ fun AuthenticationViewSelector(viewModel: AuthenticationViewSelectorViewModel) {
                 context.startActivity(intent)
             }
 
-            is AuthenticationViewSelectorState.LoggingIn -> {
+            is AuthenticationViewSelectorState.AuthenticationLoading -> {
                 isLoading = true
             }
         }
