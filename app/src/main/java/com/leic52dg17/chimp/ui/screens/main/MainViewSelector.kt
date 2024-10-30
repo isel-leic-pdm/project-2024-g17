@@ -20,6 +20,7 @@ import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -65,12 +66,22 @@ fun MainViewSelector(
             bottomBar = {
                 if (isNavBarShown) {
                     BottomNavbar(
-                        selectedNavIcon,
-                        Modifier
+                        selectedIcon = selectedNavIcon,
+                        onClickProfile = {
+                            selectedNavIcon = "profile"
+                            val currentUser = authenticatedUser?.user
+                            if (currentUser != null) {
+                                viewModel.getUserProfile(currentUser.userId)
+                            }
+                        },
+                        onClickMessages = {
+                            selectedNavIcon = "chats"
+                        },
+                        onClickSettings = {
+                            selectedNavIcon = "settings"
+                        },
+                        rowModifier = Modifier
                             .padding(bottom = 32.dp),
-                        { selectedNavIcon = "profile" },
-                        { selectedNavIcon = "chats" },
-                        { selectedNavIcon = "settings" }
                     )
                 }
             }
@@ -191,7 +202,19 @@ fun MainViewSelector(
                             onBackClick = { /*TODO()*/ },
                             onAddToUserChannelClick = { /*TODO()*/ },
                             onRemoveUser = { /*TODO()*/ },
-                            onUserClick = { /*TODO()*/ },
+                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
+                        )
+                    }
+
+                    is MainViewSelectorState.UserInfo -> {
+                        val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
+                        UserInfoView(
+                            user = currentState.user,
+                            authenticatedUser = authenticatedUser,
+                            onBackClick = {
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                            },
+                            onLogoutClick = { viewModel.logout() },
                         )
                     }
                 }
