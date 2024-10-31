@@ -10,12 +10,14 @@ import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.message.IMessageService
+import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
+import java.util.logging.Logger
 
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
@@ -23,7 +25,11 @@ class MainViewSelectorViewModel(
     private val userService: IUserService,
     private val context: Context
 ) : ViewModel() {
-    var state: MainViewSelectorState by mutableStateOf(MainViewSelectorState.SubscribedChannels(false))
+    var state: MainViewSelectorState by mutableStateOf(
+        MainViewSelectorState.SubscribedChannels(
+            false
+        )
+    )
 
     fun transition(newState: MainViewSelectorState) {
         state = newState
@@ -37,9 +43,41 @@ class MainViewSelectorViewModel(
         val channel = (state as? MainViewSelectorState.ChannelMessages)?.channel
         transition(MainViewSelectorState.GettingChannelMessages(channel))
         viewModelScope.launch {
-            //val channel = channelService.getChannel(channelId)
-            if(channel == null) transition(MainViewSelectorState.SubscribedChannels(true, ErrorMessages.CHANNEL_NOT_FOUND))
+            if (channel == null) {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        ErrorMessages.CHANNEL_NOT_FOUND
+                    )
+                )
+            }
             else transition(MainViewSelectorState.ChannelMessages(false, channel = channel))
+        }
+    }
+
+    fun loadChannelInfo() {
+        val channel = (state as? MainViewSelectorState.ChannelInfo)?.channel
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+        transition(MainViewSelectorState.GettingChannelInfo)
+        viewModelScope.launch {
+            if (channel == null) transition(
+                MainViewSelectorState.ChannelInfo(
+                    showDialog = true,
+                    dialogMessage = ErrorMessages.CHANNEL_NOT_FOUND
+                )
+            )
+            else if (currentUser == null) transition(
+                MainViewSelectorState.ChannelInfo(
+                    showDialog = true,
+                    dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
+                )
+            )
+            else transition(
+                MainViewSelectorState.ChannelInfo(
+                    channel = channel,
+                    authenticatedUser = currentUser
+                )
+            )
         }
     }
 
@@ -47,8 +85,13 @@ class MainViewSelectorViewModel(
         transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
-            if(currentUser == null) {
-                transition(MainViewSelectorState.SubscribedChannels(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+            if (currentUser == null) {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        ErrorMessages.AUTHENTICATED_USER_NULL
+                    )
+                )
                 return@launch
             }
             val channels = channelService.getUserSubscribedChannels(currentUser.userId)
@@ -64,8 +107,13 @@ class MainViewSelectorViewModel(
         channelIconContentDescription: String
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
-        if(currentUser == null) {
-            transition(MainViewSelectorState.CreateChannel(true, ErrorMessages.AUTHENTICATED_USER_NULL))
+        if (currentUser == null) {
+            transition(
+                MainViewSelectorState.CreateChannel(
+                    true,
+                    ErrorMessages.AUTHENTICATED_USER_NULL
+                )
+            )
             return
         }
         if (state is MainViewSelectorState.CreateChannel) {
@@ -100,17 +148,80 @@ class MainViewSelectorViewModel(
         }
     }
 
-    fun getChannelById(channelId: Int) {
+    fun removeUserFromChannel(
+        userId: Int,
+        channelId: Int
+    ) {
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+        if (currentUser == null) {
+            transition(
+                MainViewSelectorState.ChannelInfo(
+                    showDialog = true, dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
+                )
+            )
+            return
+        }
+
         viewModelScope.launch {
-            try {
-                val channel = channelService.getChannelInfo(channelId)
-                if (channel != null) {
-                    transition(MainViewSelectorState.ChannelInfo(channel))
-                } else {
-                    transition(MainViewSelectorState.SubscribedChannels(true, "Channel does not exist."))
+            when (val result = channelService.removeUserFromChannel(userId, channelId)) {
+                is Failure -> transition(
+                    MainViewSelectorState.ChannelInfo(
+                        showDialog = true,
+                        dialogMessage = result.value.message
+                    )
+                )
+
+                is Success -> {
+                    transition(
+                        MainViewSelectorState.ChannelInfo(
+                            channel = channelService.getChannelById(channelId),
+                            authenticatedUser = currentUser
+                        )
+                    )
                 }
-            } catch (e: Exception) {
-                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
+            }
+        }
+    }
+
+    fun leaveChannel(
+        userId: Int?,
+        channel: Channel
+    ) {
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
+        if(currentUser == null) {
+            transition(MainViewSelectorState.ChannelInfo(showDialog = true, dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL))
+            return
+        }
+
+        if(userId == null) {
+            transition(
+                MainViewSelectorState.ChannelInfo(
+                    showDialog = true, dialogMessage = ErrorMessages.USER_NOT_FOUND
+                )
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            val channels = channelService.getUserSubscribedChannels(userId)
+            when(val result = channelService.removeUserFromChannel(userId, channel.channelId)) {
+                is Failure -> {
+                    transition(
+                        MainViewSelectorState.ChannelInfo(
+                            showDialog = true,
+                            dialogMessage = result.value.message
+                        )
+                    )
+                    return@launch
+                }
+                is Success -> {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            channels = channels
+                        )
+                    )
+                    return@launch
+                }
             }
         }
     }
@@ -119,7 +230,7 @@ class MainViewSelectorViewModel(
         transition(MainViewSelectorState.Loading)
         SharedPreferencesHelper.logout(context)
     }
-
+    
     fun getUserProfile(id: Int) {
         transition(MainViewSelectorState.Loading)
         viewModelScope.launch {

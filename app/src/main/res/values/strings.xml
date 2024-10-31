@@ -49,6 +49,7 @@
 
     <!-- Channel Info View -->
     <string name="add_user_to_channel_en">Add a user</string>
+    <string name="leave_channel_en">Leave channel</string>
 
     <!--Sign Up View-->
     <string name="sign_up_welcome_en">Welcome to ChIMP</string>

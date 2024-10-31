@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.http.services.fake
 
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.channel.ChannelInvitation
+import com.leic52dg17.chimp.model.channel.UserChannel
 import com.leic52dg17.chimp.model.common.PermissionLevels
 import com.leic52dg17.chimp.model.message.Message
 import com.leic52dg17.chimp.model.user.User
@@ -20,6 +21,11 @@ object FakeData {
             2,
             "username2",
             "User 2"
+        ),
+        User(
+            3,
+            "username3",
+            "User 3"
         )
     )
 
@@ -54,19 +60,31 @@ object FakeData {
                 )
             ),
             users = listOf(
-                User(
-                    1,
-                    "username1",
-                    "User 1"
-                ),
-                User(
-                    2,
-                    "username1",
-                    "User 2"
-                )
+                users[0],
+                users[1],
+                users[2]
             ),
             channelIconUrl = "https://fake.com/not-real",
-            isPrivate = false
+            isPrivate = false,
+            ownerId = 1
+        )
+    )
+
+    val userChannel = mutableListOf(
+        UserChannel(
+            1,
+            1,
+            BigInteger("1603999046")
+        ),
+        UserChannel(
+            2,
+            1,
+            BigInteger("1603999300")
+        ),
+        UserChannel(
+            3,
+            1,
+            BigInteger("1603999100")
         )
     )
 }

@@ -4,6 +4,7 @@ package com.leic52dg17.chimp.ui.views.channel
 import MessageTextField
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -54,7 +55,7 @@ const val My_ID = 1
 fun ChannelMessageView(
     channel: Channel,
     onBackClick: () -> Unit,
-
+    onChannelNameClick: () -> Unit
     ) {
     var textFieldWidth by remember { mutableStateOf(400.dp) }
     var messageText by remember { mutableStateOf("") }
@@ -83,20 +84,26 @@ fun ChannelMessageView(
                     tint = Color.Black,
                 )
             }
-
-            Text(
-                text = channel.displayName,
-                modifier = Modifier.weight(1f),
-                textAlign = TextAlign.Center,
-                fontSize = 27.sp
-            )
-            IconButton(onClick = { }) {
-                Icon(
-                    imageVector = Icons.Filled.Circle,
-                    contentDescription = stringResource(id = R.string.back_button_text_cd),
-                    modifier = Modifier.size(35.dp),
-                    tint = Color.Black,
+            Row(
+                modifier = Modifier
+                    .clickable { onChannelNameClick() },
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
+            ){
+                Text(
+                    text = channel.displayName,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontSize = 27.sp
                 )
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Filled.Circle,
+                        contentDescription = stringResource(id = R.string.back_button_text_cd),
+                        modifier = Modifier.size(35.dp),
+                        tint = Color.Black,
+                    )
+                }
             }
         }
 
@@ -227,7 +234,8 @@ fun ChannelMessageView(
 fun ChannelMessageViewLayoutPreview() {
     ChannelMessageView(
         onBackClick = {},
-        channel = FakeData.channels[0]
+        channel = FakeData.channels[0],
+        onChannelNameClick = {}
     )
 
 }

@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -15,7 +16,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.ui.components.misc.SharedAlertDialog
+import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
+import com.leic52dg17.chimp.ui.components.dialogs.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
@@ -36,6 +38,10 @@ fun MainViewSelector(
             mutableStateOf(false)
         }
 
+        var isConfirmationDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
+            mutableStateOf(false)
+        }
+
         var isLoading by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(false)
         }
@@ -43,6 +49,24 @@ fun MainViewSelector(
         var alertDialogText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
             mutableStateOf("")
         }
+
+        var confirmationDialogTitle by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
+            mutableStateOf("")
+        }
+        var confirmationDialogText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
+            mutableStateOf("")
+        }
+        var confirmationDialogConfirmText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
+            mutableStateOf("")
+        }
+        var confirmationDialogCancelText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
+            mutableStateOf("")
+        }
+        var confirmationDialogConfirmFunction by remember {
+            mutableStateOf({})
+        }
+
+
         var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
         }
@@ -50,18 +74,38 @@ fun MainViewSelector(
             mutableStateOf("chats")
         }
 
-        fun handleDialogVisibilitySwitch() {
+        fun handleSharedAlertDialogVisibilitySwitch() {
             val currentVisibility = isSharedAlertDialogShown
             val newVisibility = !currentVisibility
             isSharedAlertDialogShown = newVisibility
         }
 
+        fun handleConfirmationDialogVisibilitySwitch() {
+            val currentVisibility = isConfirmationDialogShown
+            val newVisibility = !currentVisibility
+            isConfirmationDialogShown = newVisibility
+        }
+
         if (isSharedAlertDialogShown) {
             SharedAlertDialog(
-                onDismissRequest = { handleDialogVisibilitySwitch() },
+                onDismissRequest = { handleSharedAlertDialogVisibilitySwitch() },
                 alertDialogText = alertDialogText
             )
         }
+
+        if(isConfirmationDialogShown) {
+            ConfirmationDialog(
+                confirmationTitle = confirmationDialogTitle,
+                confirmationText = confirmationDialogText,
+                cancelButtonText = confirmationDialogCancelText,
+                confirmButtonText = confirmationDialogConfirmText,
+                onConfirm = confirmationDialogConfirmFunction,
+                onCancel = {
+                    handleConfirmationDialogVisibilitySwitch()
+                }
+            )
+        }
+
         Scaffold(
             bottomBar = {
                 if (isNavBarShown) {
@@ -106,7 +150,7 @@ fun MainViewSelector(
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
-                            handleDialogVisibilitySwitch()
+                            handleSharedAlertDialogVisibilitySwitch()
                         }
 
                         LaunchedEffect(Unit) {
@@ -139,7 +183,7 @@ fun MainViewSelector(
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
-                            handleDialogVisibilitySwitch()
+                            handleSharedAlertDialogVisibilitySwitch()
                         }
 
                         CreateChannelView(
@@ -148,7 +192,7 @@ fun MainViewSelector(
                             },
                             onChannelNameInfoClick = { text ->
                                 alertDialogText = text
-                                handleDialogVisibilitySwitch()
+                                handleSharedAlertDialogVisibilitySwitch()
                             },
                             onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl, channelIconContentDescription ->
                                 viewModel.createChannel(
@@ -178,7 +222,7 @@ fun MainViewSelector(
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
                                 ?: stringResource(id = R.string.generic_error_en)
-                            handleDialogVisibilitySwitch()
+                            handleSharedAlertDialogVisibilitySwitch()
                         }
                         val currentChannel = currentState.channel
                         if (currentChannel != null) {
@@ -186,6 +230,9 @@ fun MainViewSelector(
                                 channel = currentChannel,
                                 onBackClick = {
                                     viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                },
+                                onChannelNameClick = {
+                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel))
                                 }
                             )
                         }
@@ -196,7 +243,50 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.ChannelInfo -> {
+                        isLoading = false
+                        isNavBarShown = false
                         val currentState = (viewModel.state as MainViewSelectorState.ChannelInfo)
+                        LaunchedEffect(Unit) {
+                            viewModel.loadChannelInfo()
+                        }
+                        currentState.channel?.let {
+                            ChannelInfoView(
+                                channel = it,
+                                onBackClick = {
+                                    viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it))
+                                },
+                                onAddToUserChannelClick = { /*TODO()*/ },
+                                onRemoveUser = { userId, channelId ->
+                                    confirmationDialogConfirmFunction = {
+                                        viewModel.removeUserFromChannel(userId, channelId)
+                                        handleConfirmationDialogVisibilitySwitch()
+                                    }
+                                    confirmationDialogText = "Are you sure you wish to remove this user from the channel?"
+                                    confirmationDialogTitle = "Confirm user removal"
+                                    confirmationDialogCancelText = "No"
+                                    confirmationDialogConfirmText = "Yes"
+                                    handleConfirmationDialogVisibilitySwitch()
+                                },
+                                onUserClick = { /*TODO()*/ },
+                                onLeaveChannelClick = {
+                                    confirmationDialogConfirmFunction = {
+                                        viewModel.leaveChannel(currentState.authenticatedUser?.user?.userId, it)
+                                        handleConfirmationDialogVisibilitySwitch()
+                                    }
+                                    confirmationDialogText = "Are you sure you want to leave the channel?\n The oldest user will be assigned as the new owner.\n This is not reversible."
+                                    confirmationDialogTitle = "Confirm your leave"
+                                    confirmationDialogCancelText = "No"
+                                    confirmationDialogConfirmText = "Yes"
+                                    handleConfirmationDialogVisibilitySwitch()
+                                },
+                                authenticatedUser = currentState.authenticatedUser
+                            )
+                        }
+                    }
+
+                    MainViewSelectorState.GettingChannelInfo -> {
+                        isLoading = true
+                        isNavBarShown = false
                         ChannelInfoView(
                             channel = currentState.channel,
                             onBackClick = { /*TODO()*/ },
@@ -223,10 +313,3 @@ fun MainViewSelector(
     }
 }
 
-/*
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun MainViewSelectorPreview() {
-    MainViewSelector(viewModel = MainViewSelectorViewModel(FakeChannelService(), FakeMessageService()))
-}
-*/

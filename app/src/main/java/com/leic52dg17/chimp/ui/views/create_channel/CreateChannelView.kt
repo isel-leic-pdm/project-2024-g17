@@ -78,7 +78,9 @@ fun CreateChannelView(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         BackButton(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(vertical = 8.dp),
             onBackClick = { onBackClick() }
         )
         Column(

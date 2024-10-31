@@ -6,6 +6,7 @@ import com.leic52dg17.chimp.model.user.User
 data class Channel(
     val channelId: Int,
     val displayName: String,
+    val ownerId: Int,
     val messages: List<Message>,
     val users: List<User>,
     val isPrivate: Boolean,

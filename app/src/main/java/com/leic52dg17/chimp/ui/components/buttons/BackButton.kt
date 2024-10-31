@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBackIos
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -20,14 +21,13 @@ fun BackButton(
 ) {
     Box(
         modifier = modifier
-            .fillMaxWidth()
     ) {
         IconButton(
             onClick = { onBackClick() },
             modifier = modifier.align(Alignment.BottomStart)
         ) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
                 tint = MaterialTheme.colorScheme.primary,
                 contentDescription = stringResource(R.string.back_button_text_cd)
             )

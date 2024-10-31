@@ -73,7 +73,8 @@ val mockChannelList = listOf(
         ),
         channelIconUrl = "https://picsum.photos/300/300",
         channelIconContentDescription = "Channel 1 Icon",
-        isPrivate = false
+        isPrivate = false,
+        ownerId = 2
     ),
     Channel(
         channelId = 2,
@@ -100,7 +101,8 @@ val mockChannelList = listOf(
         ),
         channelIconUrl = "https://picsum.photos/300/300",
         channelIconContentDescription = "Channel 2 Icon",
-        isPrivate = true
+        isPrivate = true,
+        ownerId = 1
     )
 )
 
