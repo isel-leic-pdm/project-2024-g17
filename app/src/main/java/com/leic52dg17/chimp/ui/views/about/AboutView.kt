@@ -9,10 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,15 +22,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.components.buttons.AboutButton
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 
 val authorNames: Array<String> = arrayOf("João Cardoso", "Francisco Antunes", "Rúben Said")
 
 @Composable
-fun AboutView() {
+fun AboutView(
+    onBackClick: () -> Unit = {}
+) {
     Column(
         modifier = Modifier
+            .padding(bottom = 100.dp)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -42,21 +42,11 @@ fun AboutView() {
         // Back button box
         Box(
             modifier = Modifier
+                .padding(16.dp)
                 .size(500.dp, 100.dp)
 
         ) {
-            IconButton(
-                onClick = { /*TODO*/ },
-                modifier = Modifier
-                    .padding(bottom = 32.dp)
-                    .align(Alignment.BottomStart)
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = null
-                )
-            }
+            BackButton(onBackClick = { onBackClick() })
         }
 
         Column(
@@ -64,8 +54,6 @@ fun AboutView() {
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-                .padding(bottom = 100.dp)
         ) {
             // Logo section
             Column(
@@ -76,7 +64,7 @@ fun AboutView() {
                     painter = painterResource(id = R.drawable.chimp_blue_final),
                     contentDescription = null,
                     modifier = Modifier
-                        .size(200.dp)
+                        .size(150.dp)
                 )
                 Text(
                     text = stringResource(id = R.string.app_name),

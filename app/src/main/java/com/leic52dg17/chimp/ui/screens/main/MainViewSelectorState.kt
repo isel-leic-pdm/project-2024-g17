@@ -6,6 +6,7 @@ import androidx.compose.runtime.saveable.Saver
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 
 sealed interface MainViewSelectorState {
     data class SubscribedChannels(val showDialog: Boolean = false, val dialogMessage: String? = null, val channels: List<Channel>? = null): MainViewSelectorState
@@ -17,6 +18,7 @@ sealed interface MainViewSelectorState {
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
     data class UserInfo(val user: User): MainViewSelectorState
+    data object About: MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(
@@ -24,6 +26,11 @@ sealed interface MainViewSelectorState {
             restore = { mutableStateOf(it) }
         )
         val StringSaver: Saver<MutableState<String>, *> = Saver(
+            save = { it.value },
+            restore = { mutableStateOf(it) }
+        )
+
+        val SelectedNavIconSaver: Saver<MutableState<SelectedNavIcon>, *> = Saver(
             save = { it.value },
             restore = { mutableStateOf(it) }
         )
