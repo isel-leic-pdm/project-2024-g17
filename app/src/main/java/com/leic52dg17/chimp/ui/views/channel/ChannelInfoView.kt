@@ -52,14 +52,10 @@ fun ChannelInfoView(
     onBackClick: () -> Unit = {},
     onAddToUserChannelClick: () -> Unit = {},
     onRemoveUser: (Int, Int) -> Unit = { _, _ -> },
-    onUserClick: () -> Unit = {},
+    onUserClick: (Int) -> Unit = {},
     modifier: Modifier = Modifier,
     authenticatedUser: AuthenticatedUser? = null,
     onLeaveChannelClick: () -> Unit = {}
-    onAddToUserChannelClick: () -> Unit = {},
-    onRemoveUser: () -> Unit = {},
-    onUserClick: (Int) -> Unit = {},
-    modifier: Modifier = Modifier
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,

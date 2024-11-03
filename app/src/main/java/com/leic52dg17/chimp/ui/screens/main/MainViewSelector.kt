@@ -20,9 +20,11 @@ import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
 import com.leic52dg17.chimp.ui.components.dialogs.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
+import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.UserInfoView
+import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -70,8 +72,8 @@ fun MainViewSelector(
         var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
         }
-        var selectedNavIcon by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
-            mutableStateOf("chats")
+        var selectedNavIcon by rememberSaveable(saver = MainViewSelectorState.SelectedNavIconSaver) {
+            mutableStateOf(SelectedNavIcon.Messages)
         }
 
         fun handleSharedAlertDialogVisibilitySwitch() {
@@ -112,17 +114,22 @@ fun MainViewSelector(
                     BottomNavbar(
                         selectedIcon = selectedNavIcon,
                         onClickProfile = {
-                            selectedNavIcon = "profile"
+                            selectedNavIcon = SelectedNavIcon.Profile
                             val currentUser = authenticatedUser?.user
                             if (currentUser != null) {
                                 viewModel.getUserProfile(currentUser.userId)
                             }
                         },
                         onClickMessages = {
-                            selectedNavIcon = "chats"
+                            selectedNavIcon = SelectedNavIcon.Messages
+                            val currentUser = authenticatedUser?.user
+                            if(currentUser != null) {
+                                viewModel.loadSubscribedChannels()
+                            }
                         },
-                        onClickSettings = {
-                            selectedNavIcon = "settings"
+                        onClickAbout = {
+                            selectedNavIcon = SelectedNavIcon.About
+                            viewModel.transition(MainViewSelectorState.About)
                         },
                         rowModifier = Modifier
                             .padding(bottom = 32.dp),
@@ -145,6 +152,7 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.SubscribedChannels -> {
                         isLoading = false
+                        selectedNavIcon = SelectedNavIcon.Messages
 
                         val currentState = (viewModel.state as MainViewSelectorState.SubscribedChannels)
                         if (currentState.showDialog) {
@@ -287,13 +295,6 @@ fun MainViewSelector(
                     MainViewSelectorState.GettingChannelInfo -> {
                         isLoading = true
                         isNavBarShown = false
-                        ChannelInfoView(
-                            channel = currentState.channel,
-                            onBackClick = { /*TODO()*/ },
-                            onAddToUserChannelClick = { /*TODO()*/ },
-                            onRemoveUser = { /*TODO()*/ },
-                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
-                        )
                     }
 
                     is MainViewSelectorState.UserInfo -> {
@@ -305,6 +306,14 @@ fun MainViewSelector(
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
                             onLogoutClick = { viewModel.logout() },
+                        )
+                    }
+
+                    MainViewSelectorState.About -> {
+                        isLoading = false
+                        isNavBarShown = true
+                        AboutView(
+                            onBackClick = { viewModel.loadSubscribedChannels() }
                         )
                     }
                 }
