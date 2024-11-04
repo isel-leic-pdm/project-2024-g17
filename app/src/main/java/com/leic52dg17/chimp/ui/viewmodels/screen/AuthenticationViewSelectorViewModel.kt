@@ -25,7 +25,7 @@ class AuthenticationViewSelectorViewModel(
         state = newState
     }
 
-    fun loginUser(username: String, password: String) {
+    fun loginUser(username: String, password: String, onAuthenticate: () -> Unit) {
         Log.i(TAG, "Logging $username in")
         if (state is AuthenticationViewSelectorState.Login) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
@@ -55,6 +55,7 @@ class AuthenticationViewSelectorViewModel(
                         )
                         else Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.userId}")
 
+                        onAuthenticate()
                         transition(AuthenticationViewSelectorState.Authenticated)
                     }
                 }

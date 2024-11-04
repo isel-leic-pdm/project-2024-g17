@@ -33,7 +33,8 @@ import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 @Composable
 fun MainViewSelector(
     viewModel: MainViewSelectorViewModel,
-    authenticatedUser: AuthenticatedUser?
+    authenticatedUser: AuthenticatedUser?,
+    onLogout: () -> Unit = {}
 ) {
     ChIMPTheme {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
@@ -305,7 +306,7 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
-                            onLogoutClick = { viewModel.logout() },
+                            onLogoutClick = { viewModel.logout(onLogout) },
                         )
                     }
 

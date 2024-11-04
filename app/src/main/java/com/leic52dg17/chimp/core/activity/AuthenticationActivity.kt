@@ -1,11 +1,13 @@
 package com.leic52dg17.chimp.core.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.leic52dg17.chimp.core.ChimpApplication
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
@@ -26,7 +28,13 @@ class AuthenticationActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {
-                AuthenticationViewSelector(viewModel = authViewSelectorViewModel)
+                AuthenticationViewSelector(
+                    viewModel = authViewSelectorViewModel,
+                    onAuthenticate = {
+                        val intent = Intent(this, LauncherActivity::class.java)
+                        this.startActivity(intent)
+                    }
+                )
             }
         }
     }
