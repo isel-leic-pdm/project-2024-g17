@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -232,19 +233,26 @@ class MainViewSelectorViewModel(
     }
     
     fun getUserProfile(id: Int) {
+        Log.i(TAG, "Getting user profile for user with ID: $id")
         transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             try {
                 val user = userService.getUserById(id)
                 if (user != null) {
+                    Log.i(TAG, "Fetched user profile for user with ID: ${user.userId}")
                     transition(MainViewSelectorState.UserInfo(user))
                 } else {
+                    Log.e(TAG, "Error fetching user profile for user with ID: $id")
                     transition(MainViewSelectorState.SubscribedChannels(true, "Unexpected error occurred when navigating to user info"))
                 }
             } catch (e: Exception) {
                 transition(MainViewSelectorState.SubscribedChannels(true, e.message))
             }
         }
+    }
+
+    companion object {
+        const val TAG = "MAIN_VIEW_SELECTOR_VIEW_MODEL"
     }
 }
 

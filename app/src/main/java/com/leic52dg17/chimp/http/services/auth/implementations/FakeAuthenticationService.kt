@@ -1,37 +1,42 @@
 package com.leic52dg17.chimp.http.services.auth.implementations
 
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
+import com.leic52dg17.chimp.http.services.auth.results.UserLoginError
 import com.leic52dg17.chimp.http.services.auth.results.UserLoginResult
 import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
+import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.model.common.failure
 import com.leic52dg17.chimp.model.common.success
 import com.leic52dg17.chimp.model.user.User
 import kotlinx.coroutines.delay
 
 class FakeAuthenticationService : IAuthenticationService {
     override suspend fun loginUser(username: String, password: String): UserLoginResult {
+        val user = FakeData.users.firstOrNull { it.username == username }
+        if(user == null) return failure(
+            UserLoginError.AuthenticationError("User could not be found.")
+        )
+
         return success(
             AuthenticatedUser(
                 "example_token",
-                User(
-                    1,
-                    "username1",
-                    "User 1"
-                )
+                user
             )
         )
     }
 
     override suspend fun signUpUser(username: String, password: String): UserSignUpResult {
-        delay(2000)
+        val user = User(
+            FakeData.users.size + 1,
+            username,
+            username
+        )
+        FakeData.users.add(user)
         return success(
             AuthenticatedUser(
                 "example_token",
-                User(
-                    1,
-                    "username1",
-                    "User 1"
-                )
+                user
             )
         )
     }
