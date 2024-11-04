@@ -275,7 +275,7 @@ fun MainViewSelector(
                                     confirmationDialogConfirmText = "Yes"
                                     handleConfirmationDialogVisibilitySwitch()
                                 },
-                                onUserClick = { /*TODO()*/ },
+                                onUserClick = { userId -> viewModel.getUserProfile(userId) },
                                 onLeaveChannelClick = {
                                     confirmationDialogConfirmFunction = {
                                         viewModel.leaveChannel(currentState.authenticatedUser?.user?.userId, it)
