@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.channel.IChannelService
+import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.http.services.user.IUserService
@@ -216,6 +217,7 @@ class MainViewSelectorViewModel(
                     return@launch
                 }
                 is Success -> {
+                    Log.i(TAG, FakeData.channels.toString())
                     transition(
                         MainViewSelectorState.SubscribedChannels(
                             channels = channels

@@ -146,7 +146,7 @@ fun ChannelInfoView(
                                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                                             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                         )
-                                        if (authenticatedUser?.user?.userId == user.userId) {
+                                        if (channel.ownerId == user.userId) {
                                             Icon(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp),
