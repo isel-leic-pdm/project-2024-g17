@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Lock
+import androidx.compose.material.icons.outlined.LockOpen
 import androidx.compose.material.icons.outlined.PersonOutline
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -33,7 +34,7 @@ import com.leic52dg17.chimp.ui.components.buttons.ForgotPasswordButton
 
 @Composable
 fun ChangePasswordView(
-    onChangePassword: (String, String) -> Unit,
+    onChangePassword: (String, String, String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
@@ -74,12 +75,12 @@ fun ChangePasswordView(
                     .padding(horizontal = 16.dp)
                     .padding(bottom = 32.dp)
             ) {
-                AuthenticationField(
+                AuthenticationPasswordField(
                     value = currentPassword,
                     onValueChange = { currentPassword = it },
                     label = stringResource(R.string.current_password_text_en),
-                    leadingIcon = Icons.Outlined.PersonOutline,
-                    leadingIconContentDescription = stringResource(R.string.login_username_icon_cd_en),
+                    leadingIcon = Icons.Outlined.LockOpen,
+                    leadingIconContentDescription = stringResource(R.string.login_password_icon_cd_en),
                     modifier = modifier.fillMaxWidth()
                 )
                 AuthenticationPasswordField(
@@ -105,7 +106,7 @@ fun ChangePasswordView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = { onChangePassword(newPassword, confirmPassword) },
+                    onClick = { onChangePassword(currentPassword, newPassword, confirmPassword) },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.change_password_text_en),
@@ -120,7 +121,7 @@ fun ChangePasswordView(
 @Composable
 fun ChangePasswordViewPreview() {
         ChangePasswordView(
-            onChangePassword = { _, _ -> },
+            onChangePassword = { _, _, _ -> },
             onBackClick = {}
         )
 }

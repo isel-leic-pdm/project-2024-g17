@@ -57,6 +57,24 @@ class AuthenticationViewSelectorViewModel(
             }
         }
     }
+
+    fun changePassword(currentPassword: String, newPassword: String, confirmPassword: String) {
+        if (state is AuthenticationViewSelectorState.Authenticated) {
+            transition(AuthenticationViewSelectorState.AuthenticationLoading)
+            viewModelScope.launch {
+                when (val result = authenticationService.changePassword(currentPassword, newPassword, confirmPassword)) {
+                    is Failure -> {
+                        transition(AuthenticationViewSelectorState.ChangePassword(true, result.value.message))
+                    }
+                    is Success -> {
+                        SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
+                }
+            }
+        }
+        transition(AuthenticationViewSelectorState.Authenticated)
+    }
 }
 
 @Suppress("UNCHECKED_CAST")
