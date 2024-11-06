@@ -39,16 +39,6 @@ fun AboutView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // Back button box
-        Box(
-            modifier = Modifier
-                .padding(16.dp)
-                .size(500.dp, 100.dp)
-
-        ) {
-            BackButton(onBackClick = { onBackClick() })
-        }
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -59,6 +49,8 @@ fun AboutView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .padding(top = 32.dp)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.chimp_blue_final),

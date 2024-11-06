@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -25,15 +26,35 @@ class AuthenticationViewSelectorViewModel(
     }
 
     fun loginUser(username: String, password: String) {
-        if(state is AuthenticationViewSelectorState.Login) {
+        Log.i(TAG, "Logging $username in")
+        if (state is AuthenticationViewSelectorState.Login) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
-                when(val result = authenticationService.loginUser(username, password)) {
+                when (val result = authenticationService.loginUser(username, password)) {
                     is Failure -> {
-                        transition(AuthenticationViewSelectorState.Login(true, result.value.message))
+                        transition(
+                            AuthenticationViewSelectorState.Login(
+                                true,
+                                result.value.message
+                            )
+                        )
                     }
+
                     is Success -> {
+                        Log.i(
+                            TAG,
+                            "Saving user with ID:${result.value.user?.userId} as authenticated user"
+                        )
                         SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
+                        val authenticatedUser =
+                            SharedPreferencesHelper.getAuthenticatedUser(context)
+
+                        if (authenticatedUser == null) Log.e(
+                            TAG,
+                            "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!"
+                        )
+                        else Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.userId}")
+
                         transition(AuthenticationViewSelectorState.Authenticated)
                     }
                 }
@@ -47,8 +68,14 @@ class AuthenticationViewSelectorViewModel(
             viewModelScope.launch {
                 when (val result = authenticationService.signUpUser(username, password)) {
                     is Failure -> {
-                        transition(AuthenticationViewSelectorState.SignUp(true, result.value.message))
+                        transition(
+                            AuthenticationViewSelectorState.SignUp(
+                                true,
+                                result.value.message
+                            )
+                        )
                     }
+
                     is Success -> {
                         SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
                         transition(AuthenticationViewSelectorState.Authenticated)
@@ -56,6 +83,10 @@ class AuthenticationViewSelectorViewModel(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "AUTHENTICATION_VIEW_MODEL"
     }
 
     fun changePassword(currentPassword: String, newPassword: String, confirmPassword: String) {

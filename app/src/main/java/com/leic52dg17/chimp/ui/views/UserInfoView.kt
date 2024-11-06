@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,74 +38,68 @@ fun UserInfoView(
     modifier: Modifier = Modifier,
 ) {
     Column(
-        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = modifier
-            .fillMaxSize()
+        verticalArrangement = Arrangement.SpaceBetween,
+        modifier = modifier.fillMaxWidth()
     ) {
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            modifier = modifier.fillMaxWidth(),
+        ) {
+            BackButton(onBackClick = onBackClick)
+        }
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = modifier.padding(top = 32.dp)
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter("https://picsum.photos/300/300"),
+                contentDescription = stringResource(R.string.user_profile_picture_cd_en),
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .clip(CircleShape)
+                    .size(300.dp)
+            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = user.displayName,
+                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    modifier = modifier
+                        .align(alignment = Alignment.CenterHorizontally)
+                )
+                Text(
+                    text = user.username,
+                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontSize = MaterialTheme.typography.bodyMedium.fontSize,
+                )
+            }
+
+        }
+
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = modifier
                 .fillMaxWidth()
+                .padding(top = 16.dp)
         ) {
-            Column(
-                modifier = modifier,
-            ) {
-                BackButton(modifier = modifier, onBackClick = onBackClick)
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier.padding(top = 32.dp)
-            ) {
-                Image(
-                    painter = rememberAsyncImagePainter("https://picsum.photos/300/300"),
-                    contentDescription = stringResource(R.string.user_profile_picture_cd_en),
-                    contentScale = ContentScale.Crop,
+            if (authenticatedUser?.user?.userId == user.userId) {
+                Button(
+                    onClick = onLogoutClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(20),
                     modifier = modifier
-                        .clip(CircleShape)
-                        .size(300.dp)
-                )
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .width(100.dp)
                 ) {
-                    Text(
-                        text = user.displayName,
-                        fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
-                        fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                        fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                        modifier = modifier
-                            .align(alignment = Alignment.CenterHorizontally)
-                    )
-                    Text(
-                        text = user.username,
-                        fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
-                        fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                        fontSize = MaterialTheme.typography.bodyMedium.fontSize,
-                    )
-                }
-
-            }
-
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp)
-            ) {
-                if (authenticatedUser?.user?.userId == user.userId) {
-                    Button(
-                        onClick = onLogoutClick,
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary,
-                            contentColor = MaterialTheme.colorScheme.onPrimary
-                        ),
-                        shape = RoundedCornerShape(20),
-                        modifier = modifier
-                            .width(100.dp)
-                    ) {
-                        Text(stringResource(R.string.logout_en))
-                    }
+                    Text(stringResource(R.string.logout_en))
                 }
             }
         }
