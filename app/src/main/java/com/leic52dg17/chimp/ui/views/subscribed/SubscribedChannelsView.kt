@@ -24,6 +24,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -108,12 +109,22 @@ val mockChannelList = listOf(
 
 @Composable
 fun SubscribedChannelsView(
-    channels: List<Channel>? = mockChannelList,
+    channels: List<Channel>?,
     onCreateChannelClick: () -> Unit = {},
     onChannelClick: (Channel) -> Unit = {}
 ) {
-
     var searchValue by remember { mutableStateOf("") }
+    var filteredChannels by remember { mutableStateOf(channels) }
+
+    LaunchedEffect(searchValue) {
+        filteredChannels = if (searchValue.isEmpty()) {
+            channels
+        } else {
+            channels?.filter { channel ->
+                channel.displayName.contains(searchValue, ignoreCase = true)
+            }
+        }
+    }
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -184,8 +195,8 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            if (channels != null) {
-                for (channel in channels) {
+            if (filteredChannels != null) {
+                for (channel in filteredChannels!!) {
                     Row(
                         horizontalArrangement = Arrangement.Start,
                         modifier = Modifier
@@ -252,6 +263,6 @@ fun SubscribedChannelsView(
 @Composable
 fun SubscribedChannelsViewPreview() {
     ChIMPTheme {
-        SubscribedChannelsView()
+        SubscribedChannelsView(mockChannelList)
     }
 }
