@@ -189,8 +189,7 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            var toDisplay = emptyList<Channel>()
-            toDisplay = if (filteredChannels.isEmpty()) {
+            val toDisplay = if (filteredChannels.isEmpty()) {
                 channels
             } else {
                 filteredChannels
