@@ -252,6 +252,7 @@ class MainViewSelectorViewModel(
         }
     }
 
+
     companion object {
         const val TAG = "MAIN_VIEW_SELECTOR_VIEW_MODEL"
     }
