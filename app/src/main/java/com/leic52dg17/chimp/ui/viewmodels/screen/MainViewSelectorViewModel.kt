@@ -227,9 +227,10 @@ class MainViewSelectorViewModel(
         }
     }
 
-    fun logout() {
+    fun logout(onLogout: () -> Unit) {
         transition(MainViewSelectorState.Loading)
         SharedPreferencesHelper.logout(context)
+        onLogout()
     }
     
     fun getUserProfile(id: Int) {

@@ -8,6 +8,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.leic52dg17.chimp.core.activity.MainActivity
+import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
@@ -16,7 +17,10 @@ import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
 
 @Composable
-fun AuthenticationViewSelector(viewModel: AuthenticationViewSelectorViewModel) {
+fun AuthenticationViewSelector(
+    viewModel: AuthenticationViewSelectorViewModel,
+    onAuthenticate: () -> Unit
+) {
     ChIMPTheme {
         val currentState = viewModel.state
         val context = LocalContext.current
@@ -41,7 +45,7 @@ fun AuthenticationViewSelector(viewModel: AuthenticationViewSelectorViewModel) {
             is AuthenticationViewSelectorState.Login -> {
                 isLoading = false
                 LoginView(
-                    onLogInClick = { username, password -> viewModel.loginUser(username, password) },
+                    onLogInClick = { username, password -> viewModel.loginUser(username, password, onAuthenticate) },
                     onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )

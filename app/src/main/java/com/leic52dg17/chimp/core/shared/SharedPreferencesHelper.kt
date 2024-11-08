@@ -35,7 +35,5 @@ object SharedPreferencesHelper {
         val editor = prefs.edit()
         editor.remove(KEY_AUTHENTICATED_USER)
         editor.apply()
-        val intent = Intent(context, AuthenticationActivity::class.java)
-        context.startActivity(intent)
     }
 }
