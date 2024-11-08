@@ -188,6 +188,7 @@ class MainViewSelectorViewModel(
         userId: Int?,
         channel: Channel
     ) {
+        Log.i("DEBUG", "Leaving channel")
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
         if(currentUser == null) {
             transition(MainViewSelectorState.ChannelInfo(showDialog = true, dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL))
@@ -204,7 +205,6 @@ class MainViewSelectorViewModel(
         }
 
         viewModelScope.launch {
-            val channels = channelService.getUserSubscribedChannels(userId)
             when(val result = channelService.removeUserFromChannel(userId, channel.channelId)) {
                 is Failure -> {
                     transition(
@@ -216,6 +216,7 @@ class MainViewSelectorViewModel(
                     return@launch
                 }
                 is Success -> {
+                    val channels = channelService.getUserSubscribedChannels(userId)
                     transition(
                         MainViewSelectorState.SubscribedChannels(
                             channels = channels
