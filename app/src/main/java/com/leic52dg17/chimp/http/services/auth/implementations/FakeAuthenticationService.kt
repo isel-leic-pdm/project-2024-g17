@@ -42,7 +42,7 @@ class FakeAuthenticationService : IAuthenticationService {
         )
     }
 
-    override suspend fun changePassword(currentPassword: String, newPassword: String, confirmPassword: String): UserChangePasswordResult {
+    override suspend fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String): UserChangePasswordResult {
         return success(
             AuthenticatedUser(
                 "example_token",

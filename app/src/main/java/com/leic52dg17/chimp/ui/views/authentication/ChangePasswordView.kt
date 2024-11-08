@@ -34,11 +34,12 @@ import com.leic52dg17.chimp.ui.components.buttons.ForgotPasswordButton
 
 @Composable
 fun ChangePasswordView(
-    onChangePassword: (String, String, String) -> Unit,
+    onChangePassword: (String, String, String, String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ){
 
+    var username by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
     var newPassword by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
@@ -106,7 +107,7 @@ fun ChangePasswordView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = { onChangePassword(currentPassword, newPassword, confirmPassword) },
+                    onClick = { onChangePassword(username, currentPassword, newPassword, confirmPassword) },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.change_password_text_en),
@@ -121,7 +122,7 @@ fun ChangePasswordView(
 @Composable
 fun ChangePasswordViewPreview() {
         ChangePasswordView(
-            onChangePassword = { _, _, _ -> },
+            onChangePassword = { _, _, _, _ -> },
             onBackClick = {}
         )
 }

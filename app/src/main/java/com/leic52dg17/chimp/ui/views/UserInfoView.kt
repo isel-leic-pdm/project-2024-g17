@@ -35,6 +35,7 @@ fun UserInfoView(
     authenticatedUser: AuthenticatedUser?,
     onBackClick: () -> Unit,
     onLogoutClick: () -> Unit,
+    onChangePasswordClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -101,6 +102,18 @@ fun UserInfoView(
                 ) {
                     Text(stringResource(R.string.logout_en))
                 }
+                Button(
+                    onClick = onChangePasswordClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(20),
+                    modifier = modifier
+                        .width(150.dp)
+                ) {
+                    Text(stringResource(R.string.change_password_text_en))
+                }
             }
         }
     }
@@ -117,5 +130,6 @@ fun UserInfoViewPreview() {
         ),
         onBackClick = { },
         onLogoutClick = { },
+        onChangePasswordClick = {}
     )
 }
