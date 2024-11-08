@@ -167,7 +167,7 @@ fun MainViewSelector(
 
                         isNavBarShown = true
                         SubscribedChannelsView(
-                            currentState.channels,
+                            currentState.channels ?: emptyList(),
                             onCreateChannelClick = {
                                 viewModel.transition(MainViewSelectorState.CreateChannel(false))
                             },

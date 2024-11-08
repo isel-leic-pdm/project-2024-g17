@@ -24,7 +24,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -109,21 +108,16 @@ val mockChannelList = listOf(
 
 @Composable
 fun SubscribedChannelsView(
-    channels: List<Channel>?,
+    channels: List<Channel>,
     onCreateChannelClick: () -> Unit = {},
     onChannelClick: (Channel) -> Unit = {}
 ) {
     var searchValue by remember { mutableStateOf("") }
     var filteredChannels by remember { mutableStateOf(channels) }
 
-    LaunchedEffect(searchValue) {
-        filteredChannels = if (searchValue.isEmpty()) {
-            channels
-        } else {
-            channels?.filter { channel ->
-                channel.displayName.contains(searchValue, ignoreCase = true)
-            }
-        }
+    fun filterChannels(input: String) {
+        searchValue = input
+        filteredChannels = channels.filter { it.displayName.contains(searchValue, ignoreCase = true) }
     }
 
     Column(
@@ -178,7 +172,7 @@ fun SubscribedChannelsView(
                     .padding(horizontal = 32.dp)
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
-                onValueChange = { searchValue = it },
+                onValueChange = { filterChannels(it) },
                 searchValue = searchValue
             )
         }
@@ -195,62 +189,67 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            if (filteredChannels != null) {
-                for (channel in filteredChannels!!) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
+            var toDisplay = emptyList<Channel>()
+            toDisplay = if (filteredChannels.isEmpty()) {
+                channels
+            } else {
+                filteredChannels
+            }
+
+            for (channel in toDisplay) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier
+                        .clickable { onChannelClick(channel) }
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.chimp_blue_final),
+                        contentDescription = channel.channelIconContentDescription,
                         modifier = Modifier
-                            .clickable { onChannelClick(channel) }
+                            .padding(horizontal = 16.dp)
+                            .size(50.dp)
+                            .clip(CircleShape)
+                    )
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp)
+                            .bottomBorder(0.5.dp, MaterialTheme.colorScheme.secondary)
                     ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.chimp_blue_final),
-                            contentDescription = channel.channelIconContentDescription,
+                        Column(
+                            horizontalAlignment = Alignment.Start,
+                            verticalArrangement = Arrangement.Center,
                             modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .size(50.dp)
-                                .clip(CircleShape)
-                        )
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .bottomBorder(0.5.dp, MaterialTheme.colorScheme.secondary)
+                                .width(200.dp)
                         ) {
-                            Column(
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.Center,
+                            Text(
+                                textAlign = TextAlign.Center,
+                                text = channel.displayName,
+                                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                                fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                                fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                            )
+                            Text(
+                                fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
+                                text = if(channel.messages.isEmpty()) "" else channel.messages.last().text,
                                 modifier = Modifier
-                                    .width(200.dp)
-                            ) {
-                                Text(
-                                    textAlign = TextAlign.Center,
-                                    text = channel.displayName,
-                                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
-                                    overflow = TextOverflow.Ellipsis,
-                                    maxLines = 1,
-                                )
-                                Text(
-                                    fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
-                                    text = if(channel.messages.isEmpty()) "" else channel.messages.last().text,
-                                    modifier = Modifier
-                                        .padding(bottom = 16.dp)
-                                        .alpha(0.60f)
-                                )
-                            }
-                            IconButton(
-                                onClick = { /*TODO*/ }
-                            ) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(20.dp),
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = stringResource(id = R.string.pin_icon_cd)
-                                )
-                            }
+                                    .padding(bottom = 16.dp)
+                                    .alpha(0.60f)
+                            )
+                        }
+                        IconButton(
+                            onClick = { /*TODO*/ }
+                        ) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(20.dp),
+                                imageVector = Icons.Default.Add,
+                                contentDescription = stringResource(id = R.string.pin_icon_cd)
+                            )
                         }
                     }
                 }
