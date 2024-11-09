@@ -4,4 +4,5 @@ import com.leic52dg17.chimp.model.user.User
 
 interface IUserService {
     fun getUserById(id: Int): User?
+    fun getAllUsers(): List<User>
 }

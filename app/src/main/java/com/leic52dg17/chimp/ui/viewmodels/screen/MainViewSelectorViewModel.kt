@@ -253,10 +253,27 @@ class MainViewSelectorViewModel(
 
     fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
         Log.i(TAG, "Inviting user $userId to channel $channelId")
-//        transition(MainViewSelectorState.Loading)
-//        viewModelScope.launch {
-//
-//        }
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
+
+        if (currentUser == null) {
+            MainViewSelectorState.ChannelInfo(
+                showDialog = true,
+                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                channelService.createChannelInvitation(channelId, currentUser.userId, userId, permission)
+                val channel = channelService.getChannelById(channelId)
+                if (channel != null) {
+                    transition(MainViewSelectorState.InvitingUsers(channel, true, "User invited!"))
+                }
+            } catch (e: Exception) {
+                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
+            }
+        }
     }
 
     companion object {
