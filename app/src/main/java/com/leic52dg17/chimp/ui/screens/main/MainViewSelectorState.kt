@@ -17,6 +17,7 @@ sealed interface MainViewSelectorState {
     data class ChannelInfo(val channel: Channel? = null, val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser? = null): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
+    data class InvitingUsers(val channel: Channel): MainViewSelectorState
     data class UserInfo(val user: User): MainViewSelectorState
     data object About: MainViewSelectorState
   

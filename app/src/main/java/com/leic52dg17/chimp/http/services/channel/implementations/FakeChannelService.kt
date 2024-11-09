@@ -9,11 +9,10 @@ import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.model.common.ErrorMessages
-import com.leic52dg17.chimp.model.common.PermissionLevels
+import com.leic52dg17.chimp.model.common.PermissionLevel
 import com.leic52dg17.chimp.model.common.failure
 import com.leic52dg17.chimp.model.common.success
 import com.leic52dg17.chimp.model.message.Message
-import com.leic52dg17.chimp.model.user.UserRequest
 import java.util.UUID
 
 class FakeChannelService : IChannelService {
@@ -45,39 +44,18 @@ class FakeChannelService : IChannelService {
     override suspend fun createChannelInvitation(
         channelId: Int,
         senderId: Int,
-        permissionLevel: PermissionLevels,
-        maxUses: Int
+        receiverId: Int,
+        permissionLevel: PermissionLevel
     ): UUID {
         val newChannelInvitation = ChannelInvitation(
             UUID.randomUUID(),
             channelId,
             senderId,
-            permissionLevel,
-            maxUses
+            receiverId,
+            permissionLevel
         )
         FakeData.channelInvitations.add(newChannelInvitation)
         return newChannelInvitation.invitationId
-    }
-
-    override suspend fun sendChannelInviteToUser(
-        channelId: Int,
-        userId: Int,
-        senderId: Int,
-        permissionLevel: PermissionLevels
-    ): Boolean {
-        val inviteId = createChannelInvitation(
-            channelId,
-            senderId,
-            permissionLevel,
-            1
-        )
-        val newUserRequest = UserRequest(
-            FakeData.userRequests.size + 1,
-            userId,
-            inviteId
-        )
-        FakeData.userRequests.add(newUserRequest)
-        return true
     }
 
     override suspend fun getChannelInfo(channelId: Int): Channel? {
