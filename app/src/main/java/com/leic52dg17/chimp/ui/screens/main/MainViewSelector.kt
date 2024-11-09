@@ -325,7 +325,7 @@ fun MainViewSelector(
                             channel = currentChannel,
                             onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel)) },
                             onInviteUserClick = { userId, channelId, permission -> viewModel.inviteUserToChannel(userId, channelId, permission) },
-                            users = FakeData.users
+                            users = FakeData.users.filter { user -> currentChannel.users.none { it.userId == user.userId }}
                         )
                     }
                 }

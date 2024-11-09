@@ -53,11 +53,13 @@ fun InviteUsersToChannelView(
 ) {
     var searchValue by remember { mutableStateOf("") }
     var filteredUsers by remember { mutableStateOf(users) }
-    var showDropdown by remember { mutableStateOf(false) }
 
     fun searchUsers(input: String) {
         searchValue = input
-        filteredUsers = users.filter { it.displayName.contains(searchValue, ignoreCase = true) }
+        filteredUsers = users.filter { user ->
+            user.displayName.contains(searchValue, ignoreCase = true) &&
+                    channel.users.none { channelUser -> channelUser.userId == user.userId }
+        }
     }
 
     Column(
@@ -93,6 +95,8 @@ fun InviteUsersToChannelView(
             val toDisplay = filteredUsers
 
             for (user in toDisplay) {
+                var showDropdown by remember { mutableStateOf(false) }
+
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -131,8 +135,8 @@ fun InviteUsersToChannelView(
                             DropdownMenuItem(
                                 onClick = {
                                     onInviteUserClick(
-                                        channel.channelId,
                                         user.userId,
+                                        channel.channelId,
                                         PermissionLevel.RR
                                     )
                                     showDropdown = false
@@ -142,8 +146,8 @@ fun InviteUsersToChannelView(
                             DropdownMenuItem(
                                 onClick = {
                                     onInviteUserClick(
-                                        channel.channelId,
                                         user.userId,
+                                        channel.channelId,
                                         PermissionLevel.RW
                                     )
                                     showDropdown = false
