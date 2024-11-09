@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.core.activity
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -47,7 +48,11 @@ class MainActivity : ComponentActivity() {
                     ) {
                         MainViewSelector(
                             mainViewSelectorViewModel,
-                            SharedPreferencesHelper.getAuthenticatedUser(applicationContext)
+                            SharedPreferencesHelper.getAuthenticatedUser(applicationContext),
+                            onLogout = {
+                                val intent = Intent(this@MainActivity, LauncherActivity::class.java)
+                                this@MainActivity.startActivity(intent)
+                            }
                         )
                     }
                 }

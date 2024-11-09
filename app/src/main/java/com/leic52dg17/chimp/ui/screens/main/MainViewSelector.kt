@@ -27,6 +27,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
+import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -35,7 +36,8 @@ import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 @Composable
 fun MainViewSelector(
     viewModel: MainViewSelectorViewModel,
-    authenticatedUser: AuthenticatedUser?
+    authenticatedUser: AuthenticatedUser?,
+    onLogout: () -> Unit = {}
 ) {
     ChIMPTheme {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
@@ -183,6 +185,28 @@ fun MainViewSelector(
                         )
                     }
 
+                    is MainViewSelectorState.ChangePassword -> {
+                        isLoading = false
+                        isNavBarShown = false
+                        val currentState = (viewModel.state as MainViewSelectorState.ChangePassword)
+                        if (currentState.showDialog) {
+                            alertDialogText = currentState.dialogMessage
+                                ?: stringResource(id = R.string.generic_error_en)
+                            handleSharedAlertDialogVisibilitySwitch()
+                        }
+                        ChangePasswordView(
+                            onChangePassword = { _, _, _, _ ->
+                                viewModel.transition(MainViewSelectorState.ChangePassword())
+                            },
+                            onBackClick = {
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                            }
+                        )
+
+
+
+                    }
+
                     is MainViewSelectorState.CreateChannel -> {
                         isLoading = false
 
@@ -306,7 +330,8 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
-                            onLogoutClick = { viewModel.logout() },
+                            onLogoutClick = { viewModel.logout(onLogout) },
+                            onChangePasswordClick = { viewModel.transition(MainViewSelectorState.ChangePassword()) }
                         )
                     }
 

@@ -61,6 +61,14 @@
     <string name="login_password_field_label_en">Password</string>
     <string name="login_forgot_password_text_en">Forgot your password?</string>
 
+    <!--Reset Password View-->
+    <string name="change_password_text_en">Reset Password</string>
+    <string name="current_password_text_en">Current Password</string>
+    <string name="new_password_text_en">New Password</string>
+    <string name="confirm_password_text_en">Confirm Password</string>
+
+
+
     <!--Common-->
     <string name="back_button_text_cd">Back</string>
     <string name="message_sent_en">Doing well bro, thanks!</string>">

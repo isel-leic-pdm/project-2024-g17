@@ -25,7 +25,7 @@ class AuthenticationViewSelectorViewModel(
         state = newState
     }
 
-    fun loginUser(username: String, password: String) {
+    fun loginUser(username: String, password: String, onAuthenticate: () -> Unit) {
         Log.i(TAG, "Logging $username in")
         if (state is AuthenticationViewSelectorState.Login) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
@@ -55,6 +55,7 @@ class AuthenticationViewSelectorViewModel(
                         )
                         else Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.userId}")
 
+                        onAuthenticate()
                         transition(AuthenticationViewSelectorState.Authenticated)
                     }
                 }
@@ -87,6 +88,24 @@ class AuthenticationViewSelectorViewModel(
 
     companion object {
         private const val TAG = "AUTHENTICATION_VIEW_MODEL"
+    }
+
+    fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String) {
+        if (state is AuthenticationViewSelectorState.Authenticated) {
+            transition(AuthenticationViewSelectorState.AuthenticationLoading)
+            viewModelScope.launch {
+                when (val result = authenticationService.changePassword(username, currentPassword, newPassword, confirmPassword)) {
+                    is Failure -> {
+                        transition(AuthenticationViewSelectorState.ChangePassword(true, result.value.message))
+                    }
+                    is Success -> {
+                        SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
+                }
+            }
+        }
+        transition(AuthenticationViewSelectorState.Authenticated)
     }
 }
 
