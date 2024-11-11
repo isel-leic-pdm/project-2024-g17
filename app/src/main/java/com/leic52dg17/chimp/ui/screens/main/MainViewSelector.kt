@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
 import com.leic52dg17.chimp.ui.components.dialogs.SharedAlertDialog
@@ -24,6 +25,7 @@ import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelector
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
@@ -71,7 +73,6 @@ fun MainViewSelector(
         var confirmationDialogConfirmFunction by remember {
             mutableStateOf({})
         }
-
 
         var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
@@ -305,7 +306,7 @@ fun MainViewSelector(
                                 onBackClick = {
                                     viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it))
                                 },
-                                onAddToUserChannelClick = { /*TODO()*/ },
+                                onAddToUserChannelClick = { viewModel.transition(MainViewSelectorState.InvitingUsers(it)) },
                                 onRemoveUser = { userId, channelId ->
                                     confirmationDialogConfirmFunction = {
                                         viewModel.removeUserFromChannel(userId, channelId)
@@ -334,7 +335,7 @@ fun MainViewSelector(
                         }
                     }
 
-                    MainViewSelectorState.GettingChannelInfo -> {
+                    is MainViewSelectorState.GettingChannelInfo -> {
                         isLoading = true
                         isNavBarShown = false
                     }
@@ -352,11 +353,22 @@ fun MainViewSelector(
                         )
                     }
 
-                    MainViewSelectorState.About -> {
+                    is MainViewSelectorState.About -> {
                         isLoading = false
                         isNavBarShown = true
                         AboutView(
                             onBackClick = { viewModel.loadSubscribedChannels() }
+                        )
+                    }
+
+                    is MainViewSelectorState.InvitingUsers -> {
+                        val currentState = (viewModel.state as MainViewSelectorState.InvitingUsers)
+                        val currentChannel = currentState.channel
+                        InviteUsersToChannelView(
+                            channel = currentChannel,
+                            onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel)) },
+                            onInviteUserClick = { userId, channelId, permission -> viewModel.inviteUserToChannel(userId, channelId, permission) },
+                            users = FakeData.users.filter { user -> currentChannel.users.none { it.userId == user.userId }}
                         )
                     }
                 }

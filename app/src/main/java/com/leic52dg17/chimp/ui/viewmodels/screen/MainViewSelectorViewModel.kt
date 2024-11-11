@@ -15,6 +15,7 @@ import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
+import com.leic52dg17.chimp.model.common.PermissionLevel
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
@@ -245,6 +246,32 @@ class MainViewSelectorViewModel(
                 } else {
                     Log.e(TAG, "Error fetching user profile for user with ID: $id")
                     transition(MainViewSelectorState.SubscribedChannels(true, "Unexpected error occurred when navigating to user info"))
+                }
+            } catch (e: Exception) {
+                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
+            }
+        }
+    }
+
+
+    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
+        Log.i(TAG, "Inviting user $userId to channel $channelId")
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
+
+        if (currentUser == null) {
+            MainViewSelectorState.ChannelInfo(
+                showDialog = true,
+                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                channelService.createChannelInvitation(channelId, currentUser.userId, userId, permission)
+                val channel = channelService.getChannelById(channelId)
+                if (channel != null) {
+                    transition(MainViewSelectorState.InvitingUsers(channel, true, "User invited!"))
                 }
             } catch (e: Exception) {
                 transition(MainViewSelectorState.SubscribedChannels(true, e.message))

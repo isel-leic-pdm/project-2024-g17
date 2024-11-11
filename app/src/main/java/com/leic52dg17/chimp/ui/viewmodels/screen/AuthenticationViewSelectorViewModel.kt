@@ -114,9 +114,7 @@ class AuthenticationViewSelectorViewModel(
             viewModelScope.launch {
                 when (val result = authenticationService.forgotPassword(email)) {
                     is Failure -> {
-                        transition(
-                            AuthenticationViewSelectorState.ForgotPassword
-                        )
+                        transition(AuthenticationViewSelectorState.ForgotPassword)
                     }
 
                     is Success -> {
