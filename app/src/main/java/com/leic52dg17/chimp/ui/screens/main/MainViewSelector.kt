@@ -20,12 +20,14 @@ import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
 import com.leic52dg17.chimp.ui.components.dialogs.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
+import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
+import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
@@ -201,9 +203,25 @@ fun MainViewSelector(
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             }
                         )
+                    }
 
-
-
+                    is MainViewSelectorState.ForgotPassword -> {
+                        isLoading = false
+                        isNavBarShown = false
+                        val currentState = (viewModel.state as MainViewSelectorState.ForgotPassword)
+                        if (currentState.showDialog) {
+                            alertDialogText = currentState.dialogMessage
+                                ?: stringResource(id = R.string.generic_error_en)
+                            handleSharedAlertDialogVisibilitySwitch()
+                        }
+                        ForgotPasswordView(
+                            onBackClick = {
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                            },
+                            onForgotPassword = { email ->
+                                //viewModel.forgotPassword(email)
+                            }
+                        )
                     }
 
                     is MainViewSelectorState.CreateChannel -> {

@@ -20,6 +20,7 @@ sealed interface MainViewSelectorState {
     data class UserInfo(val user: User): MainViewSelectorState
     data object About: MainViewSelectorState
     data class ChangePassword(val showDialog: Boolean = false, val dialogMessage: String? = null): MainViewSelectorState
+    data class ForgotPassword(val showDialog: Boolean = false, val dialogMessage: String? = null): MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(

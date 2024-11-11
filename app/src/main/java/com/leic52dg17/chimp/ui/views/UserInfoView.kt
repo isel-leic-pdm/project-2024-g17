@@ -114,6 +114,7 @@ fun UserInfoView(
                 ) {
                     Text(stringResource(R.string.change_password_text_en))
                 }
+
             }
         }
     }
