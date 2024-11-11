@@ -16,11 +16,11 @@ import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.common.ErrorMessages
 import com.leic52dg17.chimp.model.common.Failure
+import com.leic52dg17.chimp.model.common.PermissionLevel
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.model.message.Message
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
-import java.util.logging.Logger
 
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
@@ -85,7 +85,7 @@ class MainViewSelectorViewModel(
                     showDialog = true,
                     dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
                 )
-            )
+        )
             else transition(
                 MainViewSelectorState.ChannelInfo(
                     channel = channel,
@@ -233,8 +233,6 @@ class MainViewSelectorViewModel(
                     dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
                 )
             )
-            return
-        }
 
         if (userId == null) {
             transition(
@@ -246,7 +244,7 @@ class MainViewSelectorViewModel(
         }
 
         viewModelScope.launch {
-            when (val result = channelService.removeUserFromChannel(userId, channel.channelId)) {
+            when(val result = channelService.removeUserFromChannel(userId, channel.channelId)) {
                 is Failure -> {
                     transition(
                         MainViewSelectorState.ChannelInfo(
@@ -362,6 +360,32 @@ class MainViewSelectorViewModel(
                         ))
                     }
                 }
+            }
+        }
+    }
+
+
+    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
+        Log.i(TAG, "Inviting user $userId to channel $channelId")
+        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
+
+        if (currentUser == null) {
+            MainViewSelectorState.ChannelInfo(
+                showDialog = true,
+                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                channelService.createChannelInvitation(channelId, currentUser.userId, userId, permission)
+                val channel = channelService.getChannelById(channelId)
+                if (channel != null) {
+                    transition(MainViewSelectorState.InvitingUsers(channel, true, "User invited!"))
+                }
+            } catch (e: Exception) {
+                transition(MainViewSelectorState.SubscribedChannels(true, e.message))
             }
         }
     }

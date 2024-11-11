@@ -18,7 +18,9 @@ sealed interface MainViewSelectorState {
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
     data class UserInfo(val user: User, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class InvitingUsers(val channel: Channel, val showDialog: Boolean = false, val dialogMessage: String = ""): MainViewSelectorState
     data object About: MainViewSelectorState
+    data class ChangePassword(val showDialog: Boolean = false, val dialogMessage: String? = null): MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(

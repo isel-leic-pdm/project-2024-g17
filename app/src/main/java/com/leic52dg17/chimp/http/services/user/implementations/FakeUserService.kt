@@ -8,4 +8,8 @@ class FakeUserService : IUserService {
     override fun getUserById(id: Int): User? {
         return FakeData.users.firstOrNull { it.userId == id }
     }
+
+    override fun getAllUsers(): List<User> {
+        return FakeData.users
+    }
 }

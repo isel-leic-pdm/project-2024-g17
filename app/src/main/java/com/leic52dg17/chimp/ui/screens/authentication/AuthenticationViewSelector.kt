@@ -64,10 +64,10 @@ fun AuthenticationViewSelector(
             is AuthenticationViewSelectorState.ChangePassword -> {
                 isLoading = false
                 ChangePasswordView(
-                    onChangePassword = { currentPassword, newPassword, confirmPassword -> viewModel.changePassword(currentPassword, newPassword, confirmPassword) },
+                    onChangePassword = { username, currentPassword, newPassword, confirmPassword -> viewModel.changePassword(username, currentPassword, newPassword, confirmPassword) },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
-            } // TODO: Implement Change Passowrd Button
+            } // TODO: Implement Change Password Button
 
             is AuthenticationViewSelectorState.ForgotPassword -> throw NotImplementedError()
 
@@ -82,13 +82,4 @@ fun AuthenticationViewSelector(
         }
     }
 }
-/*
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun AuthenticationViewSelectorPreview() {
-    AuthenticationViewSelector(viewModel = AuthenticationViewSelectorViewModel(
-        FakeAuthenticationService(),
-        Conte
-    ))
-}*/
