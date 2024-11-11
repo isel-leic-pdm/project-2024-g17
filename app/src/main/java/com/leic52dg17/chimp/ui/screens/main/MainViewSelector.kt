@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.screens.main
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,6 +23,7 @@ import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
+import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
@@ -133,7 +135,8 @@ fun MainViewSelector(
                             viewModel.transition(MainViewSelectorState.About)
                         },
                         rowModifier = Modifier
-                            .padding(bottom = 32.dp),
+                            .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(bottom = 32.dp, top = 16.dp),
                     )
                 }
             }

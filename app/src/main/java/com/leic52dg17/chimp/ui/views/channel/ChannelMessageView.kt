@@ -121,6 +121,7 @@ fun ChannelMessageView(
                 .fillMaxWidth()
                 .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(bottom = 256.dp)
         ) {
             items(channel.messages) { message ->
                 val backgroundColor = if (message.userId == authenticatedUser?.user?.userId) {
