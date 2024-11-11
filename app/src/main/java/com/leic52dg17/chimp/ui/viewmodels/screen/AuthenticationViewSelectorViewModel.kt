@@ -107,6 +107,26 @@ class AuthenticationViewSelectorViewModel(
         }
         transition(AuthenticationViewSelectorState.Authenticated)
     }
+
+    fun forgotPassword(email: String) {
+        if (state is AuthenticationViewSelectorState.ForgotPassword) {
+            transition(AuthenticationViewSelectorState.AuthenticationLoading)
+            viewModelScope.launch {
+                when (val result = authenticationService.forgotPassword(email)) {
+                    is Failure -> {
+                        transition(
+                            AuthenticationViewSelectorState.ForgotPassword
+                        )
+                    }
+
+                    is Success -> {
+                        SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Suppress("UNCHECKED_CAST")

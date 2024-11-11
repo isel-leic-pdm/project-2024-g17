@@ -94,7 +94,7 @@ fun ForgotPasswordView(
 @Composable
 fun ForgotPasswordViewPreview() {
     ForgotPasswordView(
-        onForgotPassword = { },
+        onForgotPassword = { _ -> },
         onBackClick = { }
     )
 }

@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.http.services.auth.implementations
 
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.results.UserChangePasswordResult
+import com.leic52dg17.chimp.http.services.auth.results.UserForgotPasswordResult
 import com.leic52dg17.chimp.http.services.auth.results.UserLoginError
 import com.leic52dg17.chimp.http.services.auth.results.UserLoginResult
 import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
@@ -43,6 +44,19 @@ class FakeAuthenticationService : IAuthenticationService {
     }
 
     override suspend fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String): UserChangePasswordResult {
+        return success(
+            AuthenticatedUser(
+                "example_token",
+                User(
+                    1,
+                    "username1",
+                    "User 1"
+                )
+            )
+        )
+    }
+
+    override suspend fun forgotPassword(email: String): UserForgotPasswordResult{
         return success(
             AuthenticatedUser(
                 "example_token",

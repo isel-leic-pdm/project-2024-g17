@@ -219,7 +219,7 @@ fun MainViewSelector(
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
                             },
                             onForgotPassword = { email ->
-                                //viewModel.forgotPassword(email)
+                                viewModel.transition(MainViewSelectorState.ForgotPassword())
                             }
                         )
                     }

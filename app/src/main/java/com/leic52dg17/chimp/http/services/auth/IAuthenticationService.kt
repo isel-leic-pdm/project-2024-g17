@@ -3,9 +3,11 @@ package com.leic52dg17.chimp.http.services.auth
 import com.leic52dg17.chimp.http.services.auth.results.UserChangePasswordResult
 import com.leic52dg17.chimp.http.services.auth.results.UserLoginResult
 import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
+import com.leic52dg17.chimp.http.services.auth.results.UserForgotPasswordResult
 
 interface IAuthenticationService {
     suspend fun loginUser(username: String, password: String): UserLoginResult
     suspend fun signUpUser(username: String, password: String): UserSignUpResult
     suspend fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String): UserChangePasswordResult
+    suspend fun forgotPassword(email: String): UserForgotPasswordResult
 }
