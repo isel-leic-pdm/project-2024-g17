@@ -62,10 +62,16 @@
     <string name="login_forgot_password_text_en">Forgot your password?</string>
 
     <!--Reset Password View-->
-    <string name="change_password_text_en">Reset Password</string>
+    <string name="change_password_text_en">Change Password</string>
     <string name="current_password_text_en">Current Password</string>
     <string name="new_password_text_en">New Password</string>
     <string name="confirm_password_text_en">Confirm Password</string>
+
+    <!--Forgot Password View-->
+    <string name="forgot_password_text_en">Forgot Password</string>
+    <string name="email_text_en">Email</string>
+    <string name="reset_password_text_en">Reset Password</string>
+
 
 
 

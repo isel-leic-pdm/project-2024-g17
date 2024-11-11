@@ -18,7 +18,6 @@ import com.leic52dg17.chimp.model.common.Failure
 import com.leic52dg17.chimp.model.common.Success
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
-import java.util.logging.Logger
 
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
@@ -252,7 +251,6 @@ class MainViewSelectorViewModel(
             }
         }
     }
-
 
     companion object {
         const val TAG = "MAIN_VIEW_SELECTOR_VIEW_MODEL"
