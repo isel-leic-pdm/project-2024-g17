@@ -74,6 +74,8 @@
     <string name="message_sent_en">Doing well bro, thanks!</string>">
     <string name="message_received_en">"Hey man, how are you?"</string>
     <string name="message_text_field_en">Message</string>
+    <string name="channel_icon_cd_en">Channel Icon</string>
+    <string name="user_icon_cd_en">User Icon</string>
 
     <!--Create Channel View-->
     <string name="create_channel_title_en">Create a channel</string>

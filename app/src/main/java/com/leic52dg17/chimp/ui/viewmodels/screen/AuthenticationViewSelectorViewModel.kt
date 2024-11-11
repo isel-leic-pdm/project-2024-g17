@@ -90,11 +90,11 @@ class AuthenticationViewSelectorViewModel(
         private const val TAG = "AUTHENTICATION_VIEW_MODEL"
     }
 
-    fun changePassword(currentPassword: String, newPassword: String, confirmPassword: String) {
+    fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String) {
         if (state is AuthenticationViewSelectorState.Authenticated) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
-                when (val result = authenticationService.changePassword(currentPassword, newPassword, confirmPassword)) {
+                when (val result = authenticationService.changePassword(username, currentPassword, newPassword, confirmPassword)) {
                     is Failure -> {
                         transition(AuthenticationViewSelectorState.ChangePassword(true, result.value.message))
                     }

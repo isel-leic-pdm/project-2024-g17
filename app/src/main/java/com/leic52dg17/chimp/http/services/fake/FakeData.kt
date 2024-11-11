@@ -3,12 +3,10 @@ package com.leic52dg17.chimp.http.services.fake
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.model.channel.UserChannel
-import com.leic52dg17.chimp.model.common.PermissionLevels
 import com.leic52dg17.chimp.model.message.Message
 import com.leic52dg17.chimp.model.user.User
 import com.leic52dg17.chimp.model.user.UserRequest
 import java.math.BigInteger
-import java.util.UUID
 
 object FakeData {
     val users = mutableListOf(
@@ -26,18 +24,25 @@ object FakeData {
             3,
             "username3",
             "User 3"
+        ),
+        User(
+            4,
+            "username4",
+            "User 4"
         )
     )
 
-    val channelInvitations = mutableListOf(
-        ChannelInvitation(
-            UUID.randomUUID(),
-            1,
-            1,
-            PermissionLevels.RW,
-            1
-        )
-    )
+    val channelInvitations = mutableListOf<ChannelInvitation>()
+
+//    val channelInvitations = mutableListOf(
+//        ChannelInvitation(
+//            UUID.randomUUID(),
+//            1,
+//            1,
+//            2,
+//            PermissionLevel.RW
+//        )
+//    )
 
     val userRequests = mutableListOf<UserRequest>()
 
