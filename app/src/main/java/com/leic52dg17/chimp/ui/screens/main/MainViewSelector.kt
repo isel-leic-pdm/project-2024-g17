@@ -170,13 +170,14 @@ fun MainViewSelector(
                         SubscribedChannelsView(
                             currentState.channels ?: emptyList(),
                             onCreateChannelClick = {
-                                viewModel.transition(MainViewSelectorState.CreateChannel(false))
+                                viewModel.transition(MainViewSelectorState.CreateChannel(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onChannelClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.ChannelMessages(
                                         false,
-                                        channel = it
+                                        channel = it,
+                                        authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
                             }
@@ -197,7 +198,7 @@ fun MainViewSelector(
 
                         CreateChannelView(
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onChannelNameInfoClick = { text ->
                                 alertDialogText = text
@@ -238,11 +239,16 @@ fun MainViewSelector(
                             ChannelMessageView(
                                 channel = currentChannel,
                                 onBackClick = {
-                                    viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                    viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                                 },
                                 onChannelNameClick = {
                                     viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel))
-                                }
+                                },
+                                onSendClick = { messageText ->
+                                    // THIS WILL CHANGE, IF YOU SHIP IT, YOU KEEP IT
+                                    viewModel.sendMessage(currentChannel.channelId, messageText)
+                                },
+                                authenticatedUser = currentState.authenticatedUser
                             )
                         }
                     }
@@ -262,7 +268,7 @@ fun MainViewSelector(
                             ChannelInfoView(
                                 channel = it,
                                 onBackClick = {
-                                    viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it))
+                                    viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it, authenticatedUser = currentState.authenticatedUser))
                                 },
                                 onAddToUserChannelClick = { /*TODO()*/ },
                                 onRemoveUser = { userId, channelId ->
@@ -304,7 +310,7 @@ fun MainViewSelector(
                             user = currentState.user,
                             authenticatedUser = authenticatedUser,
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onLogoutClick = { viewModel.logout(onLogout) },
                         )
