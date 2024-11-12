@@ -87,5 +87,6 @@
     <!--User info View-->
     <string name="user_profile_picture_cd_en">"User's profile picture."</string>
     <string name="logout_en">Log out</string>
+    <string name="no_channels_in_common_en">You have no channels in common with this user.</string>
 
 </resources>
