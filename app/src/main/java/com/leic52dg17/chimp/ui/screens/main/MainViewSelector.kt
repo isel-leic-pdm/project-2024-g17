@@ -200,10 +200,10 @@ fun MainViewSelector(
                         }
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
-                                viewModel.transition(MainViewSelectorState.ChangePassword())
+                                viewModel.transition(MainViewSelectorState.ChangePassword(authenticatedUser = currentState.authenticatedUser))
                             },
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             }
                         )
 
@@ -269,7 +269,7 @@ fun MainViewSelector(
                                     viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                                 },
                                 onChannelNameClick = {
-                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel))
+                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel, authenticatedUser = currentState.authenticatedUser))
                                 },
                                 onSendClick = { messageText ->
                                     // THIS WILL CHANGE, IF YOU SHIP IT, YOU KEEP IT
@@ -297,7 +297,10 @@ fun MainViewSelector(
                                 onBackClick = {
                                     viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it, authenticatedUser = currentState.authenticatedUser))
                                 },
-                                onAddToUserChannelClick = { viewModel.transition(MainViewSelectorState.InvitingUsers(it)) },
+                                onAddToUserChannelClick = { viewModel.transition(MainViewSelectorState.InvitingUsers(
+                                    it,
+                                    authenticatedUser = currentState.authenticatedUser
+                                )) },
                                 onRemoveUser = { userId, channelId ->
                                     confirmationDialogConfirmFunction = {
                                         viewModel.removeUserFromChannel(userId, channelId)
@@ -340,7 +343,7 @@ fun MainViewSelector(
                                 viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onLogoutClick = { viewModel.logout(onLogout) },
-                            onChangePasswordClick = { viewModel.transition(MainViewSelectorState.ChangePassword()) }
+                            onChangePasswordClick = { viewModel.transition(MainViewSelectorState.ChangePassword(authenticatedUser = currentState.authenticatedUser)) }
                         )
                     }
 
@@ -357,7 +360,7 @@ fun MainViewSelector(
                         val currentChannel = currentState.channel
                         InviteUsersToChannelView(
                             channel = currentChannel,
-                            onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel)) },
+                            onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel, authenticatedUser = currentState.authenticatedUser)) },
                             onInviteUserClick = { userId, channelId, permission -> viewModel.inviteUserToChannel(userId, channelId, permission) },
                             users = FakeData.users.filter { user -> currentChannel.users.none { it.userId == user.userId }}
                         )
