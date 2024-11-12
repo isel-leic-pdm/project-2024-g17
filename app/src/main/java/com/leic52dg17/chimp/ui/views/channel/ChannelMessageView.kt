@@ -222,8 +222,8 @@ fun ChannelMessageView(
             if (isSendIconVisible) {
                 IconButton(
                     onClick = {
-                        Log.i("DEBUG", "CLICKED")
                         onSendClick(messageText)
+                        messageText = ""
                     },
                 ) {
                     Image(
