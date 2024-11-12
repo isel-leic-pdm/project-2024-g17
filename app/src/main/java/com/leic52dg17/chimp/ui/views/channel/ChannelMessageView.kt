@@ -68,7 +68,9 @@ fun ChannelMessageView(
     val listState = rememberLazyListState()
 
     LaunchedEffect(channel.messages.size) {
-        listState.scrollToItem(channel.messages.size - 1)
+        if(channel.messages.isNotEmpty()) {
+            listState.scrollToItem(channel.messages.size - 1)
+        }
     }
 
     Box(

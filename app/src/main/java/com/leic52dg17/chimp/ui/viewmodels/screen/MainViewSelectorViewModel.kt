@@ -58,6 +58,7 @@ class MainViewSelectorViewModel(
                         authenticatedUser = authenticatedUser
                     )
                 )
+                return@launch
             }
             if (channel == null) {
                 transition(
@@ -67,6 +68,7 @@ class MainViewSelectorViewModel(
                         authenticatedUser = authenticatedUser
                     )
                 )
+                return@launch
             } else transition(
                 MainViewSelectorState.ChannelMessages(
                     false,
