@@ -72,7 +72,7 @@ class MainViewSelectorViewModel(
                     showDialog = true,
                     dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL
                 )
-        )
+            )
             else transition(
                 MainViewSelectorState.ChannelInfo(
                     channel = channel,

@@ -110,10 +110,11 @@ fun UserInfoView(
                     ),
                     shape = RoundedCornerShape(20),
                     modifier = modifier
-                        .width(150.dp)
+                        .width(170.dp)
                 ) {
                     Text(stringResource(R.string.change_password_text_en))
                 }
+
             }
         }
     }

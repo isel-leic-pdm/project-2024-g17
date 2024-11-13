@@ -36,6 +36,7 @@ fun LoginView(
     onLogInClick: (String, String) -> Unit,
     onSignUpClick: () -> Unit,
     onBackClick: () -> Unit,
+    onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
@@ -97,7 +98,7 @@ fun LoginView(
                         .height(35.dp)
                 ) {
                     ForgotPasswordButton(
-                        onForgotPasswordClick = { },
+                        onForgotPasswordClick = onForgotPasswordClick,
                     )
                 }
             }
@@ -132,6 +133,7 @@ fun LoginViewPreview() {
     LoginView(
         onSignUpClick = {},
         onLogInClick = { username, password -> println(username); println(password) },
-        onBackClick = {}
+        onBackClick = {},
+        onForgotPasswordClick = {}
     )
 }

@@ -123,7 +123,7 @@ fun ChangePasswordView(
 fun ChangePasswordViewPreview() {
         ChangePasswordView(
             onChangePassword = { _, _, _, _ -> },
-            onBackClick = {}
+            onBackClick = { }
         )
 }
 

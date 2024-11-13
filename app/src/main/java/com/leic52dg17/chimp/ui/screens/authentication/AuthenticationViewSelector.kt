@@ -10,10 +10,12 @@ import androidx.compose.ui.platform.LocalContext
 import com.leic52dg17.chimp.core.activity.MainActivity
 import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
+import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.LandingView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
+import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
 import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
 
@@ -49,6 +51,7 @@ fun AuthenticationViewSelector(
                     onLogInClick = { username, password -> viewModel.loginUser(username, password, onAuthenticate) },
                     onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
+                    onForgotPasswordClick = { viewModel.transition(AuthenticationViewSelectorState.ForgotPassword) },
                 )
             }
 
@@ -61,15 +64,21 @@ fun AuthenticationViewSelector(
                 )
             }
 
+            is AuthenticationViewSelectorState.ForgotPassword -> {
+                isLoading = false
+                ForgotPasswordView(
+                    onForgotPassword = { email -> viewModel.forgotPassword(email) },
+                    onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
+                )
+            }
+
             is AuthenticationViewSelectorState.ChangePassword -> {
                 isLoading = false
                 ChangePasswordView(
                     onChangePassword = { username, currentPassword, newPassword, confirmPassword -> viewModel.changePassword(username, currentPassword, newPassword, confirmPassword) },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
-            } // TODO: Implement Change Password Button
-
-            is AuthenticationViewSelectorState.ForgotPassword -> throw NotImplementedError()
+            }
 
             is AuthenticationViewSelectorState.Authenticated -> {
                 val intent = Intent(context, MainActivity::class.java)
