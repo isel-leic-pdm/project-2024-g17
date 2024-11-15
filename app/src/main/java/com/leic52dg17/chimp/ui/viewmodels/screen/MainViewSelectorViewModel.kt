@@ -253,7 +253,7 @@ class MainViewSelectorViewModel(
     ) {
         val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
         val currentUser = authenticatedUser?.user
-        if (currentUser == null) {
+        if (currentUser != null) {
             transition(
                 MainViewSelectorState.ChannelInfo(
                     showDialog = true,
@@ -271,6 +271,7 @@ class MainViewSelectorViewModel(
                 )
                 return
             }
+
 
             viewModelScope.launch {
                 when (val result =
