@@ -210,25 +210,6 @@ fun MainViewSelector(
                         )
                     }
 
-                    is MainViewSelectorState.ForgotPassword -> {
-                        isLoading = false
-                        isNavBarShown = false
-                        val currentState = (viewModel.state as MainViewSelectorState.ForgotPassword)
-                        if (currentState.showDialog) {
-                            alertDialogText = currentState.dialogMessage
-                                ?: stringResource(id = R.string.generic_error_en)
-                            handleSharedAlertDialogVisibilitySwitch()
-                        }
-                        ForgotPasswordView(
-                            onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
-                            },
-                            onForgotPassword = { email ->
-                                viewModel.transition(MainViewSelectorState.ForgotPassword())
-                            }
-                        )
-                    }
-
                     is MainViewSelectorState.CreateChannel -> {
                         isLoading = false
 
