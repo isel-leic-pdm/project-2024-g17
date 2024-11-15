@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.ui.views.channel
 
 
 import MessageTextField
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,23 +48,32 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.http.services.fake.FakeData
+import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.model.channel.Channel
 import com.leic52dg17.chimp.model.common.formatHours
+import com.leic52dg17.chimp.model.user.User
 
-
-const val My_ID = 1
 
 @Composable
 fun ChannelMessageView(
     channel: Channel,
     onBackClick: () -> Unit,
-    onChannelNameClick: () -> Unit
-    ) {
+    onChannelNameClick: () -> Unit,
+    onSendClick: (String) -> Unit,
+    authenticatedUser: AuthenticatedUser?
+) {
     var textFieldWidth by remember { mutableStateOf(400.dp) }
     var messageText by remember { mutableStateOf("") }
     var isSendIconVisible = messageText.isNotEmpty()
+    val listState = rememberLazyListState()
 
-        Box(
+    LaunchedEffect(channel.messages.size) {
+        if(channel.messages.isNotEmpty()) {
+            listState.scrollToItem(channel.messages.size - 1)
+        }
+    }
+
+    Box(
         modifier = Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.onPrimary)
@@ -73,9 +85,7 @@ fun ChannelMessageView(
                 .background(MaterialTheme.colorScheme.primary)
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
-        )
-
-        {
+        ) {
             IconButton(onBackClick) {
                 Icon(
                     imageVector = Icons.Filled.ArrowBackIosNew,
@@ -89,7 +99,7 @@ fun ChannelMessageView(
                     .clickable { onChannelNameClick() },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
-            ){
+            ) {
                 Text(
                     text = channel.displayName,
                     modifier = Modifier.weight(1f),
@@ -108,23 +118,23 @@ fun ChannelMessageView(
         }
 
         LazyColumn(
+            state = listState,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 100.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp),
+            contentPadding = PaddingValues(bottom = 256.dp)
         ) {
-
-
             items(channel.messages) { message ->
-                val backgroundColor = if (message.userId == My_ID) {
+                val backgroundColor = if (message.userId == authenticatedUser?.user?.userId) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 }
                 val horizontalArrangement =
-                    if (message.userId == My_ID) Arrangement.End else Arrangement.Start
+                    if (message.userId == authenticatedUser?.user?.userId) Arrangement.End else Arrangement.Start
 
-                val paddingVal = if (message.userId == My_ID) {
+                val paddingVal = if (message.userId == authenticatedUser?.user?.userId) {
                     PaddingValues(end = 10.dp, start = 40.dp)
                 } else {
                     PaddingValues(start = 10.dp, end = 40.dp)
@@ -140,7 +150,6 @@ fun ChannelMessageView(
                     Surface(
                         modifier = Modifier
                             .wrapContentSize(),
-
                         shape = RoundedCornerShape(8.dp),
                         color = backgroundColor
                     ) {
@@ -156,45 +165,39 @@ fun ChannelMessageView(
                                 color = MaterialTheme.colorScheme.onSecondary,
                                 modifier = Modifier.align(Alignment.End)
                             )
-
                         }
-
                     }
                 }
             }
-
-
         }
-            Column(
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Surface(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 100.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .wrapContentSize()
+                    .align(
+                        CenterHorizontally
+                    ),
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.tertiary
+
             ) {
-                Surface(
+                Text(
+                    text = "10 October", // TODO: Replace with the actual date
                     modifier = Modifier
-                        .wrapContentSize()
-                        .align(
-                            CenterHorizontally
-                        ),
-                    shape = RoundedCornerShape(12.dp),
-                    color = MaterialTheme.colorScheme.tertiary
+                        .weight(1f)
 
-                ) {
-                    Text(
-                        text = "10 October", // TODO: Replace with the actual date
-                        modifier = Modifier
-                            .weight(1f)
-
-                            .padding(12.dp),
-                        textAlign = TextAlign.Center,
-                        fontSize = 14.sp,
-                        color = MaterialTheme.colorScheme.onTertiary
-                    )
-                }
+                        .padding(12.dp),
+                    textAlign = TextAlign.Center,
+                    fontSize = 14.sp,
+                    color = MaterialTheme.colorScheme.onTertiary
+                )
             }
-
-
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -209,7 +212,7 @@ fun ChannelMessageView(
                 contentDescription = null,
                 modifier = Modifier.size(35.dp)
             )
-            if(isSendIconVisible) textFieldWidth = 300.dp
+            if (isSendIconVisible) textFieldWidth = 300.dp
             MessageTextField(
                 modifier = Modifier
                     .width(textFieldWidth)
@@ -218,12 +221,20 @@ fun ChannelMessageView(
                 onMessageTextChange = { messageText = it }
             )
             val imageResource3 = painterResource((R.drawable.send_icon))
-            if(isSendIconVisible) {
-                Image(
-                    painter = imageResource3,
-                    contentDescription = "Send message",
-                    modifier = Modifier.size(35.dp)
-                )
+            if (isSendIconVisible) {
+                IconButton(
+                    onClick = {
+                        onSendClick(messageText)
+                        messageText = ""
+                    },
+                ) {
+                    Image(
+                        modifier = Modifier
+                            .size(35.dp),
+                        painter = imageResource3,
+                        contentDescription = "Send message",
+                    )
+                }
             }
         }
     }
@@ -235,7 +246,16 @@ fun ChannelMessageViewLayoutPreview() {
     ChannelMessageView(
         onBackClick = {},
         channel = FakeData.channels[0],
-        onChannelNameClick = {}
+        onChannelNameClick = {},
+        onSendClick = {},
+        authenticatedUser = AuthenticatedUser(
+            "",
+            User(
+                1,
+                "username",
+                "display_name"
+            )
+        )
     )
 
 }

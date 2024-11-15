@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.screens.main
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -24,6 +25,7 @@ import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
+import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
@@ -137,7 +139,8 @@ fun MainViewSelector(
                             viewModel.transition(MainViewSelectorState.About)
                         },
                         rowModifier = Modifier
-                            .padding(bottom = 32.dp),
+                            .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
+                            .padding(bottom = 32.dp, top = 16.dp),
                     )
                 }
             }
@@ -174,13 +177,14 @@ fun MainViewSelector(
                         SubscribedChannelsView(
                             currentState.channels ?: emptyList(),
                             onCreateChannelClick = {
-                                viewModel.transition(MainViewSelectorState.CreateChannel(false))
+                                viewModel.transition(MainViewSelectorState.CreateChannel(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onChannelClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.ChannelMessages(
                                         false,
-                                        channel = it
+                                        channel = it,
+                                        authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
                             }
@@ -198,10 +202,10 @@ fun MainViewSelector(
                         }
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
-                                viewModel.transition(MainViewSelectorState.ChangePassword())
+                                viewModel.transition(MainViewSelectorState.ChangePassword(authenticatedUser = currentState.authenticatedUser))
                             },
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             }
                         )
                     }
@@ -239,7 +243,7 @@ fun MainViewSelector(
 
                         CreateChannelView(
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onChannelNameInfoClick = { text ->
                                 alertDialogText = text
@@ -280,11 +284,16 @@ fun MainViewSelector(
                             ChannelMessageView(
                                 channel = currentChannel,
                                 onBackClick = {
-                                    viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                    viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                                 },
                                 onChannelNameClick = {
-                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel))
-                                }
+                                    viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel, authenticatedUser = currentState.authenticatedUser))
+                                },
+                                onSendClick = { messageText ->
+                                    // THIS WILL CHANGE, IF YOU SHIP IT, YOU KEEP IT
+                                    viewModel.sendMessage(currentChannel.channelId, messageText)
+                                },
+                                authenticatedUser = currentState.authenticatedUser
                             )
                         }
                     }
@@ -304,9 +313,12 @@ fun MainViewSelector(
                             ChannelInfoView(
                                 channel = it,
                                 onBackClick = {
-                                    viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it))
+                                    viewModel.transition(MainViewSelectorState.ChannelMessages(channel = it, authenticatedUser = currentState.authenticatedUser))
                                 },
-                                onAddToUserChannelClick = { viewModel.transition(MainViewSelectorState.InvitingUsers(it)) },
+                                onAddToUserChannelClick = { viewModel.transition(MainViewSelectorState.InvitingUsers(
+                                    it,
+                                    authenticatedUser = currentState.authenticatedUser
+                                )) },
                                 onRemoveUser = { userId, channelId ->
                                     confirmationDialogConfirmFunction = {
                                         viewModel.removeUserFromChannel(userId, channelId)
@@ -346,10 +358,10 @@ fun MainViewSelector(
                             user = currentState.user,
                             authenticatedUser = authenticatedUser,
                             onBackClick = {
-                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false))
+                                viewModel.transition(MainViewSelectorState.SubscribedChannels(false, authenticatedUser = currentState.authenticatedUser))
                             },
                             onLogoutClick = { viewModel.logout(onLogout) },
-                            onChangePasswordClick = { viewModel.transition(MainViewSelectorState.ChangePassword()) }
+                            onChangePasswordClick = { viewModel.transition(MainViewSelectorState.ChangePassword(authenticatedUser = currentState.authenticatedUser)) }
                         )
                     }
 
@@ -366,7 +378,7 @@ fun MainViewSelector(
                         val currentChannel = currentState.channel
                         InviteUsersToChannelView(
                             channel = currentChannel,
-                            onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel)) },
+                            onBackClick = { viewModel.transition(MainViewSelectorState.ChannelInfo(currentChannel, authenticatedUser = currentState.authenticatedUser)) },
                             onInviteUserClick = { userId, channelId, permission -> viewModel.inviteUserToChannel(userId, channelId, permission) },
                             users = FakeData.users.filter { user -> currentChannel.users.none { it.userId == user.userId }}
                         )
