@@ -8,12 +8,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import com.leic52dg17.chimp.core.activity.MainActivity
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
-import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
-import com.leic52dg17.chimp.ui.views.LandingView
+import com.leic52dg17.chimp.ui.views.authentication.LandingView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
 import com.leic52dg17.chimp.ui.views.authentication.LoginView

@@ -1,6 +1,5 @@
 package com.leic52dg17.chimp.ui.screens.main
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,16 +22,14 @@ import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
 import com.leic52dg17.chimp.ui.components.dialogs.SharedAlertDialog
 import com.leic52dg17.chimp.ui.components.nav.BottomNavbar
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
-import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
-import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
-import com.leic52dg17.chimp.ui.views.UserInfoView
+import com.leic52dg17.chimp.ui.views.channel.InviteUsersToChannelView
+import com.leic52dg17.chimp.ui.views.user.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
-import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
