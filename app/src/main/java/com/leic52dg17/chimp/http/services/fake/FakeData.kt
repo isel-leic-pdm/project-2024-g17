@@ -34,18 +34,6 @@ object FakeData {
 
     val channelInvitations = mutableListOf<ChannelInvitation>()
 
-//    val channelInvitations = mutableListOf(
-//        ChannelInvitation(
-//            UUID.randomUUID(),
-//            1,
-//            1,
-//            2,
-//            PermissionLevel.RW
-//        )
-//    )
-
-    val userRequests = mutableListOf<UserRequest>()
-
     val channels = mutableListOf(
         Channel(
             channelId = 1,
