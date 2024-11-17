@@ -1,6 +1,6 @@
-package com.leic52dg17.chimp.model.user
+package com.leic52dg17.chimp.domain.model.user
 
-import com.leic52dg17.chimp.model.common.ErrorMessages
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -13,6 +13,9 @@ data class User (
         require(userId > 0) {
             throw IllegalArgumentException(ErrorMessages.ID)
         }
+        require(username.length <= 50) {
+            throw IllegalArgumentException(ErrorMessages.USERNAME_TOO_LONG)
+        }
         require(username.isNotEmpty()) {
             throw IllegalArgumentException(ErrorMessages.USERNAME_EMPTY)
         }
@@ -24,6 +27,9 @@ data class User (
         }
         require(displayName.isNotBlank()) {
             throw IllegalArgumentException(ErrorMessages.DISPLAY_BLANK)
+        }
+        require(displayName.length <= 50) {
+            throw IllegalArgumentException(ErrorMessages.DISPLAY_TOO_LONG)
         }
     }
 }

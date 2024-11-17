@@ -1,6 +1,6 @@
-package com.leic52dg17.chimp.model.user
+package com.leic52dg17.chimp.domain.model.user
 
-import com.leic52dg17.chimp.model.common.ErrorMessages
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import java.util.UUID
 
 data class UserRequest(

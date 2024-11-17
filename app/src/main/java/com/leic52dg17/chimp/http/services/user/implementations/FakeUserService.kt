@@ -2,7 +2,7 @@ package com.leic52dg17.chimp.http.services.user.implementations
 
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.http.services.user.IUserService
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.user.User
 
 class FakeUserService : IUserService {
     override fun getUserById(id: Int): User? {

@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,8 +24,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
