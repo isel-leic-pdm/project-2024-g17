@@ -34,8 +34,7 @@ class FakeChannelService : IChannelService {
             mutableListOf<Message>(),
             mutableListOf(owner),
             isPrivate,
-            channelIconUrl,
-            channelIconContentDescription
+            channelIconUrl
         )
         FakeData.channels.add(newChannel)
         return success(newChannel.channelId)

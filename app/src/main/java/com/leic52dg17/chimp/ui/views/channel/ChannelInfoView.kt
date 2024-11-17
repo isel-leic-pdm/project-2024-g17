@@ -232,7 +232,6 @@ fun ChannelInfoViewPreview() {
                 Message(2, 1, "Hi", BigInteger.valueOf(Instant.now().toEpochMilli())),
                 Message(1, 1, "How are you", BigInteger.valueOf(Instant.now().toEpochMilli()))
             ),
-            channelIconContentDescription = null,
             isPrivate = true,
             ownerId = 1
         ),

@@ -72,7 +72,6 @@ val mockChannelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 1 Icon",
         isPrivate = false,
         ownerId = 2
     ),
@@ -100,7 +99,6 @@ val mockChannelList = listOf(
             )
         ),
         channelIconUrl = "https://picsum.photos/300/300",
-        channelIconContentDescription = "Channel 2 Icon",
         isPrivate = true,
         ownerId = 1
     )
@@ -205,7 +203,7 @@ fun SubscribedChannelsView(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.chimp_blue_final),
-                        contentDescription = channel.channelIconContentDescription,
+                        contentDescription = stringResource(id = R.string.channel_icon_cd_en),
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
                             .size(50.dp)
