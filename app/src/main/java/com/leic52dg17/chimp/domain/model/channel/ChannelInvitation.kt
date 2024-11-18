@@ -1,7 +1,7 @@
-package com.leic52dg17.chimp.model.channel
+package com.leic52dg17.chimp.domain.model.channel
 
-import com.leic52dg17.chimp.model.common.ErrorMessages
-import com.leic52dg17.chimp.model.common.PermissionLevel
+import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import java.util.UUID
 
 data class ChannelInvitation(

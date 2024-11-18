@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.model.common
+package com.leic52dg17.chimp.domain.utils
 
 import java.math.BigInteger
 import java.text.SimpleDateFormat

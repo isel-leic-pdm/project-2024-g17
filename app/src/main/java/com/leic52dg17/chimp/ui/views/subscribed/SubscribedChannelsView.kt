@@ -39,9 +39,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.message.Message
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.message.Message
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.inputs.SearchBar
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder

@@ -6,13 +6,13 @@ import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
 import com.leic52dg17.chimp.http.services.channel.results.ChannelUpdateError
 import com.leic52dg17.chimp.http.services.channel.results.RemoveUserFromChannelResult
 import com.leic52dg17.chimp.http.services.fake.FakeData
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.channel.ChannelInvitation
-import com.leic52dg17.chimp.model.common.ErrorMessages
-import com.leic52dg17.chimp.model.common.PermissionLevel
-import com.leic52dg17.chimp.model.common.failure
-import com.leic52dg17.chimp.model.common.success
-import com.leic52dg17.chimp.model.message.Message
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
+import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
+import com.leic52dg17.chimp.domain.model.common.failure
+import com.leic52dg17.chimp.domain.model.common.success
+import com.leic52dg17.chimp.domain.model.message.Message
 import java.util.UUID
 
 class FakeChannelService : IChannelService {

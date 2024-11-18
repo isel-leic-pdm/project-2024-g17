@@ -2,7 +2,6 @@ package com.leic52dg17.chimp.ui.views.channel
 
 
 import MessageTextField
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,10 +47,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.http.services.fake.FakeData
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.common.formatHours
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.utils.formatHours
+import com.leic52dg17.chimp.domain.model.user.User
 
 
 @Composable

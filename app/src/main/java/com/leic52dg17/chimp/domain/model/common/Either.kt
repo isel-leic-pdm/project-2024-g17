@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.model.common
+package com.leic52dg17.chimp.domain.model.common
 
 sealed class Either<out L, out R> {
     data class Left<out L>(val value: L) : Either<L, Nothing>()
