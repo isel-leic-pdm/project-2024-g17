@@ -1,12 +1,13 @@
-package com.leic52dg17.chimp.model.channel
+package com.leic52dg17.chimp.domain.model.message
 
-import com.leic52dg17.chimp.model.common.ErrorMessages
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import java.math.BigInteger
 
-data class UserChannel(
+data class Message(
     val userId: Int,
     val channelId: Int,
-    val joinedAt: BigInteger
+    val text: String,
+    val createdAt: BigInteger
 ) {
     init {
         require(userId > 0) {
@@ -15,8 +16,8 @@ data class UserChannel(
         require(channelId > 0) {
             throw IllegalArgumentException(ErrorMessages.ID)
         }
-        require(joinedAt > BigInteger.ZERO) {
-            throw IllegalArgumentException(ErrorMessages.JOINED_AT)
+        require(text.isNotEmpty()) {
+            throw IllegalArgumentException(ErrorMessages.TEXT_EMPTY)
         }
     }
 }

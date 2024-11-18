@@ -10,8 +10,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
-import com.leic52dg17.chimp.model.common.Failure
-import com.leic52dg17.chimp.model.common.Success
+import com.leic52dg17.chimp.domain.model.common.Failure
+import com.leic52dg17.chimp.domain.model.common.Success
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import kotlinx.coroutines.launch
 

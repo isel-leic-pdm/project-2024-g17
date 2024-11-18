@@ -1,10 +1,8 @@
 package com.leic52dg17.chimp.core.shared
 
 import android.content.Context
-import android.content.Intent
 import android.content.SharedPreferences
-import com.leic52dg17.chimp.core.activity.AuthenticationActivity
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 

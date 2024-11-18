@@ -6,10 +6,10 @@ import com.leic52dg17.chimp.http.services.message.results.GetChannelMessagesErro
 import com.leic52dg17.chimp.http.services.message.results.GetChannelMessagesResult
 import com.leic52dg17.chimp.http.services.message.results.MessageCreationError
 import com.leic52dg17.chimp.http.services.message.results.MessageCreationResult
-import com.leic52dg17.chimp.model.common.ErrorMessages
-import com.leic52dg17.chimp.model.common.failure
-import com.leic52dg17.chimp.model.common.success
-import com.leic52dg17.chimp.model.message.Message
+import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.common.failure
+import com.leic52dg17.chimp.domain.model.common.success
+import com.leic52dg17.chimp.domain.model.message.Message
 import java.math.BigInteger
 import java.time.Instant
 

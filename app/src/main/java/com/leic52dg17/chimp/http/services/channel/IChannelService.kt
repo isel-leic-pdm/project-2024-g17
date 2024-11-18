@@ -2,8 +2,8 @@ package com.leic52dg17.chimp.http.services.channel
 
 import com.leic52dg17.chimp.http.services.channel.results.ChannelCreationResult
 import com.leic52dg17.chimp.http.services.channel.results.RemoveUserFromChannelResult
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.common.PermissionLevel
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import java.util.UUID
 
 interface IChannelService {

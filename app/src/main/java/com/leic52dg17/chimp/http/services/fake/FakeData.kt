@@ -1,11 +1,10 @@
 package com.leic52dg17.chimp.http.services.fake
 
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.channel.ChannelInvitation
-import com.leic52dg17.chimp.model.channel.UserChannel
-import com.leic52dg17.chimp.model.message.Message
-import com.leic52dg17.chimp.model.user.User
-import com.leic52dg17.chimp.model.user.UserRequest
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
+import com.leic52dg17.chimp.domain.model.channel.UserChannel
+import com.leic52dg17.chimp.domain.model.message.Message
+import com.leic52dg17.chimp.domain.model.user.User
 import java.math.BigInteger
 
 object FakeData {

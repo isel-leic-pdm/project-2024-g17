@@ -1,6 +1,6 @@
-package com.leic52dg17.chimp.model.auth
+package com.leic52dg17.chimp.domain.model.auth
 
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.user.User
 import kotlinx.serialization.Serializable
 
 @Serializable

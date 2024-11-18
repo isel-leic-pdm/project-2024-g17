@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.model.common
+package com.leic52dg17.chimp.domain.common
 
 object Placeholders {
     object Channel {

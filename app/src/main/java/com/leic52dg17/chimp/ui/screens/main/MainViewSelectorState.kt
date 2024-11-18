@@ -3,9 +3,9 @@ package com.leic52dg17.chimp.ui.screens.main
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 
 sealed interface MainViewSelectorState {

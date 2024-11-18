@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddReaction
 import androidx.compose.material.icons.filled.AdminPanelSettings
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.Button
@@ -36,10 +35,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.message.Message
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.message.Message
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder

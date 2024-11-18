@@ -36,9 +36,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.http.services.fake.FakeData
-import com.leic52dg17.chimp.model.channel.Channel
-import com.leic52dg17.chimp.model.common.PermissionLevel
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.SearchBar
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder

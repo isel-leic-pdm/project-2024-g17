@@ -8,7 +8,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.leic52dg17.chimp.model.user.User
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 val mockList = listOf(
