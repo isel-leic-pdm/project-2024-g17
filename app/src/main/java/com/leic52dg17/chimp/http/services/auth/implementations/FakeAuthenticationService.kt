@@ -8,7 +8,6 @@ import com.leic52dg17.chimp.http.services.auth.results.UserLoginResult
 import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.domain.model.common.Either
 import com.leic52dg17.chimp.domain.model.common.failure
 import com.leic52dg17.chimp.domain.model.common.success
 import com.leic52dg17.chimp.domain.model.user.User
