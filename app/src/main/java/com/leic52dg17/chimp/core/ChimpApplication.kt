@@ -8,7 +8,9 @@ import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelSer
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.http.services.user.IUserService
-import com.leic52dg17.chimp.http.services.user.implementations.FakeUserService
+import com.leic52dg17.chimp.http.services.user.implementations.UserService
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
 
 const val TAG = "CHIMP"
 
@@ -20,6 +22,16 @@ interface DependenciesContainer {
 }
 
 class ChimpApplication : Application(), DependenciesContainer {
+    val client = HttpClient(OkHttp) {
+        install(JsonFeature) {
+            serializer = KotlinxSerializer(Json {
+                ignoreUnknownKeys = true
+                prettyPrint = true
+                isLenient = true
+            })
+        }
+    }
+
     override val channelService: IChannelService by lazy {
         FakeChannelService()
     }
@@ -30,6 +42,6 @@ class ChimpApplication : Application(), DependenciesContainer {
         FakeAuthenticationService()
     }
     override val userService: IUserService by lazy {
-        FakeUserService()
+        UserService()
     }
 }
