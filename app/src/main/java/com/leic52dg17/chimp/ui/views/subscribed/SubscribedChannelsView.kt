@@ -53,6 +53,7 @@ val mockChannelList = listOf(
         displayName = "very very long name",
         messages = listOf(
             Message(
+                id = 1,
                 userId = 1,
                 channelId = 1,
                 text = "Message 1",
@@ -80,6 +81,7 @@ val mockChannelList = listOf(
         displayName = "short",
         messages = listOf(
             Message(
+                id = 2,
                 userId = 1,
                 channelId = 1,
                 text = "Message 1",

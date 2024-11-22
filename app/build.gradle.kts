@@ -16,7 +16,7 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "com.leic52dg17.chimp.utils.ChIMPInstrumentationTestRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
