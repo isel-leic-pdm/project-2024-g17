@@ -9,17 +9,18 @@ import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.common.Either
+import com.leic52dg17.chimp.domain.model.common.failure
 import com.leic52dg17.chimp.domain.model.common.success
 import com.leic52dg17.chimp.domain.model.user.User
 
 class FakeAuthenticationService : IAuthenticationService {
     override suspend fun loginUser(username: String, password: String): UserLoginResult {
         val user = FakeData.users.firstOrNull { it.username == username }
-        if(user == null) return Either.Left(
+        if(user == null) return failure(
             UserLoginError.AuthenticationError("User could not be found.")
         )
 
-        return Either.Right(
+        return success(
             AuthenticatedUser(
                 "example_token",
                 user
