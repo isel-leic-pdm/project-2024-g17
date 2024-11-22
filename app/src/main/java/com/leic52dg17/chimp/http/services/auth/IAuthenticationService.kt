@@ -1,8 +1,8 @@
 package com.leic52dg17.chimp.http.services.auth
 
-import com.leic52dg17.chimp.http.services.auth.results.UserChangePasswordResult
 import com.leic52dg17.chimp.http.services.auth.results.UserLoginResult
 import com.leic52dg17.chimp.http.services.auth.results.UserSignUpResult
+import com.leic52dg17.chimp.http.services.auth.results.UserChangePasswordResult
 import com.leic52dg17.chimp.http.services.auth.results.UserForgotPasswordResult
 
 interface IAuthenticationService {
