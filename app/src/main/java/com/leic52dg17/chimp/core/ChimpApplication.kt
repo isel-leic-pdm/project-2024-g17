@@ -12,16 +12,16 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.implementations.SSEService
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.http.services.user.implementations.UserService
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.header
-import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.serialization.json.Json
 
 const val TAG = "CHIMP"
 
@@ -72,5 +72,4 @@ class ChimpApplication : Application(), DependenciesContainer {
     override val sseService: ISSEService by lazy {
         SSEService(client, sseScope)
     }
-
 }

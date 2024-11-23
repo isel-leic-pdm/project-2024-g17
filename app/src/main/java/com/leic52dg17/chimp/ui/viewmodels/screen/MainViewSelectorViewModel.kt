@@ -10,7 +10,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
-import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.Failure
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
@@ -400,6 +399,7 @@ class MainViewSelectorViewModel(
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, e.message ?: "Exception thrown in getUserProfile with user id $id")
                 transition(
                     MainViewSelectorState.SubscribedChannels(
                         true,
