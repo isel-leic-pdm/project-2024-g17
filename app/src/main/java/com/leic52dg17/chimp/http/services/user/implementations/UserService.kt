@@ -12,7 +12,7 @@ import java.net.URL
 
 class UserService(private val client: HttpClient): IUserService{
     override suspend fun getUserById(id: Int): User {
-        val source = URL(ApiEndpoints.Users.GET_ALL)
+        val source = URL(ApiEndpoints.Users.GET_BY_ID.replace("{id}", id.toString()))
 
         return client.get(source) { header("accept", "application/json") }
             .body<UserDto>()

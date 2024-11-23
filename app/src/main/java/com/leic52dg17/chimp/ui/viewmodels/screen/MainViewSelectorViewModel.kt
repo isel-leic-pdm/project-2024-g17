@@ -333,6 +333,7 @@ class MainViewSelectorViewModel(
                     )
                 }
             } catch (e: Exception) {
+                Log.e(TAG, e.message ?: "Exception thrown in getUserProfile with user id $id")
                 transition(
                     MainViewSelectorState.SubscribedChannels(
                         true,

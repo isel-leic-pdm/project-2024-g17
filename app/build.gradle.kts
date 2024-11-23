@@ -81,4 +81,7 @@ dependencies {
     implementation(libs.ktor.client.okhttp)
     implementation(libs.ktor.serialization.kotlinx.json)
     implementation(libs.kotlinx.serialization.json)
+
+    // DOTENV
+    implementation("io.github.cdimascio:java-dotenv:5.2.2")
 }
