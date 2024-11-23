@@ -28,7 +28,7 @@ class FakeMessageService : IMessageService {
         val channel = FakeData.channels.firstOrNull { it.channelId == channelId }
         if (channel == null) return failure(MessageCreationError(ErrorMessages.CHANNEL_NOT_FOUND))
 
-        val newMessage = Message(senderId, channelId, messageText, BigInteger(Instant.now().epochSecond.toString()))
+        val newMessage = Message(channel.messages.size + 1,senderId, channelId, messageText, BigInteger(Instant.now().epochSecond.toString()))
         val updatedMessages = channel.messages + newMessage
         val updatedChannel = channel.copy(messages = updatedMessages)
 

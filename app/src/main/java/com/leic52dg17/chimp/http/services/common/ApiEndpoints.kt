@@ -10,4 +10,8 @@ object ApiEndpoints {
         val GET_ALL = "$BASE_URL/users"
         val GET_BY_ID = "$BASE_URL/users/{id}"
     }
+
+    object Chat {
+        val LISTEN = "$BASE_URL/chat/listen"
+    }
 }

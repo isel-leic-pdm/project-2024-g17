@@ -10,29 +10,28 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
-import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.Failure
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.common.Success
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.message.IMessageService
+import com.leic52dg17.chimp.http.services.sse.ISSEService
+import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class MainViewSelectorViewModel(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
     private val userService: IUserService,
-    private val context: Context
+    private val sseService: ISSEService,
+    private val context: Context,
+    initialState: MainViewSelectorState = MainViewSelectorState.Initialized(SharedPreferencesHelper.getAuthenticatedUser(context))
 ) : ViewModel() {
-    var state: MainViewSelectorState by mutableStateOf(
-        MainViewSelectorState.SubscribedChannels(
-            false,
-            authenticatedUser = AuthenticatedUser()
-        )
-    )
+    var state: MainViewSelectorState by mutableStateOf(initialState)
 
     fun transition(newState: MainViewSelectorState) {
         state = newState
@@ -41,6 +40,21 @@ class MainViewSelectorViewModel(
     /**
      *  Channel functions
      */
+
+    private val eventFlow = MutableSharedFlow<Events>()
+
+    fun getEventStream() {
+        viewModelScope.launch {
+            sseService.listen(eventFlow)
+            eventFlow.collect { event ->
+                Log.i("MainViewSelectorViewModel", "Received event: $event")
+            }
+        }
+    }
+
+    private fun stopEventStream() {
+        sseService.stopListening()
+    }
 
     fun loadChannelMessages() {
         val channel = (state as? MainViewSelectorState.ChannelMessages)?.channel
@@ -246,6 +260,51 @@ class MainViewSelectorViewModel(
         }
     }
 
+    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
+        Log.i(TAG, "Inviting user $userId to channel $channelId")
+        val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+        val currentUser = authenticatedUser?.user
+
+        if (currentUser == null) {
+            MainViewSelectorState.ChannelInfo(
+                showDialog = true,
+                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
+                authenticatedUser = authenticatedUser
+            )
+            return
+        }
+
+        viewModelScope.launch {
+            try {
+                channelService.createChannelInvitation(
+                    channelId,
+                    currentUser.userId,
+                    userId,
+                    permission
+                )
+                val channel = channelService.getChannelById(channelId)
+                if (channel != null) {
+                    transition(
+                        MainViewSelectorState.InvitingUsers(
+                            channel,
+                            true,
+                            "User invited!",
+                            authenticatedUser = authenticatedUser
+                        )
+                    )
+                }
+            } catch (e: Exception) {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        e.message,
+                        authenticatedUser = authenticatedUser
+                    )
+                )
+            }
+        }
+    }
+
     fun leaveChannel(
         userId: Int?,
         channel: Channel
@@ -301,12 +360,19 @@ class MainViewSelectorViewModel(
         }
     }
 
+    /**
+     * De-authentication functions
+     */
     fun logout(onLogout: () -> Unit) {
         transition(MainViewSelectorState.Loading)
         SharedPreferencesHelper.logout(context)
+        stopEventStream()
         onLogout()
     }
 
+    /**
+     * User functions
+     */
     fun getUserProfile(id: Int) {
         Log.i(TAG, "Getting user profile for user with ID: $id")
         transition(MainViewSelectorState.Loading)
@@ -345,6 +411,9 @@ class MainViewSelectorViewModel(
         }
     }
 
+    /**
+     * Message functions
+     */
     fun sendMessage(channelId: Int, messageText: String) {
         transition(MainViewSelectorState.Loading)
         val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
@@ -391,8 +460,6 @@ class MainViewSelectorViewModel(
                 }
 
                 is Success -> {
-                    Log.i("DEBUG", "Success")
-                    Log.i("DEBUG", "${channel?.messages}")
                     if (channel != null) {
                         val updatedChannel = channelService.getChannelById(channel.channelId)
                         transition(
@@ -416,52 +483,6 @@ class MainViewSelectorViewModel(
         }
     }
 
-
-    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
-        Log.i(TAG, "Inviting user $userId to channel $channelId")
-        val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
-        val currentUser = authenticatedUser?.user
-
-        if (currentUser == null) {
-            MainViewSelectorState.ChannelInfo(
-                showDialog = true,
-                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
-                authenticatedUser = authenticatedUser
-            )
-            return
-        }
-
-        viewModelScope.launch {
-            try {
-                channelService.createChannelInvitation(
-                    channelId,
-                    currentUser.userId,
-                    userId,
-                    permission
-                )
-                val channel = channelService.getChannelById(channelId)
-                if (channel != null) {
-                    transition(
-                        MainViewSelectorState.InvitingUsers(
-                            channel,
-                            true,
-                            "User invited!",
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
-                }
-            } catch (e: Exception) {
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        e.message,
-                        authenticatedUser = authenticatedUser
-                    )
-                )
-            }
-        }
-    }
-
     companion object {
         const val TAG = "MAIN_VIEW_SELECTOR_VIEW_MODEL"
     }
@@ -472,6 +493,7 @@ class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
     private val userService: IUserService,
+    private val sseService: ISSEService,
     private val context: Context
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -479,7 +501,8 @@ class MainViewSelectorViewModelFactory(
             channelService,
             messageService,
             userService,
-            context,
+            sseService,
+            context
         ) as T
     }
 }
