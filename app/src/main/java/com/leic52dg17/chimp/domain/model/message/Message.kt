@@ -4,6 +4,7 @@ import com.leic52dg17.chimp.domain.common.ErrorMessages
 import java.math.BigInteger
 
 data class Message(
+    val id: Int,
     val userId: Int,
     val channelId: Int,
     val text: String,

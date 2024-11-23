@@ -31,10 +31,12 @@ class MainActivity : ComponentActivity() {
                     (application as ChimpApplication).channelService,
                     (application as ChimpApplication).messageService,
                     (application as ChimpApplication).userService,
+                    (application as ChimpApplication).sseService,
                     applicationContext
                 )
             }
         )
+        mainViewSelectorViewModel.getEventStream()
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {

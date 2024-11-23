@@ -17,4 +17,5 @@ object ErrorMessages {
     const val USERNAME_EMPTY = "Username cannot be empty."
     const val USERNAME_BLANK = "Username cannot be blank."
     const val USERNAME_TOO_LONG = "Username length cannot exceed 50 characters."
+    const val LISTEN_JOB_ALREADY_ACTIVE = "Listen job is still active, and thus a new one cannot be started."
 }
