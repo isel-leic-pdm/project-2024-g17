@@ -5,6 +5,8 @@ import androidx.test.core.app.ApplicationProvider
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
 import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
+import com.leic52dg17.chimp.http.services.sse.ISSEService
+import com.leic52dg17.chimp.http.services.sse.implementations.SSEService
 import com.leic52dg17.chimp.http.services.user.implementations.FakeUserService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
@@ -18,7 +20,9 @@ class MainViewSelectorViewModelTests {
     private val channelService = FakeChannelService()
     private val messageService = FakeMessageService()
     private val userService = FakeUserService()
+    private val isseService : ISSEService = TODO() //SSEService(_ , _)
     private val context: Context = ApplicationProvider.getApplicationContext()
+
 
     @Before
     fun setup() {
@@ -26,6 +30,7 @@ class MainViewSelectorViewModelTests {
             channelService,
             messageService,
             userService,
+            isseService,
             context
         )
     }

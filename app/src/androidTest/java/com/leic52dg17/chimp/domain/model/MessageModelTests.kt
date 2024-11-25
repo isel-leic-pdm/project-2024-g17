@@ -10,6 +10,7 @@ class MessageModelTests {
         Message(
             1,
             1,
+            1,
             MESSAGE_TEXT,
             TIMESTAMP
         )
@@ -19,6 +20,7 @@ class MessageModelTests {
     fun instantiation_fails_with_zero_user_id() {
         Message(
             0,
+            1,
             1,
             MESSAGE_TEXT,
             TIMESTAMP
@@ -30,6 +32,7 @@ class MessageModelTests {
         Message(
             1,
             0,
+            1,
             MESSAGE_TEXT,
             TIMESTAMP
         )
@@ -38,6 +41,7 @@ class MessageModelTests {
     @Test(expected = IllegalArgumentException::class)
     fun instantiation_fails_with_empty_text() {
         Message(
+            1,
             1,
             1,
             EMPTY_TEXT,
