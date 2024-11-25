@@ -59,6 +59,83 @@ object FakeData {
             channelIconUrl = "https://fake.com/not-real",
             isPrivate = false,
             ownerId = 1
+        ),
+        Channel(
+            channelId = 2,
+            displayName = "Channel 2",
+            messages = listOf(
+                Message(
+                    3,
+                    2,
+                    "Welcome to Channel 2",
+                    BigInteger("21031239131231400")
+                )
+            ),
+            users = listOf(
+                users[1],
+                users[2],
+                users[3]
+            ),
+            channelIconUrl = "https://fake.com/not-real",
+            isPrivate = true,
+            ownerId = 2
+        ),
+        Channel(
+            channelId = 3,
+            displayName = "Channel 3",
+            messages = listOf(
+                Message(
+                    4,
+                    3,
+                    "Channel 3 is live",
+                    BigInteger("21031239131231500")
+                )
+            ),
+            users = listOf(
+                users[0],
+                users[3]
+            ),
+            channelIconUrl = "https://fake.com/not-real",
+            isPrivate = false,
+            ownerId = 3
+        ),
+        Channel(
+            channelId = 4,
+            displayName = "Channel 4",
+            messages = listOf(
+                Message(
+                    5,
+                    4,
+                    "Channel 4 announcement",
+                    BigInteger("21031239131231600")
+                )
+            ),
+            users = listOf(
+                users[2],
+                users[3]
+            ),
+            channelIconUrl = "https://fake.com/not-real",
+            isPrivate = true,
+            ownerId = 4
+        ),
+        Channel(
+            channelId = 5,
+            displayName = "Channel 5",
+            messages = listOf(
+                Message(
+                    6,
+                    5,
+                    "Welcome to Channel 5",
+                    BigInteger("21031239131231700")
+                )
+            ),
+            users = listOf(
+                users[0],
+                users[1]
+            ),
+            channelIconUrl = "https://fake.com/not-real",
+            isPrivate = false,
+            ownerId = 1
         )
     )
 

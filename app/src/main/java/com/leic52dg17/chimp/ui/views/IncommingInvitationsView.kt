@@ -10,6 +10,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.http.services.fake.FakeData
+import com.leic52dg17.chimp.http.services.fake.FakeData.channels
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import java.util.UUID
 
@@ -56,7 +57,7 @@ fun IncommingInvitationsView(
                             .padding(16.dp)
                     ) {
                         // Text that GETS channel name through channelId
-                        Text("Channel Name")
+                        Text("Channel Name: ${channels.find { it.channelId == invitation.channelId }?.displayName}")
                         Text("Sender: ${invitation.senderId}")
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
