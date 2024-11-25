@@ -88,7 +88,7 @@ fun UserInfoView(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            if (authenticatedUser?.user?.userId == user.userId) {
+            if (authenticatedUser?.user?.id == user.id) {
                 Button(
                     onClick = onLogoutClick,
                     colors = ButtonDefaults.buttonColors(

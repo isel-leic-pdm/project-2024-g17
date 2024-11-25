@@ -122,7 +122,7 @@ fun MainViewSelector(
                             selectedNavIcon = SelectedNavIcon.Profile
                             val currentUser = authenticatedUser?.user
                             if (currentUser != null) {
-                                viewModel.getUserProfile(currentUser.userId)
+                                viewModel.getUserProfile(currentUser.id)
                             }
                         },
                         onClickMessages = {
@@ -155,6 +155,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.Initialized -> {
                         val currentState = (viewModel.state as MainViewSelectorState.Initialized)
                         LaunchedEffect(Unit) {
+                            viewModel.getEventStream()
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = currentState.authenticatedUser
@@ -282,6 +283,8 @@ fun MainViewSelector(
                         isNavBarShown = false
                         val currentState =
                             (viewModel.state as MainViewSelectorState.ChannelMessages)
+                        val currentChannel = currentState.channel
+
                         LaunchedEffect(Unit) {
                             viewModel.loadChannelMessages()
                         }
@@ -290,7 +293,6 @@ fun MainViewSelector(
                                 ?: stringResource(id = R.string.generic_error_en)
                             handleSharedAlertDialogVisibilitySwitch()
                         }
-                        val currentChannel = currentState.channel
                         if (currentChannel != null) {
                             ChannelMessageView(
                                 channel = currentChannel,
@@ -365,7 +367,7 @@ fun MainViewSelector(
                                 onLeaveChannelClick = {
                                     confirmationDialogConfirmFunction = {
                                         viewModel.leaveChannel(
-                                            currentState.authenticatedUser?.user?.userId,
+                                            currentState.authenticatedUser?.user?.id,
                                             it
                                         )
                                         handleConfirmationDialogVisibilitySwitch()
@@ -439,7 +441,7 @@ fun MainViewSelector(
                                     permission
                                 )
                             },
-                            users = FakeData.users.filter { user -> currentChannel.users.none { it.userId == user.userId } }
+                            users = FakeData.users.filter { user -> currentChannel.users.none { it.id == user.id } }
                         )
                     }
                 }

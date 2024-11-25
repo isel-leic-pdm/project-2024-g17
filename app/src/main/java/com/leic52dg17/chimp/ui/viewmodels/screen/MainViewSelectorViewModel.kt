@@ -20,7 +20,6 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 
 class MainViewSelectorViewModel(
@@ -29,7 +28,11 @@ class MainViewSelectorViewModel(
     private val userService: IUserService,
     private val sseService: ISSEService,
     private val context: Context,
-    initialState: MainViewSelectorState = MainViewSelectorState.Initialized(SharedPreferencesHelper.getAuthenticatedUser(context))
+    initialState: MainViewSelectorState = MainViewSelectorState.Initialized(
+        SharedPreferencesHelper.getAuthenticatedUser(
+            context
+        )
+    )
 ) : ViewModel() {
     var state: MainViewSelectorState by mutableStateOf(initialState)
 
@@ -40,13 +43,46 @@ class MainViewSelectorViewModel(
     /**
      *  Channel functions
      */
+    private fun handleIncomingEvent(event: Events) {
+        when (event) {
+            is Events.ChannelMessage -> {
+                when (state) {
+                    is MainViewSelectorState.SubscribedChannels -> {
+                        val updatedChannels = (state as MainViewSelectorState.SubscribedChannels).channels?.map { channel ->
+                            if (channel.channelId == event.message.channelId) {
+                                channel.copy(messages = channel.messages + event.message)
+                            } else {
+                                channel
+                            }
+                        }
+                        transition((state as MainViewSelectorState.SubscribedChannels).copy(channels = updatedChannels))
+                    }
 
-    private val eventFlow = MutableSharedFlow<Events>()
+                    is MainViewSelectorState.ChannelMessages -> {
+                        val channel = (state as MainViewSelectorState.ChannelMessages).channel
+                        if(channel == null) {
+                            transition((state as MainViewSelectorState.ChannelMessages).copy(showDialog = true, dialogMessage = ErrorMessages.CHANNEL_NOT_FOUND))
+                        } else {
+                            val updatedChannel: Channel = if(event.message.channelId == channel.channelId) {
+                                channel.copy(messages = channel.messages + event.message)
+                            } else {
+                                channel
+                            }
+                            transition((state as MainViewSelectorState.ChannelMessages).copy(channel = updatedChannel))
+                        }
+                    }
+                    else -> {}
+                }
+            }
+
+            is Events.Invitation -> TODO()
+        }
+    }
 
     fun getEventStream() {
         viewModelScope.launch {
-            sseService.listen(eventFlow)
-            eventFlow.collect { event ->
+            sseService.eventFlow.collect { event ->
+                handleIncomingEvent(event)
                 Log.i("MainViewSelectorViewModel", "Received event: $event")
             }
         }
@@ -135,7 +171,7 @@ class MainViewSelectorViewModel(
                 )
                 return@launch
             }
-            val channels = channelService.getUserSubscribedChannels(currentUser.userId)
+            val channels = channelService.getUserSubscribedChannels(currentUser.id)
             transition(
                 MainViewSelectorState.SubscribedChannels(
                     false,
@@ -199,7 +235,7 @@ class MainViewSelectorViewModel(
                         is Success -> {
                             transition(MainViewSelectorState.Loading)
                             val channels =
-                                channelService.getUserSubscribedChannels(currentUser.userId)
+                                channelService.getUserSubscribedChannels(currentUser.id)
                             transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     false,
@@ -278,7 +314,7 @@ class MainViewSelectorViewModel(
             try {
                 channelService.createChannelInvitation(
                     channelId,
-                    currentUser.userId,
+                    currentUser.id,
                     userId,
                     permission
                 )
@@ -381,7 +417,7 @@ class MainViewSelectorViewModel(
             try {
                 val user = userService.getUserById(id)
                 if (user != null) {
-                    Log.i(TAG, "Fetched user profile for user with ID: ${user.userId}")
+                    Log.i(TAG, "Fetched user profile for user with ID: ${user.id}")
                     transition(
                         MainViewSelectorState.UserInfo(
                             user,
@@ -444,7 +480,7 @@ class MainViewSelectorViewModel(
                 messageService.createMessageInChannel(
                     messageText,
                     channelId,
-                    currentUser.userId
+                    currentUser.id
                 )
 
             when (createMessageResult) {

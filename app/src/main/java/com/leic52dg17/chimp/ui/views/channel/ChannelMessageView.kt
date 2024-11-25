@@ -125,15 +125,15 @@ fun ChannelMessageView(
             contentPadding = PaddingValues(bottom = 256.dp)
         ) {
             items(channel.messages) { message ->
-                val backgroundColor = if (message.userId == authenticatedUser?.user?.userId) {
+                val backgroundColor = if (message.userId == authenticatedUser?.user?.id) {
                     MaterialTheme.colorScheme.primary
                 } else {
                     MaterialTheme.colorScheme.secondary
                 }
                 val horizontalArrangement =
-                    if (message.userId == authenticatedUser?.user?.userId) Arrangement.End else Arrangement.Start
+                    if (message.userId == authenticatedUser?.user?.id) Arrangement.End else Arrangement.Start
 
-                val paddingVal = if (message.userId == authenticatedUser?.user?.userId) {
+                val paddingVal = if (message.userId == authenticatedUser?.user?.id) {
                     PaddingValues(end = 10.dp, start = 40.dp)
                 } else {
                     PaddingValues(start = 10.dp, end = 40.dp)

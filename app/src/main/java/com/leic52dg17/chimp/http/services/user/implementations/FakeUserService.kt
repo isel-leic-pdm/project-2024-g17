@@ -6,7 +6,7 @@ import com.leic52dg17.chimp.domain.model.user.User
 
 class FakeUserService : IUserService {
     override suspend fun getUserById(id: Int): User? {
-        return FakeData.users.firstOrNull { it.userId == id }
+        return FakeData.users.firstOrNull { it.id == id }
     }
 
     override suspend fun getAllUsers(): List<User> {

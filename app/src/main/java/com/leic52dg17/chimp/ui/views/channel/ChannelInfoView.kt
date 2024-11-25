@@ -126,7 +126,7 @@ fun ChannelInfoView(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp)
-                                .clickable(onClick = { onUserClick(user.userId) })
+                                .clickable(onClick = { onUserClick(user.id) })
                                 .bottomBorder(0.2.dp, MaterialTheme.colorScheme.secondary)
                         ) {
                             Row(
@@ -145,7 +145,7 @@ fun ChannelInfoView(
                                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                                             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                         )
-                                        if (authenticatedUser?.user?.userId == user.userId) {
+                                        if (authenticatedUser?.user?.id == user.id) {
                                             Icon(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp),
@@ -162,10 +162,10 @@ fun ChannelInfoView(
                                     )
                                 }
                                 Column {
-                                    if (authenticatedUser?.user?.userId != user.userId && authenticatedUser?.user?.userId == channel.ownerId) {
+                                    if (authenticatedUser?.user?.id != user.id && authenticatedUser?.user?.id == channel.ownerId) {
                                         IconButton(
                                             onClick = {
-                                                onRemoveUser(user.userId, channel.channelId)
+                                                onRemoveUser(user.id, channel.channelId)
                                             }) {
                                             Icon(
                                                 imageVector = Icons.Filled.Remove,
@@ -179,7 +179,7 @@ fun ChannelInfoView(
                     }
                 }
                 Column {
-                    if (authenticatedUser?.user?.userId == channel.ownerId) {
+                    if (authenticatedUser?.user?.id == channel.ownerId) {
                         Button(
                             onClick = onAddToUserChannelClick,
                             colors = ButtonDefaults.buttonColors(

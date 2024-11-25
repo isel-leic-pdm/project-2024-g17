@@ -5,12 +5,12 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class User (
-    val userId: Int,
+    val id: Int,
     val username: String,
     val displayName: String
 ) {
     init {
-        require(userId > 0) {
+        require(id > 0) {
             throw IllegalArgumentException(ErrorMessages.ID)
         }
         require(username.length <= 50) {

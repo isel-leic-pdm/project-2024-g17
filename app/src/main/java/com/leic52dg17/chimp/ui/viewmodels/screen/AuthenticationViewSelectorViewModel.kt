@@ -44,7 +44,7 @@ class AuthenticationViewSelectorViewModel(
                     is Success -> {
                         Log.i(
                             TAG,
-                            "Saving user with ID:${result.value.user?.userId} as authenticated user"
+                            "Saving user with ID:${result.value.user?.id} as authenticated user"
                         )
                         SharedPreferencesHelper.saveAuthenticatedUser(context, result.value)
                         val authenticatedUser =
@@ -54,7 +54,7 @@ class AuthenticationViewSelectorViewModel(
                             TAG,
                             "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!"
                         )
-                        else Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.userId}")
+                        else Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.id}")
 
                         onAuthenticate()
                         transition(AuthenticationViewSelectorState.Authenticated)

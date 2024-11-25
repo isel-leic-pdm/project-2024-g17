@@ -33,6 +33,8 @@ class SSEService(
     private val scope: CoroutineScope,
 ) : ISSEService {
 
+    override val eventFlow = MutableSharedFlow<Events>()
+
     private var sseJob: Job? = null
     lateinit var channel: ByteReadChannel
     private val json = Json {
@@ -46,7 +48,7 @@ class SSEService(
         }
     }
 
-    override fun listen(eventFlow: MutableSharedFlow<Events>): SSEServiceResult {
+    override fun listen(): SSEServiceResult {
         if (sseJob?.isActive == true) return failure(SSEServiceError(ErrorMessages.LISTEN_JOB_ALREADY_ACTIVE))
 
         sseJob = scope.launch {
@@ -63,7 +65,7 @@ class SSEService(
                 }
 
             } catch (e: Exception) {
-                Log.i("SSE_SERVICE", e.message ?: "")
+                Log.i("SSE_SERVICE_SSE_SCOPE", e.message ?: "")
                 return@launch
             }
         }
