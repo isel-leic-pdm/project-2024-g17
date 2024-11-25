@@ -3,9 +3,11 @@ package com.leic52dg17.chimp.http.services.fake
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.channel.UserChannel
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
 import java.math.BigInteger
+import java.util.UUID
 
 object FakeData {
     val users = mutableListOf(
@@ -30,8 +32,6 @@ object FakeData {
             "User 4"
         )
     )
-
-    val channelInvitations = mutableListOf<ChannelInvitation>()
 
     val channels = mutableListOf(
         Channel(
@@ -77,6 +77,45 @@ object FakeData {
             3,
             1,
             BigInteger("1603999100")
+        )
+    )
+    val channelInvitations = mutableListOf<ChannelInvitation>()
+
+    val invitations = mutableListOf(
+        ChannelInvitation(
+            invitationId = UUID.randomUUID(),
+            channelId = 1,
+            senderId = 2,
+            receiverId = 1,
+            permissionLevel = PermissionLevel.RW
+        ),
+        ChannelInvitation(
+            invitationId = UUID.randomUUID(),
+            channelId = 2,
+            senderId = 2,
+            receiverId = 1,
+            permissionLevel = PermissionLevel.RW
+        ),
+        ChannelInvitation(
+            invitationId = UUID.randomUUID(),
+            channelId = 3,
+            senderId = 3,
+            receiverId = 1,
+            permissionLevel = PermissionLevel.RW
+        ),
+        ChannelInvitation(
+            invitationId = UUID.randomUUID(),
+            channelId = 4,
+            senderId = 4,
+            receiverId = 1,
+            permissionLevel = PermissionLevel.RW
+        ),
+        ChannelInvitation(
+            invitationId = UUID.randomUUID(),
+            channelId = 5,
+            senderId = 1,
+            receiverId = 1,
+            permissionLevel = PermissionLevel.RW
         )
     )
 }
