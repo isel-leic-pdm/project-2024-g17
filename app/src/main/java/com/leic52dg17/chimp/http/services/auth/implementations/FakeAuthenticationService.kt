@@ -21,7 +21,7 @@ class FakeAuthenticationService : IAuthenticationService {
 
         return Either.Right(
             AuthenticatedUser(
-                "-EUftA2ObV7_HbolVzL5JUEP5KMpn8XSTA-YPKWTEgI=",
+                "oLgxYQkaGLyoUGVnunD6XLD5TXDVa1EDDEMrdkh7bTE=",
                 user
             )
         )

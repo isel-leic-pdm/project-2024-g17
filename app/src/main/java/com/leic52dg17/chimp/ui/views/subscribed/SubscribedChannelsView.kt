@@ -62,12 +62,12 @@ val mockChannelList = listOf(
         ),
         users = listOf(
             User(
-                userId = 1,
+                id = 1,
                 username = "user1",
                 displayName = "User 1"
             ),
             User(
-                userId = 2,
+                id = 2,
                 username = "user2",
                 displayName = "User 2"
             )
@@ -90,12 +90,12 @@ val mockChannelList = listOf(
         ),
         users = listOf(
             User(
-                userId = 1,
+                id = 1,
                 username = "user1",
                 displayName = "User 1"
             ),
             User(
-                userId = 2,
+                id = 2,
                 username = "user2",
                 displayName = "User 2"
             )

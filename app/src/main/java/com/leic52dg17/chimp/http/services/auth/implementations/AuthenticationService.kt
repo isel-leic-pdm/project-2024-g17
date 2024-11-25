@@ -35,13 +35,14 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         val requestBody = GetTokenRequest(username, password)
 
         val response = client.post(source) {
-            header("accept", "application/json")
-            header("content-type", "application/json")
+            header("Accept", "application/json")
+            header("Content-type", "application/json")
             setBody(requestBody)
         }
 
         if (!response.status.isSuccess()) {
             Log.e(TAG, "Error logging in user: ${response.status}")
+            Log.e(TAG, "Response: $response")
             return failure(UserLoginError.AuthenticationError("Invalid credentials"))
         }
 

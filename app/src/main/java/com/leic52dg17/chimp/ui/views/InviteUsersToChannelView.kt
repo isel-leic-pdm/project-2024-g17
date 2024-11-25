@@ -58,7 +58,7 @@ fun InviteUsersToChannelView(
         searchValue = input
         filteredUsers = users.filter { user ->
             user.displayName.contains(searchValue, ignoreCase = true) &&
-                    channel.users.none { channelUser -> channelUser.userId == user.userId }
+                    channel.users.none { channelUser -> channelUser.id == user.id }
         }
     }
 
@@ -135,7 +135,7 @@ fun InviteUsersToChannelView(
                             DropdownMenuItem(
                                 onClick = {
                                     onInviteUserClick(
-                                        user.userId,
+                                        user.id,
                                         channel.channelId,
                                         PermissionLevel.RR
                                     )
@@ -146,7 +146,7 @@ fun InviteUsersToChannelView(
                             DropdownMenuItem(
                                 onClick = {
                                     onInviteUserClick(
-                                        user.userId,
+                                        user.id,
                                         channel.channelId,
                                         PermissionLevel.RW
                                     )

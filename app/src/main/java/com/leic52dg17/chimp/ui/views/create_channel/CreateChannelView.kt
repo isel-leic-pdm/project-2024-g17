@@ -146,7 +146,7 @@ fun CreateChannelView(
                         }
                         Log.i("CreateChannelView", "Creating channel")
                         onCreateChannelRequest(
-                            authenticatedUser.user.userId,
+                            authenticatedUser.user.id,
                             channelNameInputValue,
                             isPrivate,
                             "",

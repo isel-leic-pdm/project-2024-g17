@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.core
 
 import android.app.Application
+import android.util.Log
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService

@@ -24,7 +24,7 @@ class FakeChannelService : IChannelService {
         channelIconContentDescription: String
     ): ChannelCreationResult {
 
-        val owner = FakeData.users.find { it.userId == ownerId }
+        val owner = FakeData.users.find { it.id == ownerId }
             ?: return failure(ChannelCreationError(message = ErrorMessages.USER_NOT_FOUND))
 
         val newChannel = Channel(
@@ -66,8 +66,8 @@ class FakeChannelService : IChannelService {
     }
 
     override suspend fun getUserSubscribedChannels(userId: Int): List<Channel>? {
-        if (FakeData.users.isEmpty() || !FakeData.users.any { it.userId == userId }) return null
-        return FakeData.channels.filter { it.users.any { user -> user.userId == userId } }
+        if (FakeData.users.isEmpty() || !FakeData.users.any { it.id == userId }) return null
+        return FakeData.channels.filter { it.users.any { user -> user.id == userId } }
     }
 
     override suspend fun getChannelById(channelId: Int): Channel? {
@@ -84,7 +84,7 @@ class FakeChannelService : IChannelService {
             ChannelUpdateError(ErrorMessages.CHANNEL_NOT_FOUND)
         )
         val channel = FakeData.channels[channelIndex]
-        val isUserInChannel = channel.users.any { it.userId == userId }
+        val isUserInChannel = channel.users.any { it.id == userId }
         if (!isUserInChannel) return failure(
             ChannelUpdateError(ErrorMessages.USER_NOT_IN_CHANNEL)
         )
@@ -101,13 +101,13 @@ class FakeChannelService : IChannelService {
             val oldestUserId = oldestUserChannel.userId
 
             val removedUserChannel =
-                channel.copy(users = channel.users.filter { user -> user.userId != userId })
+                channel.copy(users = channel.users.filter { user -> user.id != userId })
             val updatedChannel = removedUserChannel.copy(ownerId = oldestUserId)
             FakeData.userChannel.removeAt(leavingUserChannelIndex)
             FakeData.channels[channelIndex] = updatedChannel
         } else {
             val removedUserChannel =
-                channel.copy(users = channel.users.filter { user -> user.userId != userId })
+                channel.copy(users = channel.users.filter { user -> user.id != userId })
             FakeData.channels[channelIndex] = removedUserChannel
         }
 

@@ -35,7 +35,7 @@ class MainActivity : ComponentActivity() {
                 )
             }
         )
-        mainViewSelectorViewModel.getEventStream()
+        (application as ChimpApplication).sseService.listen()
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {
