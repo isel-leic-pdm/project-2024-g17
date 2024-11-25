@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.core.ChimpApplication
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
@@ -31,10 +30,12 @@ class MainActivity : ComponentActivity() {
                     (application as ChimpApplication).channelService,
                     (application as ChimpApplication).messageService,
                     (application as ChimpApplication).userService,
+                    (application as ChimpApplication).sseService,
                     applicationContext
                 )
             }
         )
+        mainViewSelectorViewModel.getEventStream()
         enableEdgeToEdge()
         setContent {
             ChIMPTheme {

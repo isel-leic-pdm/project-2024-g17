@@ -41,10 +41,12 @@ object FakeData {
                 Message(
                     1,
                     1,
+                    1,
                     "Hello world",
                     BigInteger("21031239131231298")
                 ),
                 Message(
+                    2,
                     2,
                     1,
                     "Hello universe.",

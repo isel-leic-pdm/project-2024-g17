@@ -17,9 +17,10 @@ import kotlinx.coroutines.launch
 
 class AuthenticationViewSelectorViewModel(
     private val authenticationService: IAuthenticationService,
-    private val context: Context
+    private val context: Context,
+    initialState: AuthenticationViewSelectorState = AuthenticationViewSelectorState.Landing
 ) : ViewModel() {
-    var state: AuthenticationViewSelectorState by mutableStateOf(AuthenticationViewSelectorState.Landing)
+    var state: AuthenticationViewSelectorState by mutableStateOf(initialState)
 
     fun transition(newState: AuthenticationViewSelectorState) {
         state = newState

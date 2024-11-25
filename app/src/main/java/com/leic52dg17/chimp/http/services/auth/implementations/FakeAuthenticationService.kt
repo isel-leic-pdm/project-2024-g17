@@ -21,7 +21,7 @@ class FakeAuthenticationService : IAuthenticationService {
 
         return Either.Right(
             AuthenticatedUser(
-                "example_token",
+                "-EUftA2ObV7_HbolVzL5JUEP5KMpn8XSTA-YPKWTEgI=",
                 user
             )
         )

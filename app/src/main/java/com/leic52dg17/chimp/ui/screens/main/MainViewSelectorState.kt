@@ -9,6 +9,7 @@ import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 
 sealed interface MainViewSelectorState {
+    data class Initialized(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class SubscribedChannels(val showDialog: Boolean = false, val dialogMessage: String? = null, val channels: List<Channel>? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class CreateChannel(val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class ChannelMessages(val showDialog: Boolean = false, val dialogMessage: String? = null, val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
