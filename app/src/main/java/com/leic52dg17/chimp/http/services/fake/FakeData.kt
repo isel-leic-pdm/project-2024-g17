@@ -69,6 +69,7 @@ object FakeData {
                 Message(
                     3,
                     2,
+                    channelId = 2,
                     "Welcome to Channel 2",
                     BigInteger("21031239131231400")
                 )
@@ -89,6 +90,7 @@ object FakeData {
                 Message(
                     4,
                     3,
+                    channelId = 3,
                     "Channel 3 is live",
                     BigInteger("21031239131231500")
                 )
@@ -108,7 +110,9 @@ object FakeData {
                 Message(
                     5,
                     4,
+                    channelId = 4,
                     "Channel 4 announcement",
+
                     BigInteger("21031239131231600")
                 )
             ),
@@ -127,6 +131,7 @@ object FakeData {
                 Message(
                     6,
                     5,
+                    channelId = 5,
                     "Welcome to Channel 5",
                     BigInteger("21031239131231700")
                 )
