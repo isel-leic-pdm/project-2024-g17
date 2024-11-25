@@ -9,6 +9,10 @@ object ApiEndpoints {
     object Users {
         val GET_ALL = "$BASE_URL/users"
         val GET_BY_ID = "$BASE_URL/users/{id}"
+        val GET_TOKEN = "$BASE_URL/users/token"
+        val GET_BY_TOKEN = "$BASE_URL/users/token/{token}"
+        val CREATE_USER = "$BASE_URL/users"
+        val CHANGE_PASSWORD = "$BASE_URL/users/{user}"
     }
 
     object Chat {

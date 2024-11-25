@@ -15,7 +15,7 @@ import com.leic52dg17.chimp.domain.model.user.User
 class FakeAuthenticationService : IAuthenticationService {
     override suspend fun loginUser(username: String, password: String): UserLoginResult {
         val user = FakeData.users.firstOrNull { it.username == username }
-        if(user == null) return Either.Left(
+        if (user == null) return Either.Left(
             UserLoginError.AuthenticationError("User could not be found.")
         )
 
@@ -42,7 +42,12 @@ class FakeAuthenticationService : IAuthenticationService {
         )
     }
 
-    override suspend fun changePassword(username: String, currentPassword: String, newPassword: String, confirmPassword: String): UserChangePasswordResult {
+    override suspend fun changePassword(
+        username: String,
+        currentPassword: String,
+        newPassword: String,
+        confirmPassword: String
+    ): UserChangePasswordResult {
         return success(
             AuthenticatedUser(
                 "example_token",
@@ -55,7 +60,7 @@ class FakeAuthenticationService : IAuthenticationService {
         )
     }
 
-    override suspend fun forgotPassword(email: String): UserForgotPasswordResult{
+    override suspend fun forgotPassword(email: String): UserForgotPasswordResult {
         return success(
             AuthenticatedUser(
                 "example_token",
