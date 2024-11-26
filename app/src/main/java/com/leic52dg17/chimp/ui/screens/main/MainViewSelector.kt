@@ -181,7 +181,9 @@ fun MainViewSelector(
                         }
 
                         LaunchedEffect(Unit) {
-                            viewModel.loadSubscribedChannels()
+                            if(currentState.channels == null) {
+                                viewModel.loadSubscribedChannels()
+                            }
                         }
 
                         isNavBarShown = true
@@ -265,8 +267,7 @@ fun MainViewSelector(
                                     ownerId,
                                     name,
                                     isPrivate,
-                                    channelIconUrl,
-                                    channelIconContentDescription
+                                    channelIconUrl
                                 )
                             },
                             authenticatedUser = authenticatedUser
@@ -286,7 +287,9 @@ fun MainViewSelector(
                         val currentChannel = currentState.channel
 
                         LaunchedEffect(Unit) {
-                            viewModel.loadChannelMessages()
+                            if(currentState.channel?.messages == null) {
+                                viewModel.loadChannelMessages()
+                            }
                         }
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage

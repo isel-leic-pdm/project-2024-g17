@@ -227,9 +227,9 @@ fun ChannelInfoViewPreview() {
                 User(2, "User2", "displayName2"),
             ),
             messages = listOf(
-                Message(1, 1, 1, "Hello", BigInteger.valueOf(Instant.now().toEpochMilli())),
-                Message(2, 2, 1, "Hi", BigInteger.valueOf(Instant.now().toEpochMilli())),
-                Message(3, 1, 1, "How are you", BigInteger.valueOf(Instant.now().toEpochMilli()))
+                Message(1, 1, 1, "Hello", Instant.now().toEpochMilli()),
+                Message(2, 2, 1, "Hi", Instant.now().toEpochMilli()),
+                Message(3, 1, 1, "How are you", Instant.now().toEpochMilli())
             ),
             isPrivate = true,
             ownerId = 1

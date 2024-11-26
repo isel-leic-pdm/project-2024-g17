@@ -93,7 +93,7 @@ class SSEService(
                         channelId = messageContent.channelId,
                         userId = messageContent.userId,
                         text = messageContent.text,
-                        createdAt = BigInteger(messageContent.createdAt.toString())
+                        createdAt = messageContent.createdAt
                     )
 
                     Log.i("SSE_SERVICE", "Received message id: ${message.id}")
