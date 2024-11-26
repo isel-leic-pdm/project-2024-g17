@@ -56,7 +56,7 @@ fun AuthenticationViewSelector(
             is AuthenticationViewSelectorState.SignUp -> {
                 isLoading = false
                 SignUpView(
-                    onSignUpClick = { username, password -> viewModel.signUpUser(username, password) },
+                    onSignUpClick = { username, displayName, password -> viewModel.signUpUser(username, displayName, password) },
                     onLogInClick = { viewModel.transition(AuthenticationViewSelectorState.Login(false)) },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )

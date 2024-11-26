@@ -43,7 +43,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title)
             } else {
-                Log.e(TAG, "${response.status}")
+                Log.e(TAG, "Login: ${response.status}")
                 throw ServiceException(ErrorMessages.UNKNOWN)
             }
         }
@@ -54,9 +54,10 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         return AuthenticatedUser(responseBody.token, user)
     }
 
-    override suspend fun signUpUser(username: String, password: String): AuthenticatedUser {
+    override suspend fun signUpUser(username: String, displayName: String, password: String): AuthenticatedUser {
         val source = URL(ApiEndpoints.Users.CREATE_USER)
-        val requestBody = UserSignUpRequest(username, password)
+        Log.i(TAG, "Signup: $source")
+        val requestBody = UserSignUpRequest(username, displayName, password)
 
         val response = client.post(source) {
             header("accept", "application/json")
@@ -67,7 +68,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         if(!response.status.isSuccess()) {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                Log.e(TAG, " Signup: ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title)
             } else {
                 Log.e(TAG, "${response.status}")
@@ -100,7 +101,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         if(!response.status.isSuccess()) {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                Log.e(TAG, "Change password: ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title)
             } else {
                 throw ServiceException(ErrorMessages.UNKNOWN)
@@ -115,7 +116,11 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
     }
 
     private suspend fun getUserByToken(token: String): User {
-        val source = URL(ApiEndpoints.Users.GET_BY_TOKEN.replace("{token}", token))
+        val replaced = ApiEndpoints.Users.GET_BY_TOKEN.replace("{token}", token)
+        val source = URL(replaced)
+
+        Log.i(TAG, "GET_BY_TOKEN: $replaced")
+
         val response = client.get(source) {
             header("accept", "application/json")
         }
@@ -123,10 +128,10 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         if(!response.status.isSuccess()) {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                Log.e(TAG, "Getuserbytoken: ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title)
             } else {
-                Log.e(TAG, "${response.status}")
+                Log.e(TAG, "GetUserByToken: ${response.status}")
                 throw ServiceException(ErrorMessages.UNKNOWN)
             }
         }

@@ -75,12 +75,12 @@ class AuthenticationViewSelectorViewModel(
         }
     }
 
-    fun signUpUser(username: String, password: String) {
+    fun signUpUser(username: String, displayName: String, password: String) {
         if (state is AuthenticationViewSelectorState.SignUp) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
                 try {
-                    val authenticatedUser = authenticationService.signUpUser(username, password)
+                    val authenticatedUser = authenticationService.signUpUser(username, displayName, password)
                     SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
                     transition(AuthenticationViewSelectorState.Authenticated)
                 } catch (e: ServiceException) {

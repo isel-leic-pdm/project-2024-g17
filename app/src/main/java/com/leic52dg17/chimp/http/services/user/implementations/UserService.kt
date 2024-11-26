@@ -92,8 +92,8 @@ class UserService(private val client: HttpClient): IUserService{
     }
 
     @Serializable
-    private data class UserDto(val userId: Int, val username: String, val displayName: String) {
-        fun toUser() = User(id = userId, username = username, displayName = displayName)
+    private data class UserDto(val id: Int, val username: String, val displayName: String) {
+        fun toUser() = User(id = id, username = username, displayName = displayName)
     }
 
     @Serializable

@@ -53,6 +53,7 @@
     <!--Sign Up View-->
     <string name="sign_up_welcome_en">Welcome to ChIMP</string>
     <string name="sign_up_username_field_label_en">Username</string>
+    <string name="sign_up_displayName_field_label_en">Display Name</string>
     <string name="sign_up_password_field_label_en">Password</string>
 
     <!--Log In View-->

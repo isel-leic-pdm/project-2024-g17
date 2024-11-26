@@ -393,6 +393,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.UserInfo -> {
+                        isLoading = false
                         val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
                         UserInfoView(
                             user = currentState.user,
