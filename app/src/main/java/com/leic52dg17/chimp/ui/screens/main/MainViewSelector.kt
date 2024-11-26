@@ -445,7 +445,8 @@ fun MainViewSelector(
                                     permission
                                 )
                             },
-                            users = FakeData.users.filter { user -> currentChannel.users.none { it.id == user.id } }
+                            // TODO: Show available users (paginated)
+                            users = currentState.channel.users
                         )
                     }
                 }
