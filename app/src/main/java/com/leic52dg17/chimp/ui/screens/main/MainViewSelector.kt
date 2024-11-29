@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
@@ -33,13 +35,13 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
+import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 
 @Composable
 fun MainViewSelector(
     viewModel: MainViewSelectorViewModel,
-    authenticatedUser: AuthenticatedUser?,
-    onLogout: () -> Unit = {}
+    authenticatedUser: AuthenticatedUser?
 ) {
     ChIMPTheme {
         var isSharedAlertDialogShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
@@ -150,7 +152,7 @@ fun MainViewSelector(
             ) {
                 if (isLoading) {
                     LoadingOverlay()
-                }   
+                }
                 when (viewModel.state) {
                     is MainViewSelectorState.Initialized -> {
                         val currentState = (viewModel.state as MainViewSelectorState.Initialized)
@@ -181,7 +183,7 @@ fun MainViewSelector(
                         }
 
                         LaunchedEffect(Unit) {
-                            if(currentState.channels == null) {
+                            if (currentState.channels == null) {
                                 viewModel.loadSubscribedChannels()
                             }
                         }
@@ -287,7 +289,7 @@ fun MainViewSelector(
                         val currentChannel = currentState.channel
 
                         LaunchedEffect(Unit) {
-                            if(currentState.channel?.messages == null) {
+                            if (currentState.channel?.messages == null) {
                                 viewModel.loadChannelMessages()
                             }
                         }
@@ -406,7 +408,7 @@ fun MainViewSelector(
                                     )
                                 )
                             },
-                            onLogoutClick = { viewModel.logout(onLogout) },
+                            onLogoutClick = { viewModel.logout() },
                             onChangePasswordClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.ChangePassword(
@@ -420,9 +422,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.About -> {
                         isLoading = false
                         isNavBarShown = true
-                        AboutView(
-                            onBackClick = { viewModel.loadSubscribedChannels() }
-                        )
+                        AboutView()
                     }
 
                     is MainViewSelectorState.InvitingUsers -> {
@@ -447,6 +447,15 @@ fun MainViewSelector(
                             },
                             // TODO: Show available users (paginated)
                             users = currentState.channel.users
+                        )
+                    }
+
+                    MainViewSelectorState.Unauthenticated -> {
+                        ApplicationErrorView(
+                            message = ErrorMessages.AUTHENTICATED_USER_NULL,
+                            onDismiss = {
+                                viewModel.logout()
+                            }
                         )
                     }
                 }

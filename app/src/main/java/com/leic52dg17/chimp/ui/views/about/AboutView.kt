@@ -29,9 +29,7 @@ import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 val authorNames: Array<String> = arrayOf("João Cardoso", "Francisco Antunes", "Rúben Said")
 
 @Composable
-fun AboutView(
-    onBackClick: () -> Unit = {}
-) {
+fun AboutView() {
     Column(
         modifier = Modifier
             .padding(bottom = 100.dp)

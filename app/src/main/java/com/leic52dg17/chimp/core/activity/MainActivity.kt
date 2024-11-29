@@ -21,20 +21,24 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModelFactory
 
 class MainActivity : ComponentActivity() {
+
+    private fun onLogout() {
+        val intent = Intent(this@MainActivity, LauncherActivity::class.java)
+        this@MainActivity.startActivity(intent)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val mainViewSelectorViewModel by viewModels<MainViewSelectorViewModel>(
-            factoryProducer = {
-                MainViewSelectorViewModelFactory(
-                    (application as ChimpApplication).channelService,
-                    (application as ChimpApplication).messageService,
-                    (application as ChimpApplication).userService,
-                    (application as ChimpApplication).sseService,
-                    applicationContext
-                )
-            }
-        )
+        val mainViewSelectorViewModel by viewModels<MainViewSelectorViewModel> {
+            MainViewSelectorViewModelFactory(
+                (application as ChimpApplication).channelService,
+                (application as ChimpApplication).messageService,
+                (application as ChimpApplication).userService,
+                (application as ChimpApplication).sseService,
+                applicationContext
+            ) { onLogout() }
+        }
         (application as ChimpApplication).sseService.listen()
         enableEdgeToEdge()
         setContent {
@@ -50,10 +54,6 @@ class MainActivity : ComponentActivity() {
                         MainViewSelector(
                             mainViewSelectorViewModel,
                             SharedPreferencesHelper.getAuthenticatedUser(applicationContext),
-                            onLogout = {
-                                val intent = Intent(this@MainActivity, LauncherActivity::class.java)
-                                this@MainActivity.startActivity(intent)
-                            }
                         )
                     }
                 }
