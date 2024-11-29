@@ -181,7 +181,9 @@ fun MainViewSelector(
                         }
 
                         LaunchedEffect(Unit) {
-                            viewModel.loadSubscribedChannels()
+                            if(currentState.channels == null) {
+                                viewModel.loadSubscribedChannels()
+                            }
                         }
 
                         isNavBarShown = true
@@ -265,8 +267,7 @@ fun MainViewSelector(
                                     ownerId,
                                     name,
                                     isPrivate,
-                                    channelIconUrl,
-                                    channelIconContentDescription
+                                    channelIconUrl
                                 )
                             },
                             authenticatedUser = authenticatedUser
@@ -286,7 +287,9 @@ fun MainViewSelector(
                         val currentChannel = currentState.channel
 
                         LaunchedEffect(Unit) {
-                            viewModel.loadChannelMessages()
+                            if(currentState.channel?.messages == null) {
+                                viewModel.loadChannelMessages()
+                            }
                         }
                         if (currentState.showDialog) {
                             alertDialogText = currentState.dialogMessage
@@ -390,6 +393,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.UserInfo -> {
+                        isLoading = false
                         val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
                         UserInfoView(
                             user = currentState.user,
@@ -441,7 +445,8 @@ fun MainViewSelector(
                                     permission
                                 )
                             },
-                            users = FakeData.users.filter { user -> currentChannel.users.none { it.id == user.id } }
+                            // TODO: Show available users (paginated)
+                            users = currentState.channel.users
                         )
                     }
                 }

@@ -12,4 +12,8 @@ class FakeUserService : IUserService {
     override suspend fun getAllUsers(): List<User> {
         return FakeData.users
     }
+
+    override suspend fun getChannelUsers(channelId: Int): List<User> {
+        TODO("Not yet implemented")
+    }
 }

@@ -8,6 +8,7 @@ import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
 import java.math.BigInteger
 import java.util.UUID
+import kotlin.math.ceil
 
 object FakeData {
     val users = mutableListOf(
@@ -43,14 +44,14 @@ object FakeData {
                     1,
                     1,
                     "Hello world",
-                    BigInteger("21031239131231298")
+                    21031239131231298
                 ),
                 Message(
                     2,
                     2,
                     1,
                     "Hello universe.",
-                    BigInteger("21031239131231350")
+                    21031239131231350
                 )
             ),
             users = listOf(
@@ -71,7 +72,7 @@ object FakeData {
                     2,
                     channelId = 2,
                     "Welcome to Channel 2",
-                    BigInteger("21031239131231400")
+                    21031239131231400
                 )
             ),
             users = listOf(
@@ -92,7 +93,7 @@ object FakeData {
                     3,
                     channelId = 3,
                     "Channel 3 is live",
-                    BigInteger("21031239131231500")
+                    21031239131231500
                 )
             ),
             users = listOf(
@@ -113,7 +114,7 @@ object FakeData {
                     channelId = 4,
                     "Channel 4 announcement",
 
-                    BigInteger("21031239131231600")
+                    21031239131231600
                 )
             ),
             users = listOf(
@@ -133,7 +134,7 @@ object FakeData {
                     5,
                     channelId = 5,
                     "Welcome to Channel 5",
-                    BigInteger("21031239131231700")
+                    21031239131231700
                 )
             ),
             users = listOf(
@@ -167,35 +168,35 @@ object FakeData {
 
     val invitations = mutableListOf(
         ChannelInvitation(
-            invitationId = UUID.randomUUID(),
+            invitationId = ceil(Math.random()).toInt(),
             channelId = 1,
             senderId = 2,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = UUID.randomUUID(),
+            invitationId = ceil(Math.random()).toInt(),
             channelId = 2,
             senderId = 2,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = UUID.randomUUID(),
+            invitationId = ceil(Math.random()).toInt(),
             channelId = 3,
             senderId = 3,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = UUID.randomUUID(),
+            invitationId = ceil(Math.random()).toInt(),
             channelId = 4,
             senderId = 4,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = UUID.randomUUID(),
+            invitationId = ceil(Math.random()).toInt(),
             channelId = 5,
             senderId = 1,
             receiverId = 1,

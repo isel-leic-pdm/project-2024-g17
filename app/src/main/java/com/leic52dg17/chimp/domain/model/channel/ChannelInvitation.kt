@@ -5,7 +5,7 @@ import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import java.util.UUID
 
 data class ChannelInvitation(
-    val invitationId: UUID,
+    val invitationId: Int,
     val channelId: Int,
     val senderId: Int,
     val receiverId: Int,

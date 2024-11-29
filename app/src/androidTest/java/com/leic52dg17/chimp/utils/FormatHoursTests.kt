@@ -2,7 +2,6 @@ package com.leic52dg17.chimp.utils
 
 import com.leic52dg17.chimp.domain.utils.formatHours
 import org.junit.Test
-import java.math.BigInteger
 
 class FormatHoursTests {
     @Test
@@ -19,6 +18,6 @@ class FormatHoursTests {
     }
 
     companion object {
-        val TIMESTAMP = BigInteger("1731862334")
+        const val TIMESTAMP = 1731862334L
     }
 }

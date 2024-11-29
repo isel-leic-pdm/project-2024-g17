@@ -12,14 +12,13 @@ import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.http.services.fake.FakeData.channels
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
-import java.util.UUID
 
 @Composable
-fun IncommingInvitationsView(
+fun IncomingInvitationsView(
     invitations: List<ChannelInvitation>,
     onBackClick: () -> Unit,
-    onAcceptClick: (UUID) -> Unit,
-    onDeclineClick: (UUID) -> Unit,
+    onAcceptClick: (Int) -> Unit,
+    onDeclineClick: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -86,8 +85,8 @@ fun IncommingInvitationsView(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun IncommingInvitationsViewPreview() {
-    IncommingInvitationsView(
+fun IncomingInvitationsViewPreview() {
+    IncomingInvitationsView(
         invitations = FakeData.invitations,
         onBackClick = {},
         onAcceptClick = {},

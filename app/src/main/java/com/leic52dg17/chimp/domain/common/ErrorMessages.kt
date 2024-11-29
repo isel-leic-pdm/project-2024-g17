@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.domain.common
 
 object ErrorMessages {
+    const val UNKNOWN = "An unknown error has occurred. Please try again later."
     const val USER_NOT_FOUND = "The requested user could not be found."
     const val CHANNEL_NOT_FOUND = "The requested channel could not be found."
     const val AUTHENTICATED_USER_NULL = "Error retrieving information about the current authenticated user."

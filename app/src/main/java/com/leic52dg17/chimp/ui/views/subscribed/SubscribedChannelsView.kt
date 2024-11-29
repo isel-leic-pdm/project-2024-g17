@@ -57,7 +57,7 @@ val mockChannelList = listOf(
                 userId = 1,
                 channelId = 1,
                 text = "Message 1",
-                createdAt = 1640995200.toBigInteger()
+                createdAt = 1640995200L
             )
         ),
         users = listOf(
@@ -85,7 +85,7 @@ val mockChannelList = listOf(
                 userId = 1,
                 channelId = 1,
                 text = "Message 1",
-                createdAt = 1640995200.toBigInteger()
+                createdAt = 1640995200L
             )
         ),
         users = listOf(
@@ -189,10 +189,8 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            val toDisplay = if (filteredChannels.isEmpty()) {
+            val toDisplay = filteredChannels.ifEmpty {
                 channels
-            } else {
-                filteredChannels
             }
 
             for (channel in toDisplay) {

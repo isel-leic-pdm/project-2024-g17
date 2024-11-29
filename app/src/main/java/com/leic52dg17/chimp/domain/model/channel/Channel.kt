@@ -1,9 +1,12 @@
 package com.leic52dg17.chimp.domain.model.channel
 
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class Channel(
     val channelId: Int,
     val displayName: String,
@@ -11,7 +14,7 @@ data class Channel(
     val messages: List<Message>,
     val users: List<User>,
     val isPrivate: Boolean,
-    val channelIconUrl: String
+    val channelIconUrl: String,
 ) {
     init {
         require(channelId > 0) {

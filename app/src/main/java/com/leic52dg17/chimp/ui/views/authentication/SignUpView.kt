@@ -31,13 +31,14 @@ import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun SignUpView(
-    onSignUpClick: (String, String) -> Unit,
+    onSignUpClick: (String, String, String) -> Unit,
     onLogInClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var displayName by remember { mutableStateOf("") }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -79,6 +80,14 @@ fun SignUpView(
                     leadingIconContentDescription = stringResource(R.string.sign_up_username_icon_cd_en),
                     modifier = modifier.fillMaxWidth()
                 )
+                AuthenticationField(
+                    value = displayName,
+                    onValueChange = { displayName = it },
+                    label = stringResource(R.string.sign_up_displayName_field_label_en),
+                    leadingIcon = Icons.Outlined.PersonOutline,
+                    leadingIconContentDescription = stringResource(R.string.sign_up_username_icon_cd_en),
+                    modifier = modifier.fillMaxWidth()
+                )
                 AuthenticationPasswordField(
                     value = password,
                     onValueChange = { password = it },
@@ -95,7 +104,7 @@ fun SignUpView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = { onSignUpClick(username, password) },
+                    onClick = { onSignUpClick(username, displayName, password) },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.sign_up_button_text_en),
@@ -118,7 +127,7 @@ fun SignUpView(
 @Composable
 fun SignUpViewPreview() {
     SignUpView(
-        onSignUpClick = { username, password -> println(username); println(password) },
+        onSignUpClick = { username, displayName, password -> println(username); println(password); println(displayName) },
         onLogInClick = { },
         onBackClick = { }
     )

@@ -1,3 +1,4 @@
+/*
 package com.leic52dg17.chimp.http.services.auth.implementations
 
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
@@ -72,4 +73,4 @@ class FakeAuthenticationService : IAuthenticationService {
             )
         )
     }
-}
+}*/

@@ -5,4 +5,5 @@ import com.leic52dg17.chimp.domain.model.user.User
 interface IUserService {
     suspend fun getUserById(id: Int): User?
     suspend fun getAllUsers(): List<User>
+    suspend fun getChannelUsers(channelId: Int): List<User>
 }
