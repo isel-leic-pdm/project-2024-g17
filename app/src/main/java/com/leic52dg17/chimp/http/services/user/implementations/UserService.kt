@@ -5,15 +5,16 @@ import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
+import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.message.implementations.MessageService
-import com.leic52dg17.chimp.http.services.message.implementations.MessageService.Companion
 import com.leic52dg17.chimp.http.services.user.IUserService
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.Serializable
@@ -34,10 +35,13 @@ class UserService(private val client: HttpClient): IUserService{
         if(!response.status.isSuccess()) {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(MessageService.TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 
@@ -56,10 +60,13 @@ class UserService(private val client: HttpClient): IUserService{
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 
@@ -79,13 +86,15 @@ class UserService(private val client: HttpClient): IUserService{
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
-
         Log.i(TAG, response.body<String>().toString())
         val userResponse = response.body<UserResponse>()
         return userResponse.users.map { it.toUser() }

@@ -14,6 +14,7 @@ import com.leic52dg17.chimp.http.services.channel.responses.GetChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelsResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
+import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -23,6 +24,7 @@ import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
@@ -30,7 +32,7 @@ import java.net.URL
 
 class ChannelService(private val client: HttpClient) : IChannelService {
     private val json = Json { ignoreUnknownKeys = true }
-    
+
     override suspend fun createChannel(
         ownerId: Int,
         name: String,
@@ -46,13 +48,16 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             setBody(request)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         val responseBody = json.decodeFromString<CreateChannelResponse>(response.body())
@@ -66,7 +71,8 @@ class ChannelService(private val client: HttpClient) : IChannelService {
         permissionLevel: PermissionLevel
     ): Int {
         val uri = URL(ApiEndpoints.ChannelInvitation.CREATE)
-        val request = CreateChannelInvitationRequest(senderId, receiverId, channelId, permissionLevel)
+        val request =
+            CreateChannelInvitationRequest(senderId, receiverId, channelId, permissionLevel)
 
         val response = client.post(uri) {
             header("Accept", "application/json")
@@ -74,13 +80,16 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             setBody(request)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         val responseBody = json.decodeFromString<CreateChannelInvitationResponse>(response.body())
@@ -95,27 +104,32 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(TAG, "ERROR: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         val responseBody = json.decodeFromString<GetChannelsResponse>(response.body())
 
-        val channelsWithEmptyUsersAndMessages = responseBody.channels.map {channel -> Channel(
-            channelId = channel.id,
-            displayName = channel.name,
-            ownerId = channel.ownerId,
-            isPrivate = channel.isPrivate,
-            users = emptyList(),
-            messages = emptyList(),
-            channelIconUrl = "https://picsum.photos/300/300"
-        )}
+        val channelsWithEmptyUsersAndMessages = responseBody.channels.map { channel ->
+            Channel(
+                channelId = channel.id,
+                displayName = channel.name,
+                ownerId = channel.ownerId,
+                isPrivate = channel.isPrivate,
+                users = emptyList(),
+                messages = emptyList(),
+                channelIconUrl = "https://picsum.photos/300/300"
+            )
+        }
 
         return channelsWithEmptyUsersAndMessages
     }
@@ -128,13 +142,16 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         val responseBody = json.decodeFromString<GetChannelResponse>(response.body())
@@ -163,13 +180,16 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             setBody(request)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         return userId

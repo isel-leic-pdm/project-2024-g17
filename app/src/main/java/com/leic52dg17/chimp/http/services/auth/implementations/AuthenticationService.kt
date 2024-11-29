@@ -11,6 +11,7 @@ import com.leic52dg17.chimp.http.services.auth.requests.UserSignUpRequest
 import com.leic52dg17.chimp.http.services.auth.responses.GetTokenResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
+import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -41,10 +42,10 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
             } else {
                 Log.e(TAG, "Login: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 
@@ -69,10 +70,10 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " Signup: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
             } else {
                 Log.e(TAG, "${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 
@@ -86,7 +87,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         confirmPassword: String
     ): AuthenticatedUser {
         if (newPassword != confirmPassword) {
-            throw ServiceException("Password confirmation does not match.")
+            throw ServiceException("Password confirmation does not match.", ServiceErrorTypes.Common)
         }
 
         val source = URL(ApiEndpoints.Users.CHANGE_PASSWORD)
@@ -102,9 +103,9 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, "Change password: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
             } else {
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 
@@ -128,11 +129,11 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         if(!response.status.isSuccess()) {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, "Getuserbytoken: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                Log.e(TAG, "GetUserByToken: ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
             } else {
                 Log.e(TAG, "GetUserByToken: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 

@@ -3,8 +3,10 @@ package com.leic52dg17.chimp.http.services.message.implementations
 import android.util.Log
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.message.Message
+import com.leic52dg17.chimp.http.services.channel.implementations.ChannelService
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
+import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.requests.CreateMessageRequest
@@ -17,6 +19,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
@@ -41,10 +44,13 @@ class MessageService(private val client: HttpClient) : IMessageService {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
         Log.i(TAG, "=== DEBUG ===\n GOT MESSAGES FOR CHANNEL WITH ID: $channelId")
@@ -70,10 +76,13 @@ class MessageService(private val client: HttpClient) : IMessageService {
             if(response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title)
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
                 Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN)
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
 

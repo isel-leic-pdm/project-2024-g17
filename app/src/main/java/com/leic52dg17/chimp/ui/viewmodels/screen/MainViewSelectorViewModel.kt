@@ -28,11 +28,12 @@ class MainViewSelectorViewModel(
     private val userService: IUserService,
     private val sseService: ISSEService,
     private val context: Context,
+    private val onLogout: () -> Unit,
     initialState: MainViewSelectorState = MainViewSelectorState.Initialized(
         SharedPreferencesHelper.getAuthenticatedUser(
             context
         )
-    )
+    ),
 ) : ViewModel() {
     var state: MainViewSelectorState by mutableStateOf(initialState)
 
@@ -100,6 +101,10 @@ class MainViewSelectorViewModel(
         sseService.stopListening()
     }
 
+    fun debugLogout() {
+        SharedPreferencesHelper.logout(context)
+    }
+
     fun loadChannelMessages() {
         val channel = (state as? MainViewSelectorState.ChannelMessages)?.channel
         transition(MainViewSelectorState.GettingChannelMessages(channel))
@@ -108,13 +113,7 @@ class MainViewSelectorViewModel(
             val currentUser = authenticatedUser?.user
             try {
                 if (currentUser == null) {
-                    transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            true,
-                            ErrorMessages.AUTHENTICATED_USER_NULL,
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
+                    transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
                 if (channel == null) {
@@ -173,14 +172,10 @@ class MainViewSelectorViewModel(
                         authenticatedUser = currentUser
                     )
                 )
-                else if (currentUser == null) transition(
-                    MainViewSelectorState.ChannelInfo(
-                        showDialog = true,
-                        dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
-                        authenticatedUser = null
-                    )
-                )
-                else transition(
+                else if (currentUser == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                    return@launch
+                } else transition(
                     MainViewSelectorState.ChannelInfo(
                         channel = channel,
                         authenticatedUser = currentUser
@@ -208,16 +203,11 @@ class MainViewSelectorViewModel(
                 Log.d(TAG, "=== COULD RETRIEVE AUTH USER : $authenticatedUser")
                 val currentUser = authenticatedUser?.user
                 if (currentUser == null) {
-                    transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            true,
-                            ErrorMessages.AUTHENTICATED_USER_NULL,
-                            authenticatedUser = null
-                        )
-                    )
+                    transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-                val channelsWithoutMessagesOrUsers = channelService.getUserSubscribedChannels(currentUser.id)
+                val channelsWithoutMessagesOrUsers =
+                    channelService.getUserSubscribedChannels(currentUser.id)
                 val channels = mutableListOf<Channel>()
 
                 for (channel in channelsWithoutMessagesOrUsers) {
@@ -266,13 +256,7 @@ class MainViewSelectorViewModel(
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
         if (currentUser == null) {
-            transition(
-                MainViewSelectorState.CreateChannel(
-                    true,
-                    ErrorMessages.AUTHENTICATED_USER_NULL,
-                    authenticatedUser = null
-                )
-            )
+            transition(MainViewSelectorState.Unauthenticated)
             return
         }
         if (state is MainViewSelectorState.CreateChannel) {
@@ -281,13 +265,7 @@ class MainViewSelectorViewModel(
                 val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
 
                 if (authenticatedUser == null) {
-                    transition(
-                        MainViewSelectorState.CreateChannel(
-                            true,
-                            ErrorMessages.AUTHENTICATED_USER_NULL,
-                            authenticatedUser = null
-                        )
-                    )
+                    transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
                 try {
@@ -326,13 +304,7 @@ class MainViewSelectorViewModel(
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)
         if (currentUser == null) {
-            transition(
-                MainViewSelectorState.ChannelInfo(
-                    showDialog = true,
-                    dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
-                    authenticatedUser = null
-                )
-            )
+            transition(MainViewSelectorState.Unauthenticated)
             return
         }
 
@@ -365,11 +337,7 @@ class MainViewSelectorViewModel(
         val currentUser = authenticatedUser?.user
 
         if (currentUser == null) {
-            MainViewSelectorState.ChannelInfo(
-                showDialog = true,
-                dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
-                authenticatedUser = authenticatedUser
-            )
+            transition(MainViewSelectorState.Unauthenticated)
             return
         }
 
@@ -409,49 +377,43 @@ class MainViewSelectorViewModel(
     ) {
         val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
         val currentUser = authenticatedUser?.user
-        if (currentUser != null) {
+        if (currentUser == null) {
+            transition(MainViewSelectorState.Unauthenticated)
+            return
+        }
+        if (userId == null) {
             transition(
                 MainViewSelectorState.ChannelInfo(
-                    showDialog = true,
-                    dialogMessage = ErrorMessages.AUTHENTICATED_USER_NULL,
+                    showDialog = true, dialogMessage = ErrorMessages.USER_NOT_FOUND,
                     authenticatedUser = authenticatedUser
                 )
             )
+            return
+        }
 
-            if (userId == null) {
+
+        viewModelScope.launch {
+            try {
+                channelService.removeUserFromChannel(userId, channel.channelId)
+                val channels = channelService.getUserSubscribedChannels(userId)
                 transition(
-                    MainViewSelectorState.ChannelInfo(
-                        showDialog = true, dialogMessage = ErrorMessages.USER_NOT_FOUND,
+                    MainViewSelectorState.SubscribedChannels(
+                        channels = channels,
                         authenticatedUser = authenticatedUser
                     )
                 )
-                return
-            }
-
-
-            viewModelScope.launch {
-                try {
-                    channelService.removeUserFromChannel(userId, channel.channelId)
-                    val channels = channelService.getUserSubscribedChannels(userId)
-                    transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            channels = channels,
-                            authenticatedUser = authenticatedUser
-                        )
+                return@launch
+            } catch (e: ServiceException) {
+                Log.e(TAG, "${e.message!!} : Current State -> $state")
+                val channels = channelService.getUserSubscribedChannels(userId)
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        showDialog = true,
+                        dialogMessage = e.message,
+                        channels = channels,
+                        authenticatedUser = authenticatedUser
                     )
-                    return@launch
-                } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message!!} : Current State -> $state")
-                    val channels = channelService.getUserSubscribedChannels(userId)
-                    transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            showDialog = true,
-                            dialogMessage = e.message,
-                            channels = channels,
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
-                }
+                )
             }
         }
     }
@@ -459,7 +421,7 @@ class MainViewSelectorViewModel(
     /**
      * De-authentication functions
      */
-    fun logout(onLogout: () -> Unit) {
+    fun logout() {
         transition(MainViewSelectorState.Loading)
         SharedPreferencesHelper.logout(context)
         stopEventStream()
@@ -515,16 +477,8 @@ class MainViewSelectorViewModel(
         val currentUser = authenticatedUser?.user
         viewModelScope.launch {
             try {
-                val channel = channelService.getChannelById(channelId)
                 if (currentUser == null) {
-                    transition(
-                        MainViewSelectorState.ChannelMessages(
-                            true,
-                            ErrorMessages.AUTHENTICATED_USER_NULL,
-                            channel,
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
+                    transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
                 messageService.createMessageInChannel(
@@ -535,7 +489,8 @@ class MainViewSelectorViewModel(
                 val channelWithoutMessages = channelService.getChannelById(channelId)
                 val channelMessages = messageService.getChannelMessages(channelId)
                 val channelUsers = userService.getChannelUsers(channelId)
-                val updatedChannel = channelWithoutMessages.copy(messages = channelMessages, users = channelUsers)
+                val updatedChannel =
+                    channelWithoutMessages.copy(messages = channelMessages, users = channelUsers)
                 transition(
                     MainViewSelectorState.ChannelMessages(
                         false,
@@ -567,7 +522,8 @@ class MainViewSelectorViewModelFactory(
     private val messageService: IMessageService,
     private val userService: IUserService,
     private val sseService: ISSEService,
-    private val context: Context
+    private val context: Context,
+    private val onLogout: () -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
@@ -575,7 +531,8 @@ class MainViewSelectorViewModelFactory(
             messageService,
             userService,
             sseService,
-            context
+            context,
+            onLogout
         ) as T
     }
 }
