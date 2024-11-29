@@ -11,11 +11,8 @@ import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
-import com.leic52dg17.chimp.domain.model.common.Failure
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
-import com.leic52dg17.chimp.domain.model.common.Success
 import com.leic52dg17.chimp.domain.model.message.Message
-import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.message.IMessageService
