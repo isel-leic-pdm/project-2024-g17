@@ -401,7 +401,6 @@ fun MainViewSelector(
                             user = currentState.user,
                             authenticatedUser = authenticatedUser,
                             onBackClick = {
-                                viewModel.debugLogout()
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         false,
