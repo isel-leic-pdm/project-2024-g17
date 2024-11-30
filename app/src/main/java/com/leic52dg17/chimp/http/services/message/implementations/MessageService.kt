@@ -3,7 +3,6 @@ package com.leic52dg17.chimp.http.services.message.implementations
 import android.util.Log
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.message.Message
-import com.leic52dg17.chimp.http.services.channel.implementations.ChannelService
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
@@ -40,12 +39,12 @@ class MessageService(private val client: HttpClient) : IMessageService {
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if(response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Log.e(TAG, "Unauthorized: ${response.status}")
                 throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
@@ -72,12 +71,12 @@ class MessageService(private val client: HttpClient) : IMessageService {
             setBody(request)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if(response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Log.e(TAG, "Unauthorized: ${response.status}")
                 throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {

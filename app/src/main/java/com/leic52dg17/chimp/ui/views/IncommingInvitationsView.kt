@@ -64,13 +64,13 @@ fun IncomingInvitationsView(
                             modifier = modifier.fillMaxWidth()
                         ) {
                             Button(
-                                onClick = { onAcceptClick(invitation.invitationId) },
+                                onClick = { onAcceptClick(invitation.id) },
                                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
                             ) {
                                 Text("Accept")
                             }
                             Button(
-                                onClick = { onDeclineClick(invitation.invitationId) },
+                                onClick = { onDeclineClick(invitation.id) },
                                 colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.error)
                             ) {
                                 Text("Decline")
