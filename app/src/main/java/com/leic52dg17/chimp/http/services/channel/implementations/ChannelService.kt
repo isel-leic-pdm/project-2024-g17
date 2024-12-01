@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.http.services.channel.implementations
 import android.util.Log
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel.requests.CreateChannelInvitationRequest
@@ -193,6 +194,54 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             }
         }
         return userId
+    }
+
+    override suspend fun getChannelInvitations(id: Int): List<ChannelInvitation> {
+        val uri = URL(ApiEndpoints.ChannelInvitation.GET_BY_USER_ID.replace("{id}", id.toString()))
+
+        val response = client.get(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
+                val details = json.decodeFromString<ProblemDetails>(response.body())
+                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+            } else {
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
+            }
+        }
+
+        return json.decodeFromString<List<ChannelInvitation>>(response.body())
+    }
+
+    override suspend fun acceptChannelInvitation(invitationId: Int, userId: Int) {
+        val uri = URL(ApiEndpoints.ChannelInvitation.USE.replace("{id}", userId.toString()))
+
+        val response = client.put(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
+                val details = json.decodeFromString<ProblemDetails>(response.body())
+                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+            } else {
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
+            }
+        }
+    }
+
+    override suspend fun rejectChannelInvitation(invitationId: Int, userId: Int) {
+        TODO("Not yet implemented")
     }
 
     companion object {

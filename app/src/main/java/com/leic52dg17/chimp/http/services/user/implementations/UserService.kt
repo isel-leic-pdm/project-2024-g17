@@ -21,7 +21,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.net.URL
 
-class UserService(private val client: HttpClient): IUserService{
+class UserService(private val client: HttpClient) : IUserService {
     private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun getUserById(id: Int): User {
@@ -32,11 +32,11 @@ class UserService(private val client: HttpClient): IUserService{
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if(response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Log.e(TAG, "Unauthorized: ${response.status}")
                 throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
@@ -56,12 +56,12 @@ class UserService(private val client: HttpClient): IUserService{
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                Log.e(TAG, "${details.title} -> ${details.errors}")
                 throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if(response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Log.e(TAG, "Unauthorized: ${response.status}")
                 throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {
@@ -82,12 +82,12 @@ class UserService(private val client: HttpClient): IUserService{
             header("Content-Type", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
                 val details = json.decodeFromString<ProblemDetails>(response.body())
                 Log.e(TAG, " ${details.title} -> ${details.errors}")
                 throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if(response.status == HttpStatusCode.Unauthorized) {
+            } else if (response.status == HttpStatusCode.Unauthorized) {
                 Log.e(TAG, "Unauthorized: ${response.status}")
                 throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
             } else {

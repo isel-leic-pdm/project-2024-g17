@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
@@ -19,6 +20,7 @@ import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
+import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
 
@@ -84,7 +86,20 @@ class MainViewSelectorViewModel(
                 }
             }
 
-            is Events.Invitation -> TODO()
+            is Events.Invitation -> {
+                when (state) {
+                    is MainViewSelectorState.UserInvitations -> {
+                        val currState = (state as MainViewSelectorState.UserInvitations)
+                        val updatedInvitations = currState.invitations + event.channelInvitation
+                        transition(currState.copy(
+                            invitations = updatedInvitations,
+                            authenticatedUser = currState.authenticatedUser
+                        ))
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -508,6 +523,69 @@ class MainViewSelectorViewModel(
                     )
                 )
             }
+        }
+    }
+
+    fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser?.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                    return@launch
+                }
+                channelService.getChannelInvitations(authenticatedUser.user.id)
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
+        }
+    }
+
+    fun acceptChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    channelService.acceptChannelInvitation(invitationId, authenticatedUser.user.id)
+                }
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
+        }
+    }
+
+    fun rejectChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    channelService.rejectChannelInvitation(invitationId, authenticatedUser.user.id)
+                }
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
         }
     }
 

@@ -10,8 +10,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MailOutline
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +37,7 @@ fun UserInfoView(
     user: User,
     authenticatedUser: AuthenticatedUser?,
     onBackClick: () -> Unit,
+    onInvitationsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -47,6 +52,15 @@ fun UserInfoView(
             modifier = modifier.fillMaxWidth(),
         ) {
             BackButton(onBackClick = onBackClick)
+            IconButton(
+                onClick = onInvitationsClick,
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MailOutline,
+                    tint = MaterialTheme.colorScheme.primary,
+                    contentDescription = stringResource(R.string.back_button_text_cd)
+                )
+            }
         }
 
         Column(
@@ -62,7 +76,8 @@ fun UserInfoView(
                     .size(300.dp)
             )
             Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = modifier.padding(top = 10.dp)
             ) {
                 Text(
                     text = user.displayName,
@@ -129,6 +144,7 @@ fun UserInfoViewPreview() {
             user = User(1, "username", "Harvyyyy")
         ),
         onBackClick = { },
+        onInvitationsClick = { },
         onLogoutClick = { },
         onChangePasswordClick = {}
     )
