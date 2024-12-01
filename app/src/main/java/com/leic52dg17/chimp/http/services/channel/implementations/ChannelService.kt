@@ -11,6 +11,7 @@ import com.leic52dg17.chimp.http.services.channel.requests.CreateChannelRequest
 import com.leic52dg17.chimp.http.services.channel.requests.UpdateUserChannelRequest
 import com.leic52dg17.chimp.http.services.channel.responses.CreateChannelInvitationResponse
 import com.leic52dg17.chimp.http.services.channel.responses.CreateChannelResponse
+import com.leic52dg17.chimp.http.services.channel.responses.GetChannelInvitationsResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelsResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
@@ -216,7 +217,13 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             }
         }
 
-        return json.decodeFromString<List<ChannelInvitation>>(response.body())
+        val responseBody = json.decodeFromString<GetChannelInvitationsResponse>(response.body())
+
+        val invitations = responseBody.channelInvitations.map { invitations ->
+            invitations.toChannelInvitation()
+        }
+
+        return invitations
     }
 
     override suspend fun acceptChannelInvitation(invitationId: Int, userId: Int) {

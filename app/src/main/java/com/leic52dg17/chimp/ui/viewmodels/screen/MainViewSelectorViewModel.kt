@@ -20,7 +20,6 @@ import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
-import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import kotlinx.coroutines.launch
 
@@ -533,7 +532,8 @@ class MainViewSelectorViewModel(
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-                channelService.getChannelInvitations(authenticatedUser.user.id)
+                val invitations = channelService.getChannelInvitations(authenticatedUser.user.id)
+                transition(MainViewSelectorState.UserInvitations(invitations, authenticatedUser))
             }
         } catch (e: ServiceException) {
             transition(
