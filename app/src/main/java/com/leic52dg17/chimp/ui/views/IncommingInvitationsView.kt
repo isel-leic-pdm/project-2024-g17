@@ -8,16 +8,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
-import com.leic52dg17.chimp.http.services.fake.FakeData
-import com.leic52dg17.chimp.http.services.fake.FakeData.channels
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun IncomingInvitationsView(
-    invitations: List<ChannelInvitation>,
+    invitations: List<ChannelInvitationDetails>,
     onBackClick: () -> Unit,
     onAcceptClick: (Int) -> Unit,
     onDeclineClick: (Int) -> Unit,
@@ -58,8 +55,8 @@ fun IncomingInvitationsView(
                             .padding(16.dp)
                     ) {
                         // Text that GETS channel name through channelId
-                        Text("Channel Name: ${channels.find { it.channelId == invitation.channelId }?.displayName}")
-                        Text("Sender: ${invitation.senderId}")
+                        Text("Channel Name: ${invitation.channelName}")
+                        Text("Sender: ${invitation.senderUsername}")
                         Row(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically,
@@ -83,15 +80,4 @@ fun IncomingInvitationsView(
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun IncomingInvitationsViewPreview() {
-    IncomingInvitationsView(
-        invitations = FakeData.invitations,
-        onBackClick = {},
-        onAcceptClick = {},
-        onDeclineClick = {}
-    )
 }
