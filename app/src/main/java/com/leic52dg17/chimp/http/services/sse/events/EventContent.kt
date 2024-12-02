@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.http.services.sse.events
 
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,8 +20,10 @@ data class MessageContent(
 @Serializable
 @SerialName("Invitation")
 data class InvitationContent(
-    val invitationId: Int,
+    val id: Int,
+    val senderId: Int,
+    val receiverId: Int,
     val channelId: Int,
-    val invitedByUserId: Int,
-    val invitedAt: Long
+    val permissionLevel: PermissionLevel,
+    val createdAt: Long
 ) : EventContent()

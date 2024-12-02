@@ -10,7 +10,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -84,7 +86,34 @@ class MainViewSelectorViewModel(
                 }
             }
 
-            is Events.Invitation -> TODO()
+            is Events.Invitation -> {
+                when (state) {
+                    is MainViewSelectorState.UserInvitations -> {
+                        val currState = (state as MainViewSelectorState.UserInvitations)
+
+                        viewModelScope.launch {
+                            val channel = channelService.getChannelById(event.channelInvitation.channelId)
+                            val sender = userService.getUserById(event.channelInvitation.senderId)
+                            val incomingInvitation = ChannelInvitationDetails(
+                                id = event.channelInvitation.id,
+                                senderId = event.channelInvitation.senderId,
+                                receiverId = event.channelInvitation.receiverId,
+                                channelId = event.channelInvitation.channelId,
+                                permissionLevel = event.channelInvitation.permissionLevel,
+                                senderUsername = if (sender?.username != null) sender.username else "Unknown user",
+                                channelName = channel.displayName
+                            )
+
+                            transition(currState.copy(
+                                invitations = currState.invitations + incomingInvitation,
+                                authenticatedUser = currState.authenticatedUser
+                            ))
+                        }
+                    }
+
+                    else -> {}
+                }
+            }
         }
     }
 
@@ -514,6 +543,84 @@ class MainViewSelectorViewModel(
                     )
                 )
             }
+        }
+    }
+
+    fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser?.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                    return@launch
+                }
+                val invitations = channelService.getChannelInvitations(authenticatedUser.user.id)
+                val invitationDetails = invitations.map { invitation ->
+                    val sender = userService.getUserById(invitation.senderId)
+                    val channel = channelService.getChannelById(invitation.channelId)
+
+                    ChannelInvitationDetails(
+                        id = invitation.id,
+                        channelId = invitation.channelId,
+                        senderId = invitation.senderId,
+                        receiverId = invitation.receiverId,
+                        permissionLevel = invitation.permissionLevel,
+                        channelName = channel.displayName,
+                        senderUsername = if (sender?.displayName != null) sender.displayName else "Unknown user"
+                    )
+                }
+                transition(MainViewSelectorState.UserInvitations(invitationDetails, authenticatedUser))
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
+        }
+    }
+
+    fun acceptChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    channelService.acceptChannelInvitation(invitationId, authenticatedUser.user.id)
+                }
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
+        }
+    }
+
+    fun rejectChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
+        try {
+            viewModelScope.launch {
+                if (authenticatedUser.user == null) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    channelService.rejectChannelInvitation(invitationId, authenticatedUser.user.id)
+                }
+            }
+        } catch (e: ServiceException) {
+            transition(
+                MainViewSelectorState.SubscribedChannels(
+                    true,
+                    dialogMessage = e.message,
+                    channels = null,
+                    authenticatedUser = authenticatedUser
+                )
+            )
         }
     }
 

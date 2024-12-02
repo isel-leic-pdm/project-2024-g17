@@ -34,6 +34,7 @@ object ApiEndpoints {
         val GET_BY_ID = "$BASE_URL/channels/invitations/{id}"
         val USE = "$BASE_URL/channels/invitations/{id}"
         val GET_BY_CHANNEL_ID = "$BASE_URL/channels/invitations/channel/{id}"
+        val GET_BY_USER_ID = "$BASE_URL/channels/invitations/users/{id}"
     }
 
     object Chat {

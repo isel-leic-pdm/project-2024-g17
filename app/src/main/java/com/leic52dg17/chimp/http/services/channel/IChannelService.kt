@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.http.services.channel
 
 import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 
 interface IChannelService {
@@ -26,4 +27,9 @@ interface IChannelService {
         userId: Int,
         channelId: Int
     ): Int
+
+    suspend fun getChannelInvitations(id: Int): List<ChannelInvitation>
+
+    suspend fun acceptChannelInvitation(invitationId: Int, userId: Int)
+    suspend fun rejectChannelInvitation(invitationId: Int, userId: Int)
 }

@@ -7,7 +7,6 @@ import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
 import java.math.BigInteger
-import java.util.UUID
 import kotlin.math.ceil
 
 object FakeData {
@@ -168,35 +167,35 @@ object FakeData {
 
     val invitations = mutableListOf(
         ChannelInvitation(
-            invitationId = ceil(Math.random()).toInt(),
+            id = ceil(Math.random()).toInt(),
             channelId = 1,
             senderId = 2,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = ceil(Math.random()).toInt(),
+            id = ceil(Math.random()).toInt(),
             channelId = 2,
             senderId = 2,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = ceil(Math.random()).toInt(),
+            id = ceil(Math.random()).toInt(),
             channelId = 3,
             senderId = 3,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = ceil(Math.random()).toInt(),
+            id = ceil(Math.random()).toInt(),
             channelId = 4,
             senderId = 4,
             receiverId = 1,
             permissionLevel = PermissionLevel.RW
         ),
         ChannelInvitation(
-            invitationId = ceil(Math.random()).toInt(),
+            id = ceil(Math.random()).toInt(),
             channelId = 5,
             senderId = 1,
             receiverId = 1,

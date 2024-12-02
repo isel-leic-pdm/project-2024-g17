@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.Saver
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 
@@ -23,6 +24,7 @@ sealed interface MainViewSelectorState {
     data object About: MainViewSelectorState
     data class ChangePassword(val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object Unauthenticated: MainViewSelectorState
+    data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(
