@@ -16,6 +16,7 @@ import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.channel.IChannelService
+import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
@@ -92,7 +93,8 @@ class MainViewSelectorViewModel(
                         val currState = (state as MainViewSelectorState.UserInvitations)
 
                         viewModelScope.launch {
-                            val channel = channelService.getChannelById(event.channelInvitation.channelId)
+                            val channel =
+                                channelService.getChannelById(event.channelInvitation.channelId)
                             val sender = userService.getUserById(event.channelInvitation.senderId)
                             val incomingInvitation = ChannelInvitationDetails(
                                 id = event.channelInvitation.id,
@@ -104,10 +106,12 @@ class MainViewSelectorViewModel(
                                 channelName = channel.displayName
                             )
 
-                            transition(currState.copy(
-                                invitations = currState.invitations + incomingInvitation,
-                                authenticatedUser = currState.authenticatedUser
-                            ))
+                            transition(
+                                currState.copy(
+                                    invitations = currState.invitations + incomingInvitation,
+                                    authenticatedUser = currState.authenticatedUser
+                                )
+                            )
                         }
                     }
 
@@ -177,13 +181,17 @@ class MainViewSelectorViewModel(
                 }
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        showDialog = true,
-                        dialogMessage = e.message,
-                        authenticatedUser = authenticatedUser
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            showDialog = true,
+                            dialogMessage = e.message,
+                            authenticatedUser = authenticatedUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -212,13 +220,17 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                transition(
-                    MainViewSelectorState.ChannelInfo(
-                        showDialog = true,
-                        dialogMessage = e.message,
-                        authenticatedUser = currentUser
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.ChannelInfo(
+                            showDialog = true,
+                            dialogMessage = e.message,
+                            authenticatedUser = currentUser
+                        )
                     )
-                )
+                }
             }
         }
 
@@ -266,13 +278,17 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        e.message,
-                        authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            true,
+                            e.message,
+                            authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -317,13 +333,17 @@ class MainViewSelectorViewModel(
                     )
                 } catch (e: ServiceException) {
                     Log.e(TAG, "${e.message!!} : Current State -> $state")
-                    transition(
-                        MainViewSelectorState.CreateChannel(
-                            true,
-                            e.message,
-                            authenticatedUser = authenticatedUser
+                    if(e.type === ServiceErrorTypes.Unauthorized) {
+                        transition(MainViewSelectorState.Unauthenticated)
+                    } else {
+                        transition(
+                            MainViewSelectorState.CreateChannel(
+                                true,
+                                e.message,
+                                authenticatedUser = authenticatedUser
+                            )
                         )
-                    )
+                    }
                 }
             }
         }
@@ -350,14 +370,18 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                transition(
-                    MainViewSelectorState.ChannelInfo(
-                        showDialog = true,
-                        dialogMessage = e.message,
-                        channel = channelService.getChannelById(channelId),
-                        authenticatedUser = currentUser
+                if(e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.ChannelInfo(
+                            showDialog = true,
+                            dialogMessage = e.message,
+                            channel = channelService.getChannelById(channelId),
+                            authenticatedUser = currentUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -391,13 +415,17 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        e.message,
-                        authenticatedUser = authenticatedUser
+                if(e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            true,
+                            e.message,
+                            authenticatedUser = authenticatedUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -437,14 +465,18 @@ class MainViewSelectorViewModel(
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
                 val channels = channelService.getUserSubscribedChannels(userId)
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        showDialog = true,
-                        dialogMessage = e.message,
-                        channels = channels,
-                        authenticatedUser = authenticatedUser
+                if(e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            showDialog = true,
+                            dialogMessage = e.message,
+                            channels = channels,
+                            authenticatedUser = authenticatedUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -467,7 +499,7 @@ class MainViewSelectorViewModel(
         transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
-            if(authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
+            if (authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                 transition(MainViewSelectorState.Unauthenticated)
                 return@launch
             }
@@ -493,13 +525,17 @@ class MainViewSelectorViewModel(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: "Exception thrown in getUserProfile with user id $id")
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        e.message,
-                        authenticatedUser = authenticatedUser
+                if((e as ServiceException).type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            true,
+                            e.message,
+                            authenticatedUser = authenticatedUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -534,14 +570,18 @@ class MainViewSelectorViewModel(
                     )
                 )
             } catch (e: ServiceException) {
-                transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        dialogMessage = e.message,
-                        channels = null,
-                        authenticatedUser = authenticatedUser
+                if(e.type === ServiceErrorTypes.Unauthorized) {
+                    transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            true,
+                            dialogMessage = e.message,
+                            channels = null,
+                            authenticatedUser = authenticatedUser
+                        )
                     )
-                )
+                }
             }
         }
     }
@@ -549,7 +589,10 @@ class MainViewSelectorViewModel(
     fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
         try {
             viewModelScope.launch {
-                if (authenticatedUser?.user == null) {
+                if (authenticatedUser?.user == null || !SharedPreferencesHelper.checkTokenValidity(
+                        context
+                    )
+                ) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -568,59 +611,82 @@ class MainViewSelectorViewModel(
                         senderUsername = if (sender?.displayName != null) sender.displayName else "Unknown user"
                     )
                 }
-                transition(MainViewSelectorState.UserInvitations(invitationDetails, authenticatedUser))
+                transition(
+                    MainViewSelectorState.UserInvitations(
+                        invitationDetails,
+                        authenticatedUser
+                    )
+                )
             }
         } catch (e: ServiceException) {
-            transition(
-                MainViewSelectorState.SubscribedChannels(
-                    true,
-                    dialogMessage = e.message,
-                    channels = null,
-                    authenticatedUser = authenticatedUser
+            if(e.type === ServiceErrorTypes.Unauthorized) {
+                transition(MainViewSelectorState.Unauthenticated)
+            } else {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        dialogMessage = e.message,
+                        channels = null,
+                        authenticatedUser = authenticatedUser
+                    )
                 )
-            )
+            }
         }
     }
 
     fun acceptChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
         try {
             viewModelScope.launch {
-                if (authenticatedUser.user == null) {
+                if (authenticatedUser.user == null || !SharedPreferencesHelper.checkTokenValidity(
+                        context
+                    )
+                ) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     channelService.acceptChannelInvitation(invitationId, authenticatedUser.user.id)
                 }
             }
         } catch (e: ServiceException) {
-            transition(
-                MainViewSelectorState.SubscribedChannels(
-                    true,
-                    dialogMessage = e.message,
-                    channels = null,
-                    authenticatedUser = authenticatedUser
+            if(e.type === ServiceErrorTypes.Unauthorized) {
+                transition(MainViewSelectorState.Unauthenticated)
+            } else {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        dialogMessage = e.message,
+                        channels = null,
+                        authenticatedUser = authenticatedUser
+                    )
                 )
-            )
+            }
         }
     }
 
     fun rejectChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
         try {
             viewModelScope.launch {
-                if (authenticatedUser.user == null) {
+                if (authenticatedUser.user == null || !SharedPreferencesHelper.checkTokenValidity(
+                        context
+                    )
+                ) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     channelService.rejectChannelInvitation(invitationId, authenticatedUser.user.id)
                 }
             }
         } catch (e: ServiceException) {
-            transition(
-                MainViewSelectorState.SubscribedChannels(
-                    true,
-                    dialogMessage = e.message,
-                    channels = null,
-                    authenticatedUser = authenticatedUser
+            if(e.type === ServiceErrorTypes.Unauthorized) {
+                transition(MainViewSelectorState.Unauthenticated)
+            } else {
+                transition(
+                    MainViewSelectorState.SubscribedChannels(
+                        true,
+                        dialogMessage = e.message,
+                        channels = null,
+                        authenticatedUser = authenticatedUser
+                    )
                 )
-            )
+            }
         }
     }
 
