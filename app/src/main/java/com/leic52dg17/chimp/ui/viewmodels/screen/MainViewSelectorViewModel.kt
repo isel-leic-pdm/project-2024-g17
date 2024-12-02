@@ -112,7 +112,7 @@ class MainViewSelectorViewModel(
             val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
             val currentUser = authenticatedUser?.user
             try {
-                if (currentUser == null) {
+                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -172,7 +172,7 @@ class MainViewSelectorViewModel(
                         authenticatedUser = currentUser
                     )
                 )
-                else if (currentUser == null) {
+                else if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 } else transition(
@@ -202,7 +202,7 @@ class MainViewSelectorViewModel(
                 val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
                 Log.d(TAG, "=== COULD RETRIEVE AUTH USER : $authenticatedUser")
                 val currentUser = authenticatedUser?.user
-                if (currentUser == null) {
+                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -255,16 +255,18 @@ class MainViewSelectorViewModel(
         channelIconUrl: String
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
-        if (currentUser == null) {
-            transition(MainViewSelectorState.Unauthenticated)
-            return
-        }
+        Log.i("DEBUG_SESH", currentUser.toString())
+        Log.i("DEBUG_SESH", SharedPreferencesHelper.checkTokenValidity(context).toString())
         if (state is MainViewSelectorState.CreateChannel) {
+            if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
+                transition(MainViewSelectorState.Unauthenticated)
+                return
+            }
             transition(MainViewSelectorState.CreatingChannel)
             viewModelScope.launch {
                 val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
 
-                if (authenticatedUser == null) {
+                if (authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -303,7 +305,7 @@ class MainViewSelectorViewModel(
         channelId: Int
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)
-        if (currentUser == null) {
+        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
             transition(MainViewSelectorState.Unauthenticated)
             return
         }
@@ -336,7 +338,7 @@ class MainViewSelectorViewModel(
         val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
         val currentUser = authenticatedUser?.user
 
-        if (currentUser == null) {
+        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
             transition(MainViewSelectorState.Unauthenticated)
             return
         }
@@ -377,7 +379,7 @@ class MainViewSelectorViewModel(
     ) {
         val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
         val currentUser = authenticatedUser?.user
-        if (currentUser == null) {
+        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
             transition(MainViewSelectorState.Unauthenticated)
             return
         }
@@ -436,6 +438,10 @@ class MainViewSelectorViewModel(
         transition(MainViewSelectorState.Loading)
         viewModelScope.launch {
             val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context)
+            if(authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
+                transition(MainViewSelectorState.Unauthenticated)
+                return@launch
+            }
             try {
                 val user = userService.getUserById(id)
                 if (user != null) {
@@ -477,7 +483,7 @@ class MainViewSelectorViewModel(
         val currentUser = authenticatedUser?.user
         viewModelScope.launch {
             try {
-                if (currentUser == null) {
+                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                     transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }

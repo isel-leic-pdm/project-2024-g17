@@ -6,6 +6,7 @@ import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.message.Message
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.time.Instant
 
 object SharedPreferencesHelper {
     private const val PREFS_NAME = "chimp_prefs"
@@ -28,6 +29,13 @@ object SharedPreferencesHelper {
         val prefs = getPreferences(context)
         val userJson = prefs.getString(KEY_AUTHENTICATED_USER, null)
         return userJson?.let { Json.decodeFromString(it) }
+    }
+
+    fun checkTokenValidity(context: Context): Boolean {
+        val authenticatedUser = getAuthenticatedUser(context)
+        return if(authenticatedUser?.tokenExpirationDate != null) {
+            authenticatedUser.tokenExpirationDate >= Instant.EPOCH.epochSecond
+        } else false
     }
 
     fun logout(context: Context) {
