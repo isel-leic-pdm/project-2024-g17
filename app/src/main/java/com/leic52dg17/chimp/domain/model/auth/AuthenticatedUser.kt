@@ -6,5 +6,6 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class AuthenticatedUser(
     val authenticationToken: String? = null,
-    val user: User? = null
+    val user: User? = null,
+    val tokenExpirationDate: Long? = null
 )

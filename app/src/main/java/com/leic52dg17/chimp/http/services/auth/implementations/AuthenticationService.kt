@@ -52,7 +52,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
         val responseBody = response.body<GetTokenResponse>()
         val user = getUserByToken(responseBody.token)
 
-        return AuthenticatedUser(responseBody.token, user)
+        return AuthenticatedUser(responseBody.token, user, responseBody.expirationDate)
     }
 
     override suspend fun signUpUser(username: String, displayName: String, password: String): AuthenticatedUser {
