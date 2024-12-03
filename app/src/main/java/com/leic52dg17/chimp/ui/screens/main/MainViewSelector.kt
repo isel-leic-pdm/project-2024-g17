@@ -264,7 +264,7 @@ fun MainViewSelector(
                                 alertDialogText = text
                                 handleSharedAlertDialogVisibilitySwitch()
                             },
-                            onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl, channelIconContentDescription ->
+                            onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl ->
                                 viewModel.createChannel(
                                     ownerId,
                                     name,
@@ -334,8 +334,10 @@ fun MainViewSelector(
                         isLoading = false
                         isNavBarShown = false
                         val currentState = (viewModel.state as MainViewSelectorState.ChannelInfo)
-                        LaunchedEffect(Unit) {
-                            viewModel.loadChannelInfo()
+                        LaunchedEffect(currentState.channel?.channelId) {
+                            if(!currentState.showDialog) {
+                                viewModel.loadChannelInfo()
+                            }
                         }
                         currentState.channel?.let {
                             ChannelInfoView(

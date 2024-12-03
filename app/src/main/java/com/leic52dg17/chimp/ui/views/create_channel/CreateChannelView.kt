@@ -46,8 +46,7 @@ fun CreateChannelView(
         name: String,
         isPrivate: Boolean,
         channelIconUrl: String,
-        channelIconContentDescription: String
-    ) -> Unit = { _, _, _, _, _ -> }
+    ) -> Unit = { _, _, _, _ -> }
 ) {
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
@@ -149,8 +148,7 @@ fun CreateChannelView(
                             authenticatedUser.user.id,
                             channelNameInputValue,
                             isPrivate,
-                            "",
-                            "Channel Icon"
+                            ""
                         )
                     }
                 ) {
