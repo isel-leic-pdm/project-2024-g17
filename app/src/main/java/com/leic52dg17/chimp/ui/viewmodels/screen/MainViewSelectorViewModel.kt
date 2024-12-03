@@ -199,37 +199,51 @@ class MainViewSelectorViewModel(
     fun loadChannelInfo() {
         val channel = (state as? MainViewSelectorState.ChannelInfo)?.channel
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)
-        transition(MainViewSelectorState.GettingChannelInfo)
-        viewModelScope.launch {
-            try {
-                if (channel == null) transition(
-                    MainViewSelectorState.ChannelInfo(
-                        showDialog = true,
-                        dialogMessage = ErrorMessages.CHANNEL_NOT_FOUND,
-                        authenticatedUser = currentUser
-                    )
-                )
-                else if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
-                    transition(MainViewSelectorState.Unauthenticated)
-                    return@launch
-                } else transition(
-                    MainViewSelectorState.ChannelInfo(
-                        channel = channel,
-                        authenticatedUser = currentUser
-                    )
-                )
-            } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $state")
-                if (e.type === ServiceErrorTypes.Unauthorized) {
-                    transition(MainViewSelectorState.Unauthenticated)
-                } else {
-                    transition(
+        if (state !is MainViewSelectorState.GettingChannelInfo) {
+            transition(MainViewSelectorState.GettingChannelInfo)
+            viewModelScope.launch {
+                try {
+                    if (channel == null) transition(
                         MainViewSelectorState.ChannelInfo(
                             showDialog = true,
-                            dialogMessage = e.message,
+                            dialogMessage = ErrorMessages.CHANNEL_NOT_FOUND,
                             authenticatedUser = currentUser
                         )
                     )
+                    else if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(
+                            context
+                        )
+                    ) {
+                        transition(MainViewSelectorState.Unauthenticated)
+                        return@launch
+                    } else {
+                        var updatedChannel: Channel
+                        if (channel.users.isEmpty()) {
+                            val channelUsers = userService.getChannelUsers(channel.channelId)
+                            updatedChannel = channel.copy(users = channelUsers)
+                        } else {
+                            updatedChannel = channel
+                        }
+                        transition(
+                            MainViewSelectorState.ChannelInfo(
+                                channel = updatedChannel,
+                                authenticatedUser = currentUser
+                            )
+                        )
+                    }
+                } catch (e: ServiceException) {
+                    Log.e(TAG, "${e.message!!} : Current State -> $state")
+                    if (e.type === ServiceErrorTypes.Unauthorized) {
+                        transition(MainViewSelectorState.Unauthenticated)
+                    } else {
+                        transition(
+                            MainViewSelectorState.ChannelInfo(
+                                showDialog = true,
+                                dialogMessage = e.message,
+                                authenticatedUser = currentUser
+                            )
+                        )
+                    }
                 }
             }
         }
@@ -300,8 +314,6 @@ class MainViewSelectorViewModel(
         channelIconUrl: String
     ) {
         val currentUser = SharedPreferencesHelper.getAuthenticatedUser(context)?.user
-        Log.i("DEBUG_SESH", currentUser.toString())
-        Log.i("DEBUG_SESH", SharedPreferencesHelper.checkTokenValidity(context).toString())
         if (state is MainViewSelectorState.CreateChannel) {
             if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(context)) {
                 transition(MainViewSelectorState.Unauthenticated)
@@ -333,7 +345,7 @@ class MainViewSelectorViewModel(
                     )
                 } catch (e: ServiceException) {
                     Log.e(TAG, "${e.message!!} : Current State -> $state")
-                    if(e.type === ServiceErrorTypes.Unauthorized) {
+                    if (e.type === ServiceErrorTypes.Unauthorized) {
                         transition(MainViewSelectorState.Unauthenticated)
                     } else {
                         transition(
@@ -370,7 +382,7 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                if(e.type === ServiceErrorTypes.Unauthorized) {
+                if (e.type === ServiceErrorTypes.Unauthorized) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     transition(
@@ -415,7 +427,7 @@ class MainViewSelectorViewModel(
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
-                if(e.type === ServiceErrorTypes.Unauthorized) {
+                if (e.type === ServiceErrorTypes.Unauthorized) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     transition(
@@ -465,7 +477,7 @@ class MainViewSelectorViewModel(
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message!!} : Current State -> $state")
                 val channels = channelService.getUserSubscribedChannels(userId)
-                if(e.type === ServiceErrorTypes.Unauthorized) {
+                if (e.type === ServiceErrorTypes.Unauthorized) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     transition(
@@ -525,7 +537,7 @@ class MainViewSelectorViewModel(
                 }
             } catch (e: Exception) {
                 Log.e(TAG, e.message ?: "Exception thrown in getUserProfile with user id $id")
-                if((e as ServiceException).type === ServiceErrorTypes.Unauthorized) {
+                if ((e as ServiceException).type === ServiceErrorTypes.Unauthorized) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     transition(
@@ -570,7 +582,7 @@ class MainViewSelectorViewModel(
                     )
                 )
             } catch (e: ServiceException) {
-                if(e.type === ServiceErrorTypes.Unauthorized) {
+                if (e.type === ServiceErrorTypes.Unauthorized) {
                     transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     transition(
@@ -619,7 +631,7 @@ class MainViewSelectorViewModel(
                 )
             }
         } catch (e: ServiceException) {
-            if(e.type === ServiceErrorTypes.Unauthorized) {
+            if (e.type === ServiceErrorTypes.Unauthorized) {
                 transition(MainViewSelectorState.Unauthenticated)
             } else {
                 transition(
@@ -647,7 +659,7 @@ class MainViewSelectorViewModel(
                 }
             }
         } catch (e: ServiceException) {
-            if(e.type === ServiceErrorTypes.Unauthorized) {
+            if (e.type === ServiceErrorTypes.Unauthorized) {
                 transition(MainViewSelectorState.Unauthenticated)
             } else {
                 transition(
@@ -675,7 +687,7 @@ class MainViewSelectorViewModel(
                 }
             }
         } catch (e: ServiceException) {
-            if(e.type === ServiceErrorTypes.Unauthorized) {
+            if (e.type === ServiceErrorTypes.Unauthorized) {
                 transition(MainViewSelectorState.Unauthenticated)
             } else {
                 transition(
