@@ -7,11 +7,10 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import com.leic52dg17.chimp.core.ChimpApplication
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
-import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModelFactory
+import com.leic52dg17.chimp.ui.viewmodels.screen.auth.AuthenticationViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.auth.AuthenticationViewSelectorViewModelFactory
 
 class AuthenticationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

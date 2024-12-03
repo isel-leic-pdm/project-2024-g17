@@ -10,7 +10,7 @@ import androidx.compose.ui.platform.LocalContext
 import com.leic52dg17.chimp.core.activity.MainActivity
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.AuthenticationViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.auth.AuthenticationViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.LandingView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
