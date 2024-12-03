@@ -17,8 +17,8 @@ import com.leic52dg17.chimp.core.ChimpApplication
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModelFactory
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModelFactory
 
 class MainActivity : ComponentActivity() {
 

@@ -6,10 +6,9 @@ import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
 import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
-import com.leic52dg17.chimp.http.services.sse.implementations.SSEService
 import com.leic52dg17.chimp.http.services.user.implementations.FakeUserService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Test

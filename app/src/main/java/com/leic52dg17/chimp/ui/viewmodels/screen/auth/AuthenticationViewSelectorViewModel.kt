@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.viewmodels.screen
+package com.leic52dg17.chimp.ui.viewmodels.screen.auth
 
 import android.content.Context
 import android.util.Log
@@ -80,7 +80,8 @@ class AuthenticationViewSelectorViewModel(
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
                 try {
-                    val authenticatedUser = authenticationService.signUpUser(username, displayName, password)
+                    val authenticatedUser =
+                        authenticationService.signUpUser(username, displayName, password)
                     SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
                     transition(AuthenticationViewSelectorState.Authenticated)
                 } catch (e: ServiceException) {
@@ -93,10 +94,6 @@ class AuthenticationViewSelectorViewModel(
                 }
             }
         }
-    }
-
-    companion object {
-        private const val TAG = "AUTHENTICATION_VIEW_MODEL"
     }
 
     fun changePassword(
@@ -143,6 +140,10 @@ class AuthenticationViewSelectorViewModel(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "AUTHENTICATION_VIEW_MODEL"
     }
 }
 

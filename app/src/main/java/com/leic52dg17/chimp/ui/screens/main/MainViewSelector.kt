@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
@@ -26,7 +25,7 @@ import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
