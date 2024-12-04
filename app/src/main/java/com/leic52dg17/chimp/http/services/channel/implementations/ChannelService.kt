@@ -63,6 +63,7 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             }
         }
         val responseBody = json.decodeFromString<CreateChannelResponse>(response.body())
+        throw ServiceException("This is a test", ServiceErrorTypes.Common)
         return responseBody.channelId
     }
 

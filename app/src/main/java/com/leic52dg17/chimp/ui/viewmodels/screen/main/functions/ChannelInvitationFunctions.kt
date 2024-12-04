@@ -49,12 +49,11 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
             } else {
                 viewModel.transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        dialogMessage = e.message,
-                        channels = null,
-                        authenticatedUser = authenticatedUser
-                    )
+                    MainViewSelectorState.Error(message = e.message) {
+                        viewModel.transition(
+                            MainViewSelectorState.SubscribedChannels(authenticatedUser = authenticatedUser)
+                        )
+                    }
                 )
             }
         }
@@ -80,12 +79,13 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
             } else {
                 viewModel.transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        dialogMessage = e.message,
-                        channels = null,
-                        authenticatedUser = authenticatedUser
-                    )
+                    MainViewSelectorState.Error(message = e.message) {
+                        viewModel.transition(
+                            MainViewSelectorState.SubscribedChannels(
+                                authenticatedUser = authenticatedUser
+                            )
+                        )
+                    }
                 )
             }
         }
@@ -111,12 +111,13 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
             } else {
                 viewModel.transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        true,
-                        dialogMessage = e.message,
-                        channels = null,
-                        authenticatedUser = authenticatedUser
-                    )
+                    MainViewSelectorState.Error(e.message) {
+                        viewModel.transition(
+                            MainViewSelectorState.SubscribedChannels(
+                                authenticatedUser = authenticatedUser
+                            )
+                        )
+                    }
                 )
             }
         }

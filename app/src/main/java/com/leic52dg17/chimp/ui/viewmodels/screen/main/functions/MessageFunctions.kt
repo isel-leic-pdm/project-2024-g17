@@ -30,7 +30,6 @@ class MessageFunctions(private val viewModel: MainViewSelectorViewModel) {
                     channelWithoutMessages.copy(messages = channelMessages, users = channelUsers)
                 viewModel.transition(
                     MainViewSelectorState.ChannelMessages(
-                        false,
                         channel = updatedChannel,
                         authenticatedUser = authenticatedUser
                     )
@@ -40,12 +39,13 @@ class MessageFunctions(private val viewModel: MainViewSelectorViewModel) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     viewModel.transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            true,
-                            dialogMessage = e.message,
-                            channels = null,
-                            authenticatedUser = authenticatedUser
-                        )
+                        MainViewSelectorState.Error(message = e.message) {
+                            viewModel.transition(
+                                MainViewSelectorState.SubscribedChannels(
+                                    authenticatedUser = authenticatedUser
+                                )
+                            )
+                        }
                     )
                 }
             }

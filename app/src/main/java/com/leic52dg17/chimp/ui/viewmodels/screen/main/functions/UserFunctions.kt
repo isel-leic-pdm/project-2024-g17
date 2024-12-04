@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
@@ -33,24 +34,27 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                 } else {
                     Log.e(TAG, "Error fetching user profile for user with ID: $id")
                     viewModel.transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            true,
-                            "Unexpected error occurred when navigating to user info",
-                            authenticatedUser = authenticatedUser
-                        )
+                        MainViewSelectorState.Error(message = ErrorMessages.UNKNOWN) {
+                            viewModel.transition(
+                                MainViewSelectorState.SubscribedChannels(
+                                    authenticatedUser = authenticatedUser
+                                )
+                            )
+                        }
                     )
                 }
-            } catch (e: Exception) {
-                Log.e(TAG, e.message ?: "Exception thrown in getUserProfile with user id $id")
-                if ((e as ServiceException).type === ServiceErrorTypes.Unauthorized) {
+            } catch (e: ServiceException) {
+                if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     viewModel.transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            true,
-                            e.message,
-                            authenticatedUser = authenticatedUser
-                        )
+                        MainViewSelectorState.Error(message = e.message) {
+                            viewModel.transition(
+                                MainViewSelectorState.SubscribedChannels(
+                                    authenticatedUser = authenticatedUser
+                                )
+                            )
+                        }
                     )
                 }
             }
