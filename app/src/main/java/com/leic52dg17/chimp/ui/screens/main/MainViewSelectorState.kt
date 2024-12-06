@@ -10,19 +10,20 @@ import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 
 sealed interface MainViewSelectorState {
+    data class Error(val message: String, val onDismiss: () -> Unit): MainViewSelectorState
     data class Initialized(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class SubscribedChannels(val showDialog: Boolean = false, val dialogMessage: String? = null, val channels: List<Channel>? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class CreateChannel(val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class ChannelMessages(val showDialog: Boolean = false, val dialogMessage: String? = null, val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class SubscribedChannels(val channels: List<Channel>? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class CreateChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class ChannelMessages(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
     data object CreatingChannel: MainViewSelectorState
-    data class ChannelInfo(val channel: Channel? = null, val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class ChannelInfo(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
     data class UserInfo(val user: User, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class InvitingUsers(val channel: Channel, val showDialog: Boolean = false, val dialogMessage: String = "", val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class InvitingUsers(val showAlertDialog: Boolean = false, val dialogText: String = "", val channel: Channel, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object About: MainViewSelectorState
-    data class ChangePassword(val showDialog: Boolean = false, val dialogMessage: String? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class ChangePassword(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object Unauthenticated: MainViewSelectorState
     data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
   

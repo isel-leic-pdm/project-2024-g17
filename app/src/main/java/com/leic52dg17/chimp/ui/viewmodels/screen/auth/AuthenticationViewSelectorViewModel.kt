@@ -44,10 +44,9 @@ class AuthenticationViewSelectorViewModel(
                     if (storedAuthenticatedUser == null) {
                         Log.e(TAG, "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!")
                         transition(
-                            AuthenticationViewSelectorState.Login(
-                                isDialogOpen = true,
-                                errorMessage = ErrorMessages.AUTHENTICATED_USER_NULL
-                            )
+                            AuthenticationViewSelectorState.Error(message = ErrorMessages.AUTHENTICATED_USER_NULL) {
+                                transition(AuthenticationViewSelectorState.Login)
+                            }
                         )
                     } else {
                         Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.id}")
@@ -57,18 +56,18 @@ class AuthenticationViewSelectorViewModel(
                 } catch (e: ServiceException) {
                     Log.e(TAG, "ServiceException: ${e.message}")
                     transition(
-                        AuthenticationViewSelectorState.Login(
-                            isDialogOpen = true,
-                            errorMessage = e.message
-                        )
+                        AuthenticationViewSelectorState.Error(e.message) {
+                            AuthenticationViewSelectorState.Login
+                        }
                     )
                 } catch (e: Exception) {
                     Log.e(TAG, "Exception: ${e.message}")
                     transition(
-                        AuthenticationViewSelectorState.Login(
-                            isDialogOpen = true,
-                            errorMessage = e.message
-                        )
+                        AuthenticationViewSelectorState.Error(
+                            message = e.message ?: ErrorMessages.UNKNOWN
+                        ) {
+                            transition(AuthenticationViewSelectorState.Login)
+                        }
                     )
                 }
             }
@@ -86,10 +85,9 @@ class AuthenticationViewSelectorViewModel(
                     transition(AuthenticationViewSelectorState.Authenticated)
                 } catch (e: ServiceException) {
                     transition(
-                        AuthenticationViewSelectorState.SignUp(
-                            isDialogOpen = true,
-                            errorMessage = e.message
-                        )
+                        AuthenticationViewSelectorState.Error(e.message) {
+                            transition(AuthenticationViewSelectorState.SignUp)
+                        }
                     )
                 }
             }
@@ -116,10 +114,9 @@ class AuthenticationViewSelectorViewModel(
                     transition(AuthenticationViewSelectorState.Authenticated)
                 } catch (e: ServiceException) {
                     transition(
-                        AuthenticationViewSelectorState.ChangePassword(
-                            isDialogOpen = true,
-                            errorMessage = e.message
-                        )
+                        AuthenticationViewSelectorState.Error(message = e.message) {
+                            transition(AuthenticationViewSelectorState.ChangePassword)
+                        }
                     )
                 }
             }

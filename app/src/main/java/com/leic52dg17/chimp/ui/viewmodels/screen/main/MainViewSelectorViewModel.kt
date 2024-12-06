@@ -71,10 +71,11 @@ class MainViewSelectorViewModel(
                         val channel = (state as MainViewSelectorState.ChannelMessages).channel
                         if (channel == null) {
                             transition(
-                                (state as MainViewSelectorState.ChannelMessages).copy(
-                                    showDialog = true,
-                                    dialogMessage = ErrorMessages.CHANNEL_NOT_FOUND
-                                )
+                                MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
+                                    transition(
+                                        MainViewSelectorState.SubscribedChannels(authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context))
+                                    )
+                                }
                             )
                         } else {
                             val updatedChannel: Channel =

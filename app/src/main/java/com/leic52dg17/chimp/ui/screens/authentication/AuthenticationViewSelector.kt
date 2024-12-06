@@ -16,6 +16,7 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.authentication.ForgotPasswordView
 import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
+import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
 
 @Composable
 fun AuthenticationViewSelector(
@@ -35,19 +36,46 @@ fun AuthenticationViewSelector(
         }
 
         when (currentState) {
+
+            is AuthenticationViewSelectorState.Error -> {
+                ApplicationErrorView(
+                    message = currentState.message
+                ) {
+                    viewModel.transition(AuthenticationViewSelectorState.Landing)
+                }
+            }
+
             is AuthenticationViewSelectorState.Landing -> {
                 isLoading = false
                 LandingView(
-                    onLogInClick = { viewModel.transition(AuthenticationViewSelectorState.Login(false)) },
-                    onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
+                    onLogInClick = {
+                        viewModel.transition(
+                            AuthenticationViewSelectorState.Login
+                        )
+                    },
+                    onSignUpClick = {
+                        viewModel.transition(
+                            AuthenticationViewSelectorState.SignUp
+                        )
+                    },
                 )
             }
 
             is AuthenticationViewSelectorState.Login -> {
                 isLoading = false
                 LoginView(
-                    onLogInClick = { username, password -> viewModel.loginUser(username, password, onAuthenticate) },
-                    onSignUpClick = { viewModel.transition(AuthenticationViewSelectorState.SignUp(false)) },
+                    onLogInClick = { username, password ->
+                        viewModel.loginUser(
+                            username,
+                            password,
+                            onAuthenticate
+                        )
+                    },
+                    onSignUpClick = {
+                        viewModel.transition(
+                            AuthenticationViewSelectorState.SignUp
+                        )
+                    },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                     onForgotPasswordClick = { viewModel.transition(AuthenticationViewSelectorState.ForgotPassword) },
                 )
@@ -56,8 +84,18 @@ fun AuthenticationViewSelector(
             is AuthenticationViewSelectorState.SignUp -> {
                 isLoading = false
                 SignUpView(
-                    onSignUpClick = { username, displayName, password -> viewModel.signUpUser(username, displayName, password) },
-                    onLogInClick = { viewModel.transition(AuthenticationViewSelectorState.Login(false)) },
+                    onSignUpClick = { username, displayName, password ->
+                        viewModel.signUpUser(
+                            username,
+                            displayName,
+                            password
+                        )
+                    },
+                    onLogInClick = {
+                        viewModel.transition(
+                            AuthenticationViewSelectorState.Login
+                        )
+                    },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
             }
@@ -73,7 +111,14 @@ fun AuthenticationViewSelector(
             is AuthenticationViewSelectorState.ChangePassword -> {
                 isLoading = false
                 ChangePasswordView(
-                    onChangePassword = { username, currentPassword, newPassword, confirmPassword -> viewModel.changePassword(username, currentPassword, newPassword, confirmPassword) },
+                    onChangePassword = { username, currentPassword, newPassword, confirmPassword ->
+                        viewModel.changePassword(
+                            username,
+                            currentPassword,
+                            newPassword,
+                            confirmPassword
+                        )
+                    },
                     onBackClick = { viewModel.transition(AuthenticationViewSelectorState.Landing) },
                 )
             }
