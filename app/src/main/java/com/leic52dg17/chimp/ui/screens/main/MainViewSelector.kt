@@ -166,9 +166,9 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.Error -> {
-
                         val currentState = (viewModel.state as MainViewSelectorState.Error)
                         Log.i("MAIN_VIEW_SELECTOR", "Got into error")
+                        
                         ApplicationErrorView(
                             message = currentState.message,
                             onDismiss = {
@@ -177,14 +177,16 @@ fun MainViewSelector(
                         )
                     }
 
+
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
 
                         selectedNavIcon = SelectedNavIcon.Messages
-
+                      
                         val currentState =
                             (viewModel.state as MainViewSelectorState.SubscribedChannels)
+                            
                         LaunchedEffect(Unit) {
                             if (currentState.channels == null) {
                                 viewModel.loadSubscribedChannels()
