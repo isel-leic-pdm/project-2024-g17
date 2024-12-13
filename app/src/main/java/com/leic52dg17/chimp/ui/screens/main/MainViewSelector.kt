@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.screens.main
 
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -7,15 +8,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
@@ -25,7 +25,7 @@ import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
-import com.leic52dg17.chimp.ui.viewmodels.screen.MainViewSelectorViewModel
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
@@ -51,8 +51,8 @@ fun MainViewSelector(
             mutableStateOf(false)
         }
 
-        var isLoading by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
-            mutableStateOf(false)
+        val isLoading by remember {
+            derivedStateOf { viewModel.state is MainViewSelectorState.Loading }
         }
 
         var alertDialogText by rememberSaveable(saver = MainViewSelectorState.StringSaver) {
@@ -165,22 +165,28 @@ fun MainViewSelector(
                         }
                     }
 
-                    is MainViewSelectorState.Loading -> {
-                        isLoading = true
+                    is MainViewSelectorState.Error -> {
+                        val currentState = (viewModel.state as MainViewSelectorState.Error)
+                        Log.i("MAIN_VIEW_SELECTOR", "Got into error")
+                        
+                        ApplicationErrorView(
+                            message = currentState.message,
+                            onDismiss = {
+                                currentState.onDismiss()
+                            }
+                        )
                     }
 
-                    is MainViewSelectorState.SubscribedChannels -> {
-                        isLoading = false
-                        selectedNavIcon = SelectedNavIcon.Messages
 
+                    is MainViewSelectorState.Loading -> {}
+
+                    is MainViewSelectorState.SubscribedChannels -> {
+
+                        selectedNavIcon = SelectedNavIcon.Messages
+                      
                         val currentState =
                             (viewModel.state as MainViewSelectorState.SubscribedChannels)
-                        if (currentState.showDialog) {
-                            alertDialogText = currentState.dialogMessage
-                                ?: stringResource(id = R.string.generic_error_en)
-                            handleSharedAlertDialogVisibilitySwitch()
-                        }
-
+                            
                         LaunchedEffect(Unit) {
                             if (currentState.channels == null) {
                                 viewModel.loadSubscribedChannels()
@@ -193,7 +199,6 @@ fun MainViewSelector(
                             onCreateChannelClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.CreateChannel(
-                                        false,
                                         authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
@@ -201,7 +206,6 @@ fun MainViewSelector(
                             onChannelClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.ChannelMessages(
-                                        false,
                                         channel = it,
                                         authenticatedUser = currentState.authenticatedUser
                                     )
@@ -211,14 +215,9 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.ChangePassword -> {
-                        isLoading = false
+
                         isNavBarShown = false
                         val currentState = (viewModel.state as MainViewSelectorState.ChangePassword)
-                        if (currentState.showDialog) {
-                            alertDialogText = currentState.dialogMessage
-                                ?: stringResource(id = R.string.generic_error_en)
-                            handleSharedAlertDialogVisibilitySwitch()
-                        }
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
                                 viewModel.transition(
@@ -230,7 +229,6 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        false,
                                         authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
@@ -239,22 +237,15 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.CreateChannel -> {
-                        isLoading = false
+
 
                         isNavBarShown = false
 
                         val currentState = (viewModel.state as MainViewSelectorState.CreateChannel)
-                        if (currentState.showDialog) {
-                            alertDialogText = currentState.dialogMessage
-                                ?: stringResource(id = R.string.generic_error_en)
-                            handleSharedAlertDialogVisibilitySwitch()
-                        }
-
                         CreateChannelView(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        false,
                                         authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
@@ -263,7 +254,7 @@ fun MainViewSelector(
                                 alertDialogText = text
                                 handleSharedAlertDialogVisibilitySwitch()
                             },
-                            onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl, channelIconContentDescription ->
+                            onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl ->
                                 viewModel.createChannel(
                                     ownerId,
                                     name,
@@ -277,11 +268,11 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.CreatingChannel -> {
                         isNavBarShown = false
-                        isLoading = true
+
                     }
 
                     is MainViewSelectorState.ChannelMessages -> {
-                        isLoading = false
+
                         isNavBarShown = false
                         val currentState =
                             (viewModel.state as MainViewSelectorState.ChannelMessages)
@@ -292,18 +283,12 @@ fun MainViewSelector(
                                 viewModel.loadChannelMessages()
                             }
                         }
-                        if (currentState.showDialog) {
-                            alertDialogText = currentState.dialogMessage
-                                ?: stringResource(id = R.string.generic_error_en)
-                            handleSharedAlertDialogVisibilitySwitch()
-                        }
                         if (currentChannel != null) {
                             ChannelMessageView(
                                 channel = currentChannel,
                                 onBackClick = {
                                     viewModel.transition(
                                         MainViewSelectorState.SubscribedChannels(
-                                            false,
                                             authenticatedUser = currentState.authenticatedUser
                                         )
                                     )
@@ -326,14 +311,14 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.GettingChannelMessages -> {
-                        isLoading = true
+
                     }
 
                     is MainViewSelectorState.ChannelInfo -> {
-                        isLoading = false
+
                         isNavBarShown = false
                         val currentState = (viewModel.state as MainViewSelectorState.ChannelInfo)
-                        LaunchedEffect(Unit) {
+                        LaunchedEffect(currentState.channel?.channelId) {
                             viewModel.loadChannelInfo()
                         }
                         currentState.channel?.let {
@@ -350,7 +335,7 @@ fun MainViewSelector(
                                 onAddToUserChannelClick = {
                                     viewModel.transition(
                                         MainViewSelectorState.InvitingUsers(
-                                            it,
+                                            channel = it,
                                             authenticatedUser = currentState.authenticatedUser
                                         )
                                     )
@@ -389,12 +374,12 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.GettingChannelInfo -> {
-                        isLoading = true
+
                         isNavBarShown = false
                     }
 
                     is MainViewSelectorState.UserInfo -> {
-                        isLoading = false
+
                         val currentState = (viewModel.state as MainViewSelectorState.UserInfo)
                         UserInfoView(
                             user = currentState.user,
@@ -402,7 +387,6 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        false,
                                         authenticatedUser = currentState.authenticatedUser
                                     )
                                 )
@@ -422,7 +406,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.About -> {
-                        isLoading = false
+
                         isNavBarShown = true
                         AboutView()
                     }
@@ -453,6 +437,7 @@ fun MainViewSelector(
                     }
 
                     MainViewSelectorState.Unauthenticated -> {
+
                         ApplicationErrorView(
                             message = ErrorMessages.AUTHENTICATED_USER_NULL,
                             onDismiss = {
@@ -472,10 +457,16 @@ fun MainViewSelector(
                                     viewModel.getUserProfile(currentState.authenticatedUser.user.id)
                                 },
                                 onAcceptClick = { invitationId ->
-                                    viewModel.acceptChannelInvitation(invitationId, currentState.authenticatedUser)
+                                    viewModel.acceptChannelInvitation(
+                                        invitationId,
+                                        currentState.authenticatedUser
+                                    )
                                 },
                                 onDeclineClick = { invitationId ->
-                                    viewModel.rejectChannelInvitation(invitationId, currentState.authenticatedUser)
+                                    viewModel.rejectChannelInvitation(
+                                        invitationId,
+                                        currentState.authenticatedUser
+                                    )
                                 }
                             )
                         }
