@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.http.services.channel.requests
+package com.leic52dg17.chimp.http.services.channel_invitations.requests
 
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import kotlinx.serialization.Serializable

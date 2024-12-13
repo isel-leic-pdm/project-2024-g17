@@ -15,6 +15,7 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
+import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
@@ -30,6 +31,7 @@ class MainViewSelectorViewModel(
     val channelService: IChannelService,
     val messageService: IMessageService,
     val userService: IUserService,
+    val channelInvitationService: IChannelInvitationService,
     val sseService: ISSEService,
     val context: Context,
     private val onLogout: () -> Unit,
@@ -204,6 +206,7 @@ class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
     private val userService: IUserService,
+    private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
     private val context: Context,
     private val onLogout: () -> Unit
@@ -213,6 +216,7 @@ class MainViewSelectorViewModelFactory(
             channelService,
             messageService,
             userService,
+            channelInvitationService,
             sseService,
             context,
             onLogout
