@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.views
+package com.leic52dg17.chimp.ui.views.channel_invitations
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
