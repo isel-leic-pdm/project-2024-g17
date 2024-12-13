@@ -172,8 +172,9 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                Log.e(TAG, "${e.message!!} : Current State -> ${viewModel.state}")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
+                    Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     viewModel.transition(
@@ -235,6 +236,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
+                        Log.i(TAG, "Transitioning to error! - Create channel")
                         viewModel.transition(
                             MainViewSelectorState.Error(e.message) {
                                 viewModel.transition(
