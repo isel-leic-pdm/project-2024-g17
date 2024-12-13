@@ -71,6 +71,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
                     )
+                    loadChannelInvitations(authenticatedUser)
                 }
             }
         } catch (e: ServiceException) {
@@ -102,6 +103,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     viewModel.channelInvitationService.rejectChannelInvitation(
                         invitationId,
                     )
+                    loadChannelInvitations(authenticatedUser)
                 }
             }
         } catch (e: ServiceException) {
