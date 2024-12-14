@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.leic52dg17.chimp.core.ChimpApplication
-import com.leic52dg17.chimp.core.shared.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 

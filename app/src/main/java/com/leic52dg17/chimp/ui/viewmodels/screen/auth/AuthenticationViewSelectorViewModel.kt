@@ -7,13 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
-import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
-import kotlinx.coroutines.flow.last
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class AuthenticationViewSelectorViewModel(
@@ -40,7 +39,7 @@ class AuthenticationViewSelectorViewModel(
                     )
                     viewModelScope.launch {
                         userInfoRepository.saveAuthenticatedUser(authenticatedUser)
-                        if (userInfoRepository.authenticatedUser.last() == null) {
+                        if (userInfoRepository.authenticatedUser.first() == null) {
                             Log.e(TAG, "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!")
                             transition(
                                 AuthenticationViewSelectorState.Error(message = ErrorMessages.AUTHENTICATED_USER_NULL) {

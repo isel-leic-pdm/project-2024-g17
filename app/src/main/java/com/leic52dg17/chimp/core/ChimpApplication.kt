@@ -5,8 +5,8 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
-import com.leic52dg17.chimp.core.shared.UserInfoPreferencesRepository
-import com.leic52dg17.chimp.core.shared.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoPreferencesRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoRepository
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -46,7 +46,7 @@ class ChimpApplication : Application(), DependenciesContainer {
     private val client by lazy {
         HttpClient(OkHttp) {
             defaultRequest {
-                val interceptor = AuthTokenInterceptor(applicationContext)
+                val interceptor = AuthTokenInterceptor(userInfoRepository)
                 attributes.put(AuthTokenInterceptor.Key, interceptor)
                 interceptor.intercept(this)
             }

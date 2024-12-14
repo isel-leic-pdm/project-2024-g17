@@ -1,7 +1,6 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState

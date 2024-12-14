@@ -1,17 +1,10 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main
 
-import android.content.Context
 import android.util.Log
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
-import com.leic52dg17.chimp.core.shared.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
@@ -28,10 +21,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
@@ -45,11 +35,12 @@ class MainViewSelectorViewModel(
     val userInfoRepository: UserInfoRepository,
     private val onLogout: () -> Unit,
 ) : ViewModel() {
-    lateinit var stateFlow: MutableStateFlow<MainViewSelectorState>
+    val stateFlow: MutableStateFlow<MainViewSelectorState> =
+        MutableStateFlow(MainViewSelectorState.Loading)
 
     init {
         viewModelScope.launch {
-            stateFlow = MutableStateFlow(
+            stateFlow.emit(
                 MainViewSelectorState.SubscribedChannels(
                     authenticatedUser = userInfoRepository.authenticatedUser.first(),
                 )

@@ -1,14 +1,10 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
-import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
@@ -40,19 +36,8 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                     return@launch
                 } else {
-                    val channelMessages = mutableListOf<Message>()
-                    val storedMessages =
-                        SharedPreferencesHelper.getMessages(viewModel.context, channel.channelId)
-                    if (storedMessages.isEmpty()) {
-                        val newMessages =
-                            viewModel.messageService.getChannelMessages(channel.channelId)
-                        SharedPreferencesHelper.storeMessages(
-                            viewModel.context,
-                            channel.channelId,
-                            newMessages
-                        )
-                        channelMessages.addAll(newMessages)
-                    }
+                    val channelMessages =
+                        viewModel.messageService.getChannelMessages(channel.channelId)
                     viewModel.transition(
                         MainViewSelectorState.ChannelMessages(
                             channel = channel.copy(messages = channelMessages),
@@ -148,19 +133,11 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
 
                 for (channel in channelsWithoutMessagesOrUsers) {
                     Log.i("DEBUG", channel.displayName)
-                    val messages = mutableListOf<Message>()
-                    val storedMessages =
-                        SharedPreferencesHelper.getMessages(viewModel.context, channel.channelId)
-                    if (storedMessages.isEmpty()) {
-                        val channelMessages =
-                            viewModel.messageService.getChannelMessages(channel.channelId)
-                        messages.addAll(channelMessages)
-                    } else {
-                        messages.addAll(storedMessages)
-                    }
+                    val channelMessages =
+                        viewModel.messageService.getChannelMessages(channel.channelId)
                     val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
 
-                    val toAdd = channel.copy(messages = messages, users = channelUsers)
+                    val toAdd = channel.copy(messages = channelMessages, users = channelUsers)
                     channels.add(toAdd)
                 }
 
@@ -219,7 +196,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                     viewModel.transition(MainViewSelectorState.Loading)
                     val channels =
-                        viewModel.channelService.getUserSubscribedChannels(currentUser.id)
+                        viewModel.channelService.getUserSubscribedChannels(authenticatedUser.user.id)
                     viewModel.transition(
                         MainViewSelectorState.SubscribedChannels(
                             channels = channels,

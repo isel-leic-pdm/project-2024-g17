@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.core.shared
+package com.leic52dg17.chimp.core.repositories
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -8,7 +8,6 @@ import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.Instant
