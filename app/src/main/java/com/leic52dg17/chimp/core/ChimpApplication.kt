@@ -6,6 +6,8 @@ import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel.implementations.ChannelService
+import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
+import com.leic52dg17.chimp.http.services.channel_invitations.implementations.ChannelInvitationService
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.implementations.MessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
@@ -29,6 +31,7 @@ interface DependenciesContainer {
     val messageService: IMessageService
     val authenticationService: IAuthenticationService
     val userService: IUserService
+    val channelInvitationService: IChannelInvitationService
     val sseService: ISSEService
 }
 
@@ -67,6 +70,10 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val userService: IUserService by lazy {
         UserService(client)
+    }
+
+    override val channelInvitationService: IChannelInvitationService by lazy {
+        ChannelInvitationService(client)
     }
 
     override val sseService: ISSEService by lazy {

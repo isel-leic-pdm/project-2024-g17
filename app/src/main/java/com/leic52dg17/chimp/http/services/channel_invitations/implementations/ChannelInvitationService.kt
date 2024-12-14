@@ -1,17 +1,14 @@
-package com.leic52dg17.chimp.http.services.channel.implementations
+package com.leic52dg17.chimp.http.services.channel_invitations.implementations
 
 import android.util.Log
 import com.leic52dg17.chimp.domain.common.ErrorMessages
-import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
-import com.leic52dg17.chimp.http.services.channel.IChannelService
+import com.leic52dg17.chimp.http.services.channel_invitations.responses.GetChannelInvitationResponse
+import com.leic52dg17.chimp.http.services.channel_invitations.responses.GetChannelInvitationsResponse
+import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
 import com.leic52dg17.chimp.http.services.channel_invitations.requests.CreateChannelInvitationRequest
-import com.leic52dg17.chimp.http.services.channel.requests.CreateChannelRequest
-import com.leic52dg17.chimp.http.services.channel.requests.UpdateUserChannelRequest
 import com.leic52dg17.chimp.http.services.channel_invitations.responses.CreateChannelInvitationResponse
-import com.leic52dg17.chimp.http.services.channel.responses.CreateChannelResponse
-import com.leic52dg17.chimp.http.services.channel.responses.GetChannelResponse
-import com.leic52dg17.chimp.http.services.channel.responses.GetChannelsResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
@@ -30,115 +27,13 @@ import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import java.net.URL
 
-class ChannelService(private val client: HttpClient) : IChannelService {
+class ChannelInvitationService(private val client: HttpClient): IChannelInvitationService {
     private val json = Json { ignoreUnknownKeys = true }
 
-    override suspend fun createChannel(
-        ownerId: Int,
-        name: String,
-        isPrivate: Boolean,
-        channelIconUrl: String,
-    ): Int {
-        val uri = URL(ApiEndpoints.Channel.CREATE)
-        val request = CreateChannelRequest(ownerId, name, isPrivate)
-
-        val response = client.post(uri) {
-            header("Accept", "application/json")
-            header("Content-Type", "application/json")
-            setBody(request)
-        }
-
-        if (!response.status.isSuccess()) {
-            if (response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Log.e(TAG, "Unauthorized: ${response.status}")
-                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
-            } else {
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
-        val responseBody = json.decodeFromString<CreateChannelResponse>(response.body())
-        return responseBody.channelId
-    }
-
-    override suspend fun createChannelInvitation(
-        channelId: Int,
-        senderId: Int,
-        receiverId: Int,
-        permissionLevel: PermissionLevel
-    ): Int {
-        val uri = URL(ApiEndpoints.ChannelInvitation.CREATE)
-        val request =
-            CreateChannelInvitationRequest(senderId, receiverId, channelId, permissionLevel)
-
-        val response = client.post(uri) {
-            header("Accept", "application/json")
-            header("Content-Type", "application/json")
-            setBody(request)
-        }
-
-        if (!response.status.isSuccess()) {
-            if (response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Log.e(TAG, "Unauthorized: ${response.status}")
-                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
-            } else {
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
-        val responseBody = json.decodeFromString<CreateChannelInvitationResponse>(response.body())
-        return responseBody.channelInvitationId
-    }
-
-    override suspend fun getUserSubscribedChannels(userId: Int): List<Channel> {
-        val uri = URL(ApiEndpoints.Channel.GET_USER_SUBSCRIBED.replace("{id}", userId.toString()))
+    override suspend fun getChannelInvitationById(invitationId: Int): ChannelInvitation {
+        val uri = URL(ApiEndpoints.ChannelInvitation.GET_BY_ID.replace("{id}", invitationId.toString()))
 
         val response = client.get(uri) {
-            header("Accept", "application/json")
-            header("Content-Type", "application/json")
-        }
-
-        if (!response.status.isSuccess()) {
-            if (response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Log.e(TAG, "Unauthorized: ${response.status}")
-                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
-            } else {
-                Log.e(TAG, "ERROR: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
-        val responseBody = json.decodeFromString<GetChannelsResponse>(response.body())
-
-        val channelsWithEmptyUsersAndMessages = responseBody.channels.map { channel ->
-            Channel(
-                channelId = channel.id,
-                displayName = channel.name,
-                ownerId = channel.ownerId,
-                isPrivate = channel.isPrivate,
-                users = emptyList(),
-                messages = emptyList(),
-                channelIconUrl = "https://picsum.photos/300/300"
-            )
-        }
-
-        return channelsWithEmptyUsersAndMessages
-    }
-
-    override suspend fun getChannelById(channelId: Int): Channel {
-        val uri = URL(ApiEndpoints.Channel.GET_BY_ID.replace("{id}", channelId.toString()))
-
-        val response = client.get(uri) {
-            header("Accept", "application/json")
             header("Content-Type", "application/json")
         }
 
@@ -154,30 +49,23 @@ class ChannelService(private val client: HttpClient) : IChannelService {
                 throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
-        val responseBody = json.decodeFromString<GetChannelResponse>(response.body())
-        val channelWithoutMessagesOrUsers = Channel(
-            displayName = responseBody.name,
-            channelId = responseBody.id,
-            ownerId = responseBody.ownerId,
-            isPrivate = responseBody.isPrivate,
-            users = emptyList(),
-            messages = emptyList(),
-            channelIconUrl = "https://picsum.photos/300/300"
+
+        val responseBody = json.decodeFromString<GetChannelInvitationResponse>(response.body())
+
+        return ChannelInvitation(
+            id = responseBody.id,
+            channelId = responseBody.channelId,
+            senderId = responseBody.senderId,
+            receiverId = responseBody.receiverId,
+            permissionLevel = parsePermissionLevel(responseBody.permissionLevel),
         )
-        return channelWithoutMessagesOrUsers
     }
 
-    override suspend fun removeUserFromChannel(
-        userId: Int,
-        channelId: Int
-    ): Int {
-        val uri = URL(ApiEndpoints.Channel.REMOVE_USER_FROM_CHANNEL)
-        val request = UpdateUserChannelRequest(userId, channelId)
+    override suspend fun getChannelInvitationsByReceiverId(receiverId: Int): List<ChannelInvitation> {
+        val uri = URL(ApiEndpoints.ChannelInvitation.GET_BY_USER_ID.replace("{id}", receiverId.toString()))
 
-        val response = client.put(uri) {
-            header("Accept", "application/json")
+        val response = client.get(uri) {
             header("Content-Type", "application/json")
-            setBody(request)
         }
 
         if (!response.status.isSuccess()) {
@@ -192,10 +80,99 @@ class ChannelService(private val client: HttpClient) : IChannelService {
                 throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
             }
         }
-        return userId
+
+        val responseBody = json.decodeFromString<GetChannelInvitationsResponse>(response.body())
+
+        val invitations = responseBody.channelInvitations.map { invitations ->
+            invitations.toChannelInvitation()
+        }
+
+        return invitations
+    }
+
+    override suspend fun createChannelInvitation(
+        senderId: Int,
+        receiverId: Int,
+        channelId: Int,
+        permissionLevel: PermissionLevel
+    ): Int {
+        val uri = URL(ApiEndpoints.ChannelInvitation.CREATE)
+
+        val request = CreateChannelInvitationRequest(senderId, receiverId, channelId, permissionLevel)
+
+        val response = client.post(uri) {
+            header("Content-Type", "application/json")
+            setBody(request)
+        }
+
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
+                val details = json.decodeFromString<ProblemDetails>(response.body())
+                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if (response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+            } else {
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
+            }
+        }
+
+        val responseBody = json.decodeFromString<CreateChannelInvitationResponse>(response.body())
+        return responseBody.channelInvitationId
+    }
+
+    override suspend fun acceptChannelInvitation(invitationId: Int) {
+        val uri = URL(ApiEndpoints.ChannelInvitation.ACCEPT.replace("{id}", invitationId.toString()))
+
+        val response = client.put(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
+                val details = json.decodeFromString<ProblemDetails>(response.body())
+                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+            } else {
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
+            }
+        }
+    }
+
+    override suspend fun rejectChannelInvitation(invitationId: Int) {
+        val uri = URL(ApiEndpoints.ChannelInvitation.REJECT.replace("{id}", invitationId.toString()))
+
+        val response = client.put(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        if (!response.status.isSuccess()) {
+            if (response.contentType() == ContentType.Application.ProblemJson) {
+                val details = json.decodeFromString<ProblemDetails>(response.body())
+                Log.e(TAG, " ${details.title} -> ${details.errors}")
+                throw ServiceException(details.title, ServiceErrorTypes.Common)
+            } else if(response.status == HttpStatusCode.Unauthorized) {
+                Log.e(TAG, "Unauthorized: ${response.status}")
+                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+            } else {
+                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
+            }
+        }
+    }
+
+    private fun parsePermissionLevel(permissionLevel: String): PermissionLevel {
+        return when (permissionLevel) {
+            "RR" -> PermissionLevel.RR
+            "RW" -> PermissionLevel.RW
+            else -> throw IllegalStateException("Unknown permission level")
+        }
     }
 
     companion object {
-        const val TAG = "CHANNEL_SERVICE"
+        const val TAG = "CHANNEL_INVITATION_SERVICE"
     }
 }

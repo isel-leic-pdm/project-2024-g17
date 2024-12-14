@@ -32,7 +32,8 @@ object ApiEndpoints {
     object ChannelInvitation {
         val CREATE = "$BASE_URL/channels/invitations"
         val GET_BY_ID = "$BASE_URL/channels/invitations/{id}"
-        val USE = "$BASE_URL/channels/invitations/{id}"
+        val ACCEPT = "$BASE_URL/channels/invitations/{id}/accept"
+        val REJECT = "$BASE_URL/channels/invitations/{id}/reject"
         val GET_BY_CHANNEL_ID = "$BASE_URL/channels/invitations/channel/{id}"
         val GET_BY_USER_ID = "$BASE_URL/channels/invitations/users/{id}"
     }

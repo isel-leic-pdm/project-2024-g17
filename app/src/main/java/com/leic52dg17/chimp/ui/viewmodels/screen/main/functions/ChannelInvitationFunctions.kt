@@ -22,7 +22,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     return@launch
                 }
                 val invitations =
-                    viewModel.channelService.getChannelInvitations(authenticatedUser.user.id)
+                    viewModel.channelInvitationService.getChannelInvitationsByReceiverId(authenticatedUser.user.id)
                 val invitationDetails = invitations.map { invitation ->
                     val sender = viewModel.userService.getUserById(invitation.senderId)
                     val channel = viewModel.channelService.getChannelById(invitation.channelId)
@@ -68,10 +68,10 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 ) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
-                    viewModel.channelService.acceptChannelInvitation(
+                    viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
-                        authenticatedUser.user.id
                     )
+                    loadChannelInvitations(authenticatedUser)
                 }
             }
         } catch (e: ServiceException) {
@@ -100,10 +100,10 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 ) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
-                    viewModel.channelService.rejectChannelInvitation(
+                    viewModel.channelInvitationService.rejectChannelInvitation(
                         invitationId,
-                        authenticatedUser.user.id
                     )
+                    loadChannelInvitations(authenticatedUser)
                 }
             }
         } catch (e: ServiceException) {
