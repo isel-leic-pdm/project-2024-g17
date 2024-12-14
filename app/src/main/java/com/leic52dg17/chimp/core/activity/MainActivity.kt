@@ -19,6 +19,10 @@ import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModelFactory
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
 
@@ -37,7 +41,7 @@ class MainActivity : ComponentActivity() {
                 (application as ChimpApplication).userService,
                 (application as ChimpApplication).channelInvitationService,
                 (application as ChimpApplication).sseService,
-                applicationContext
+                (application as ChimpApplication).userInfoRepository,
             ) { onLogout() }
         }
         (application as ChimpApplication).sseService.listen()
@@ -52,9 +56,16 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier
                             .padding(innerPadding)
                     ) {
+                        // DANGEROUS. BE CAREFUL! THERE HAS TO BE A BETTER SOLUTION...
+                        val authenticatedUser = runBlocking {
+                            withContext(Dispatchers.IO) {
+                                (application as ChimpApplication).userInfoRepository.authenticatedUser.first()
+                            }
+                        }
+
                         MainViewSelector(
                             mainViewSelectorViewModel,
-                            SharedPreferencesHelper.getAuthenticatedUser(applicationContext),
+                            authenticatedUser
                         )
                     }
                 }

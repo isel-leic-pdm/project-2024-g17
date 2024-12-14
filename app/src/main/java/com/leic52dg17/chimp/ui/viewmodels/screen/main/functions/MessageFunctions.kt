@@ -6,22 +6,23 @@ import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class MessageFunctions(private val viewModel: MainViewSelectorViewModel) {
     fun sendMessage(channelId: Int, messageText: String) {
-        val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-        val currentUser = authenticatedUser?.user
         viewModel.viewModelScope.launch {
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+
             try {
-                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+                if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
                 viewModel.messageService.createMessageInChannel(
                     messageText,
                     channelId,
-                    currentUser.id
+                    authenticatedUser.user.id
                 )
                 val channelWithoutMessages = viewModel.channelService.getChannelById(channelId)
                 val channelMessages = viewModel.messageService.getChannelMessages(channelId)

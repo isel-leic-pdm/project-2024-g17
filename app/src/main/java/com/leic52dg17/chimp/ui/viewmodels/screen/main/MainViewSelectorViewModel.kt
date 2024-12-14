@@ -51,7 +51,7 @@ class MainViewSelectorViewModel(
         viewModelScope.launch {
             stateFlow = MutableStateFlow(
                 MainViewSelectorState.SubscribedChannels(
-                    authenticatedUser = userInfoRepository.authenticatedUser.first()
+                    authenticatedUser = userInfoRepository.authenticatedUser.first(),
                 )
             )
         }

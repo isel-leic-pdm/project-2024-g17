@@ -61,7 +61,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 }
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
@@ -115,7 +115,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                         )
                     }
                 } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                    Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
@@ -172,7 +172,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> ${viewModel.stateFlow.value}")
+                Log.e(TAG, "${e.message} : Current State -> ${viewModel.stateFlow.value}")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
@@ -227,7 +227,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                         )
                     )
                 } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                    Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
