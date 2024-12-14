@@ -20,7 +20,7 @@ class AuthenticationActivity : ComponentActivity() {
             factoryProducer = {
                 AuthenticationViewSelectorViewModelFactory(
                     (application as ChimpApplication).authenticationService,
-                    applicationContext
+                    (application as ChimpApplication).userInfoRepository,
                 )
             }
         )

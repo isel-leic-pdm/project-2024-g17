@@ -9,7 +9,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
+import com.leic52dg17.chimp.core.shared.UserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
@@ -30,6 +32,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
@@ -38,16 +41,21 @@ class MainViewSelectorViewModel(
     val messageService: IMessageService,
     val userService: IUserService,
     val channelInvitationService: IChannelInvitationService,
-    val sseService: ISSEService,
-    val context: Context,
+    private val sseService: ISSEService,
+    val userInfoRepository: UserInfoRepository,
     private val onLogout: () -> Unit,
-    initialState: MainViewSelectorState = MainViewSelectorState.Initialized(
-        SharedPreferencesHelper.getAuthenticatedUser(
-            context
-        )
-    ),
 ) : ViewModel() {
-    val stateFlow = MutableStateFlow(initialState)
+    lateinit var stateFlow: MutableStateFlow<MainViewSelectorState>
+
+    init {
+        viewModelScope.launch {
+            stateFlow = MutableStateFlow(
+                MainViewSelectorState.SubscribedChannels(
+                    authenticatedUser = userInfoRepository.authenticatedUser.first()
+                )
+            )
+        }
+    }
 
     fun transition(newState: MainViewSelectorState) {
         viewModelScope.launch {
@@ -79,26 +87,27 @@ class MainViewSelectorViewModel(
 
                     is MainViewSelectorState.ChannelMessages -> {
                         val channel = (state).channel
-                        if (channel == null) {
-                            transition(
-                                MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
-                                    transition(
-                                        MainViewSelectorState.SubscribedChannels(
-                                            authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(
-                                                context
+                        viewModelScope.launch {
+                            if (channel == null) {
+                                val authenticatedUser = userInfoRepository.authenticatedUser.first()
+                                transition(
+                                    MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
+                                        transition(
+                                            MainViewSelectorState.SubscribedChannels(
+                                                authenticatedUser = authenticatedUser
                                             )
                                         )
-                                    )
-                                }
-                            )
-                        } else {
-                            val updatedChannel: Channel =
-                                if (event.message.channelId == channel.channelId) {
-                                    channel.copy(messages = channel.messages + event.message)
-                                } else {
-                                    channel
-                                }
-                            transition((state).copy(channel = updatedChannel))
+                                    }
+                                )
+                            } else {
+                                val updatedChannel: Channel =
+                                    if (event.message.channelId == channel.channelId) {
+                                        channel.copy(messages = channel.messages + event.message)
+                                    } else {
+                                        channel
+                                    }
+                                transition((state).copy(channel = updatedChannel))
+                            }
                         }
                     }
 
@@ -153,10 +162,6 @@ class MainViewSelectorViewModel(
         sseService.stopListening()
     }
 
-    fun debugLogout() {
-        SharedPreferencesHelper.logout(context)
-    }
-
     /**
      *  Channel functions
      */
@@ -180,9 +185,13 @@ class MainViewSelectorViewModel(
      */
     fun logout() {
         transition(MainViewSelectorState.Loading)
-        SharedPreferencesHelper.logout(context)
-        stopEventStream()
-        onLogout()
+
+        // SharedPreferencesHelper.logout(context)
+        viewModelScope.launch {
+            userInfoRepository.clearAuthenticatedUser()
+            stopEventStream()
+            onLogout()
+        }
     }
 
     /**
@@ -220,7 +229,7 @@ class MainViewSelectorViewModelFactory(
     private val userService: IUserService,
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
-    private val context: Context,
+    private val userInfoRepository: UserInfoRepository,
     private val onLogout: () -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -230,8 +239,8 @@ class MainViewSelectorViewModelFactory(
             userService,
             channelInvitationService,
             sseService,
-            context,
-            onLogout
+            userInfoRepository,
+            onLogout,
         ) as T
     }
 }

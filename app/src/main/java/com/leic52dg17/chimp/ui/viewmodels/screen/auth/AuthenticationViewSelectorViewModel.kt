@@ -1,6 +1,5 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.auth
 
-import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,16 +7,18 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
+import com.leic52dg17.chimp.core.shared.UserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class AuthenticationViewSelectorViewModel(
     private val authenticationService: IAuthenticationService,
-    private val context: Context,
+    private val userInfoRepository: UserInfoRepository,
     initialState: AuthenticationViewSelectorState = AuthenticationViewSelectorState.Landing
 ) : ViewModel() {
     var state: AuthenticationViewSelectorState by mutableStateOf(initialState)
@@ -37,21 +38,20 @@ class AuthenticationViewSelectorViewModel(
                         TAG,
                         "Saving user with ID:${authenticatedUser.user?.id} as authenticated user"
                     )
-                    SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
-                    val storedAuthenticatedUser =
-                        SharedPreferencesHelper.getAuthenticatedUser(context)
-
-                    if (storedAuthenticatedUser == null) {
-                        Log.e(TAG, "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!")
-                        transition(
-                            AuthenticationViewSelectorState.Error(message = ErrorMessages.AUTHENTICATED_USER_NULL) {
-                                transition(AuthenticationViewSelectorState.Login)
-                            }
-                        )
-                    } else {
-                        Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.id}")
-                        onAuthenticate()
-                        transition(AuthenticationViewSelectorState.Authenticated)
+                    viewModelScope.launch {
+                        userInfoRepository.saveAuthenticatedUser(authenticatedUser)
+                        if (userInfoRepository.authenticatedUser.last() == null) {
+                            Log.e(TAG, "!=== COULD NOT RETRIEVE AUTHENTICATED USER ==!")
+                            transition(
+                                AuthenticationViewSelectorState.Error(message = ErrorMessages.AUTHENTICATED_USER_NULL) {
+                                    transition(AuthenticationViewSelectorState.Login)
+                                }
+                            )
+                        } else {
+                            Log.i(TAG, "Authenticated user ID: ${authenticatedUser.user?.id}")
+                            onAuthenticate()
+                            transition(AuthenticationViewSelectorState.Authenticated)
+                        }
                     }
                 } catch (e: ServiceException) {
                     Log.e(TAG, "ServiceException: ${e.message}")
@@ -81,8 +81,11 @@ class AuthenticationViewSelectorViewModel(
                 try {
                     val authenticatedUser =
                         authenticationService.signUpUser(username, displayName, password)
-                    SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
-                    transition(AuthenticationViewSelectorState.Authenticated)
+
+                    viewModelScope.launch {
+                        userInfoRepository.saveAuthenticatedUser(authenticatedUser)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
                 } catch (e: ServiceException) {
                     transition(
                         AuthenticationViewSelectorState.Error(e.message) {
@@ -110,8 +113,11 @@ class AuthenticationViewSelectorViewModel(
                         newPassword,
                         confirmPassword
                     )
-                    SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
-                    transition(AuthenticationViewSelectorState.Authenticated)
+
+                    viewModelScope.launch {
+                        userInfoRepository.saveAuthenticatedUser(authenticatedUser)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
                 } catch (e: ServiceException) {
                     transition(
                         AuthenticationViewSelectorState.Error(message = e.message) {
@@ -130,8 +136,10 @@ class AuthenticationViewSelectorViewModel(
             viewModelScope.launch {
                 try {
                     val authenticatedUser = authenticationService.forgotPassword(email)
-                    SharedPreferencesHelper.saveAuthenticatedUser(context, authenticatedUser)
-                    transition(AuthenticationViewSelectorState.Authenticated)
+                    viewModelScope.launch {
+                        userInfoRepository.saveAuthenticatedUser(authenticatedUser)
+                        transition(AuthenticationViewSelectorState.Authenticated)
+                    }
                 } catch (e: ServiceException) {
                     transition(AuthenticationViewSelectorState.ForgotPassword)
                 }
@@ -147,12 +155,12 @@ class AuthenticationViewSelectorViewModel(
 @Suppress("UNCHECKED_CAST")
 class AuthenticationViewSelectorViewModelFactory(
     private val authenticationService: IAuthenticationService,
-    private val context: Context
+    private val userInfoRepository: UserInfoRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AuthenticationViewSelectorViewModel(
             authenticationService,
-            context
+            userInfoRepository,
         ) as T
     }
 }
