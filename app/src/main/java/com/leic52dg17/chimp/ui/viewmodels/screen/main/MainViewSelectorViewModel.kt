@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -24,6 +25,11 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class MainViewSelectorViewModel(
@@ -39,10 +45,12 @@ class MainViewSelectorViewModel(
         )
     ),
 ) : ViewModel() {
-    var state: MainViewSelectorState by mutableStateOf(initialState)
+    val stateFlow = MutableStateFlow(initialState)
 
     fun transition(newState: MainViewSelectorState) {
-        state = newState
+        viewModelScope.launch {
+            stateFlow.emit(newState)
+        }
     }
 
     private val channelFunctions = ChannelFunctions(this)
@@ -51,29 +59,33 @@ class MainViewSelectorViewModel(
     private val channelInvitationFunctions = ChannelInvitationFunctions(this)
 
 
-    private fun handleIncomingEvent(event: Events) {
+    private suspend fun handleIncomingEvent(event: Events) {
         when (event) {
             is Events.ChannelMessage -> {
-                when (state) {
+                when (val state = stateFlow.last()) {
                     is MainViewSelectorState.SubscribedChannels -> {
                         val updatedChannels =
-                            (state as MainViewSelectorState.SubscribedChannels).channels?.map { channel ->
+                            (state).channels?.map { channel ->
                                 if (channel.channelId == event.message.channelId) {
                                     channel.copy(messages = channel.messages + event.message)
                                 } else {
                                     channel
                                 }
                             }
-                        transition((state as MainViewSelectorState.SubscribedChannels).copy(channels = updatedChannels))
+                        transition((state).copy(channels = updatedChannels))
                     }
 
                     is MainViewSelectorState.ChannelMessages -> {
-                        val channel = (state as MainViewSelectorState.ChannelMessages).channel
+                        val channel = (state).channel
                         if (channel == null) {
                             transition(
                                 MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
                                     transition(
-                                        MainViewSelectorState.SubscribedChannels(authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(context))
+                                        MainViewSelectorState.SubscribedChannels(
+                                            authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(
+                                                context
+                                            )
+                                        )
                                     )
                                 }
                             )
@@ -84,7 +96,7 @@ class MainViewSelectorViewModel(
                                 } else {
                                     channel
                                 }
-                            transition((state as MainViewSelectorState.ChannelMessages).copy(channel = updatedChannel))
+                            transition((state).copy(channel = updatedChannel))
                         }
                     }
 
@@ -93,9 +105,9 @@ class MainViewSelectorViewModel(
             }
 
             is Events.Invitation -> {
-                when (state) {
+                when (val state = stateFlow.last()) {
                     is MainViewSelectorState.UserInvitations -> {
-                        val currState = (state as MainViewSelectorState.UserInvitations)
+                        val currState = (state)
 
                         viewModelScope.launch {
                             val channel =

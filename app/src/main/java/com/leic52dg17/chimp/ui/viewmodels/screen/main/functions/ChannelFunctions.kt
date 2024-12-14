@@ -1,6 +1,8 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
@@ -12,13 +14,15 @@ import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
     fun loadChannelMessages() {
-        val channel = (viewModel.state as? MainViewSelectorState.ChannelMessages)?.channel
-        viewModel.transition(MainViewSelectorState.GettingChannelMessages(channel))
         viewModel.viewModelScope.launch {
+            val channel =
+                (viewModel.stateFlow.last() as? MainViewSelectorState.ChannelMessages)?.channel
+            viewModel.transition(MainViewSelectorState.GettingChannelMessages(channel))
             val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
             val currentUser = authenticatedUser?.user
             try {
@@ -76,11 +80,11 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
     }
 
     fun loadChannelInfo() {
-        val channel = (viewModel.state as? MainViewSelectorState.ChannelInfo)?.channel
-        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-        if (viewModel.state !is MainViewSelectorState.GettingChannelInfo) {
-            viewModel.transition(MainViewSelectorState.GettingChannelInfo)
-            viewModel.viewModelScope.launch {
+        viewModel.viewModelScope.launch {
+            val channel = (viewModel.stateFlow.value as? MainViewSelectorState.ChannelInfo)?.channel
+            val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
+            if (viewModel.stateFlow.value !is MainViewSelectorState.GettingChannelInfo) {
+                viewModel.transition(MainViewSelectorState.GettingChannelInfo)
                 try {
                     if (channel == null) viewModel.transition(
                         MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
@@ -128,7 +132,6 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                 }
             }
         }
-
     }
 
     fun loadSubscribedChannels() {
@@ -172,7 +175,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> ${viewModel.state}")
+                Log.e(TAG, "${e.message!!} : Current State -> ${viewModel.stateFlow.value}")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
@@ -197,14 +200,14 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
         isPrivate: Boolean,
         channelIconUrl: String
     ) {
-        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)?.user
-        if (viewModel.state is MainViewSelectorState.CreateChannel) {
-            if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
-                viewModel.transition(MainViewSelectorState.Unauthenticated)
-                return
-            }
-            viewModel.transition(MainViewSelectorState.CreatingChannel)
             viewModel.viewModelScope.launch {
+                val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)?.user
+                if (viewModel.stateFlow.value is MainViewSelectorState.CreateChannel) {
+                    if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+                        viewModel.transition(MainViewSelectorState.Unauthenticated)
+                        return@launch
+                    }
+                    viewModel.transition(MainViewSelectorState.CreatingChannel)
                 val authenticatedUser =
                     SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
 
@@ -327,7 +330,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            if(channelNullCheck) {
+                            if (channelNullCheck) {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = authenticatedUser

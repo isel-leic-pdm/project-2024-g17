@@ -39,7 +39,7 @@ class SSEService(
     lateinit var channel: ByteReadChannel
     private val json = Json {
         ignoreUnknownKeys = true
-        classDiscriminator = "type" // Tells the serializer to look for the "type" field
+        classDiscriminator = "type"
         serializersModule = kotlinx.serialization.modules.SerializersModule {
             polymorphic(EventContent::class) {
                 subclass(MessageContent::class, MessageContent.serializer())
