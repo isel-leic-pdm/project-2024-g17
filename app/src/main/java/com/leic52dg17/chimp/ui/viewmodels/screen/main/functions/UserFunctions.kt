@@ -2,13 +2,13 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
@@ -16,8 +16,8 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
         Log.i(TAG, "Getting user profile for user with ID: $id")
         viewModel.transition(MainViewSelectorState.Loading)
         viewModel.viewModelScope.launch {
-            val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-            if (authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+            if (authenticatedUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
                 return@launch
             }

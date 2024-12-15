@@ -1,7 +1,12 @@
 package com.leic52dg17.chimp.core
 
 import android.app.Application
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
+import com.leic52dg17.chimp.core.repositories.UserInfoPreferencesRepository
+import com.leic52dg17.chimp.core.repositories.UserInfoRepository
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -27,6 +32,8 @@ import kotlinx.serialization.json.Json
 const val TAG = "CHIMP"
 
 interface DependenciesContainer {
+    val preferencesDataStore: DataStore<Preferences>
+    val userInfoRepository: UserInfoRepository
     val channelService: IChannelService
     val messageService: IMessageService
     val authenticationService: IAuthenticationService
@@ -39,7 +46,7 @@ class ChimpApplication : Application(), DependenciesContainer {
     private val client by lazy {
         HttpClient(OkHttp) {
             defaultRequest {
-                val interceptor = AuthTokenInterceptor(applicationContext)
+                val interceptor = AuthTokenInterceptor(userInfoRepository)
                 attributes.put(AuthTokenInterceptor.Key, interceptor)
                 interceptor.intercept(this)
             }
@@ -52,6 +59,12 @@ class ChimpApplication : Application(), DependenciesContainer {
                 })
             }
         }
+    }
+
+    override val preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
+
+    override val userInfoRepository: UserInfoRepository by lazy {
+        UserInfoPreferencesRepository(preferencesDataStore)
     }
 
     private val sseScope = CoroutineScope(Dispatchers.IO)

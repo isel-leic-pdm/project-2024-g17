@@ -1,19 +1,16 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
-import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
@@ -23,10 +20,9 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
             val channel =
                 (viewModel.stateFlow.last() as? MainViewSelectorState.ChannelMessages)?.channel
             viewModel.transition(MainViewSelectorState.GettingChannelMessages(channel))
-            val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-            val currentUser = authenticatedUser?.user
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             try {
-                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+                if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -40,19 +36,8 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                     return@launch
                 } else {
-                    val channelMessages = mutableListOf<Message>()
-                    val storedMessages =
-                        SharedPreferencesHelper.getMessages(viewModel.context, channel.channelId)
-                    if (storedMessages.isEmpty()) {
-                        val newMessages =
-                            viewModel.messageService.getChannelMessages(channel.channelId)
-                        SharedPreferencesHelper.storeMessages(
-                            viewModel.context,
-                            channel.channelId,
-                            newMessages
-                        )
-                        channelMessages.addAll(newMessages)
-                    }
+                    val channelMessages =
+                        viewModel.messageService.getChannelMessages(channel.channelId)
                     viewModel.transition(
                         MainViewSelectorState.ChannelMessages(
                             channel = channel.copy(messages = channelMessages),
@@ -61,7 +46,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 }
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
@@ -82,7 +67,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
     fun loadChannelInfo() {
         viewModel.viewModelScope.launch {
             val channel = (viewModel.stateFlow.value as? MainViewSelectorState.ChannelInfo)?.channel
-            val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
+            val currentUser = viewModel.userInfoRepository.authenticatedUser.first()
             if (viewModel.stateFlow.value !is MainViewSelectorState.GettingChannelInfo) {
                 viewModel.transition(MainViewSelectorState.GettingChannelInfo)
                 try {
@@ -95,14 +80,11 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                             )
                         }
                     )
-                    else if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(
-                            viewModel.context
-                        )
-                    ) {
+                    else if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                         return@launch
                     } else {
-                        var updatedChannel: Channel
+                        val updatedChannel: Channel
                         if (channel.users.isEmpty()) {
                             val channelUsers =
                                 viewModel.userService.getChannelUsers(channel.channelId)
@@ -118,7 +100,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                         )
                     }
                 } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                    Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
@@ -137,11 +119,11 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
     fun loadSubscribedChannels() {
         viewModel.transition(MainViewSelectorState.Loading)
         viewModel.viewModelScope.launch {
-            val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             try {
                 Log.d(TAG, "=== COULD RETRIEVE AUTH USER : $authenticatedUser")
                 val currentUser = authenticatedUser?.user
-                if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+                if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -151,19 +133,11 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
 
                 for (channel in channelsWithoutMessagesOrUsers) {
                     Log.i("DEBUG", channel.displayName)
-                    val messages = mutableListOf<Message>()
-                    val storedMessages =
-                        SharedPreferencesHelper.getMessages(viewModel.context, channel.channelId)
-                    if (storedMessages.isEmpty()) {
-                        val channelMessages =
-                            viewModel.messageService.getChannelMessages(channel.channelId)
-                        messages.addAll(channelMessages)
-                    } else {
-                        messages.addAll(storedMessages)
-                    }
+                    val channelMessages =
+                        viewModel.messageService.getChannelMessages(channel.channelId)
                     val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
 
-                    val toAdd = channel.copy(messages = messages, users = channelUsers)
+                    val toAdd = channel.copy(messages = channelMessages, users = channelUsers)
                     channels.add(toAdd)
                 }
 
@@ -175,7 +149,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> ${viewModel.stateFlow.value}")
+                Log.e(TAG, "${e.message} : Current State -> ${viewModel.stateFlow.value}")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
@@ -201,20 +175,15 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
         channelIconUrl: String
     ) {
             viewModel.viewModelScope.launch {
-                val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)?.user
+                val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
                 if (viewModel.stateFlow.value is MainViewSelectorState.CreateChannel) {
-                    if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
+                    if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                         return@launch
                     }
                     viewModel.transition(MainViewSelectorState.CreatingChannel)
-                val authenticatedUser =
-                    SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
 
-                if (authenticatedUser == null || !SharedPreferencesHelper.checkTokenValidity(
-                        viewModel.context
-                    )
-                ) {
+                if (!viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -227,7 +196,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                     viewModel.transition(MainViewSelectorState.Loading)
                     val channels =
-                        viewModel.channelService.getUserSubscribedChannels(currentUser.id)
+                        viewModel.channelService.getUserSubscribedChannels(authenticatedUser.user.id)
                     viewModel.transition(
                         MainViewSelectorState.SubscribedChannels(
                             channels = channels,
@@ -235,7 +204,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                         )
                     )
                 } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                    Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
@@ -257,13 +226,13 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
         userId: Int,
         channelId: Int
     ) {
-        val currentUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
-            viewModel.transition(MainViewSelectorState.Unauthenticated)
-            return
-        }
-
         viewModel.viewModelScope.launch {
+            val currentUser = viewModel.userInfoRepository.authenticatedUser.first()
+            if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+                viewModel.transition(MainViewSelectorState.Unauthenticated)
+                return@launch
+            }
+
             val channel = viewModel.channelService.getChannelById(channelId)
             try {
                 viewModel.channelService.removeUserFromChannel(userId, channelId)
@@ -274,7 +243,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
@@ -295,15 +264,14 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
 
     fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
         Log.i(TAG, "Inviting user $userId to channel $channelId")
-        val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-        val currentUser = authenticatedUser?.user
-
-        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
-            viewModel.transition(MainViewSelectorState.Unauthenticated)
-            return
-        }
-
         viewModel.viewModelScope.launch {
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+
+            if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+                viewModel.transition(MainViewSelectorState.Unauthenticated)
+                return@launch
+            }
+
             // WE WILL HAVE TO MAKE A PROPER SOLUTION FOR THIS, THIS IS ONLY A WORKAROUND!!!
             var channelNullCheck = true
             val channel = viewModel.channelService.getChannelById(channelId)
@@ -311,7 +279,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
             try {
                 viewModel.channelService.createChannelInvitation(
                     channelId,
-                    currentUser.id,
+                    authenticatedUser.user.id,
                     userId,
                     permission
                 )
@@ -324,7 +292,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     )
                 )
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
@@ -355,28 +323,27 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
         userId: Int?,
         channel: Channel
     ) {
-        val authenticatedUser = SharedPreferencesHelper.getAuthenticatedUser(viewModel.context)
-        val currentUser = authenticatedUser?.user
-        if (currentUser == null || !SharedPreferencesHelper.checkTokenValidity(viewModel.context)) {
-            viewModel.transition(MainViewSelectorState.Unauthenticated)
-            return
-        }
-        if (userId == null) {
-            viewModel.transition(
-                MainViewSelectorState.Error(message = ErrorMessages.USER_NOT_FOUND) {
-                    viewModel.transition(
-                        MainViewSelectorState.ChannelInfo(
-                            channel = channel,
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
-                }
-            )
-            return
-        }
-
-
         viewModel.viewModelScope.launch {
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+            val currentUser = authenticatedUser?.user
+            if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+                viewModel.transition(MainViewSelectorState.Unauthenticated)
+                return@launch
+            }
+            if (userId == null) {
+                viewModel.transition(
+                    MainViewSelectorState.Error(message = ErrorMessages.USER_NOT_FOUND) {
+                        viewModel.transition(
+                            MainViewSelectorState.ChannelInfo(
+                                channel = channel,
+                                authenticatedUser = authenticatedUser
+                            )
+                        )
+                    }
+                )
+                return@launch
+            }
+
             try {
                 viewModel.channelService.removeUserFromChannel(userId, channel.channelId)
                 val channels = viewModel.channelService.getUserSubscribedChannels(userId)
@@ -388,8 +355,7 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                 )
                 return@launch
             } catch (e: ServiceException) {
-                Log.e(TAG, "${e.message!!} : Current State -> $viewModel.state")
-                val channels = viewModel.channelService.getUserSubscribedChannels(userId)
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {

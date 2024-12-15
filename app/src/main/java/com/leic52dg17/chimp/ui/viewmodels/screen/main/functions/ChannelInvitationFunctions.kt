@@ -1,7 +1,6 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.shared.SharedPreferencesHelper
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
@@ -14,10 +13,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
     fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
         try {
             viewModel.viewModelScope.launch {
-                if (authenticatedUser?.user == null || !SharedPreferencesHelper.checkTokenValidity(
-                        viewModel.context
-                    )
-                ) {
+                if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
@@ -62,10 +58,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
     fun acceptChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
         try {
             viewModel.viewModelScope.launch {
-                if (authenticatedUser.user == null || !SharedPreferencesHelper.checkTokenValidity(
-                        viewModel.context
-                    )
-                ) {
+                if (authenticatedUser.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     viewModel.channelInvitationService.acceptChannelInvitation(
@@ -94,10 +87,7 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
     fun rejectChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
         try {
             viewModel.viewModelScope.launch {
-                if (authenticatedUser.user == null || !SharedPreferencesHelper.checkTokenValidity(
-                        viewModel.context
-                    )
-                ) {
+                if (authenticatedUser.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
                     viewModel.channelInvitationService.rejectChannelInvitation(

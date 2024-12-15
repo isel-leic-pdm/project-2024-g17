@@ -84,4 +84,7 @@ dependencies {
 
     // DOTENV
     implementation(libs.java.dotenv)
+
+    // DATA STORE
+    implementation(libs.androidx.datastore)
 }
