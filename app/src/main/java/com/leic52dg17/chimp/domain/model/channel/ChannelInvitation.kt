@@ -2,7 +2,9 @@ package com.leic52dg17.chimp.domain.model.channel
 
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class ChannelInvitation(
     val id: Int,
     val channelId: Int,

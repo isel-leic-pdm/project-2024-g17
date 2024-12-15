@@ -1,7 +1,6 @@
 package com.leic52dg17.chimp.http.services.auth.implementations
 
 import android.util.Log
-import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
@@ -10,18 +9,15 @@ import com.leic52dg17.chimp.http.services.auth.requests.UserChangePasswordReques
 import com.leic52dg17.chimp.http.services.auth.requests.UserSignUpRequest
 import com.leic52dg17.chimp.http.services.auth.responses.GetTokenResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
-import com.leic52dg17.chimp.http.services.common.ProblemDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
+import com.leic52dg17.chimp.http.services.common.handleAuthServiceResponse
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import java.net.URL
 
@@ -38,16 +34,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             setBody(requestBody)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else {
-                Log.e(TAG, "Login: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleAuthServiceResponse(response, json, TAG, "Login: ${response.status}")
 
         val responseBody = response.body<GetTokenResponse>()
         val user = getUserByToken(responseBody.token)
@@ -66,16 +53,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             setBody(requestBody)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " Signup: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else {
-                Log.e(TAG, "${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleAuthServiceResponse(response, json, TAG, "Sign Up: ${response.status}")
 
         return loginUser(username, password)
     }
@@ -99,15 +77,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             setBody(requestBody)
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, "Change password: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else {
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleAuthServiceResponse(response, json, TAG, "Change password: ${response.status}")
 
         return loginUser(username, newPassword)
     }
@@ -126,16 +96,7 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
             header("accept", "application/json")
         }
 
-        if(!response.status.isSuccess()) {
-            if(response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, "GetUserByToken: ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else {
-                Log.e(TAG, "GetUserByToken: ${response.status}")
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleAuthServiceResponse(response, json, TAG, "Get user by token: ${response.status}")
 
         return response.body<User>()
     }

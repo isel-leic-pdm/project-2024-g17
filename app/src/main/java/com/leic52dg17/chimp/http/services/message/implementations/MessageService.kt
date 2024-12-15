@@ -7,6 +7,7 @@ import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.ProblemDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
+import com.leic52dg17.chimp.http.services.common.handleServiceResponse
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.requests.CreateMessageRequest
 import com.leic52dg17.chimp.http.services.message.responses.CreateMessageResponse
@@ -39,19 +40,8 @@ class MessageService(private val client: HttpClient) : IMessageService {
             header("Content-Type", "application/json")
         }
 
-        if (!response.status.isSuccess()) {
-            if (response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Log.e(TAG, "Unauthorized: ${response.status}")
-                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
-            } else {
-                Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleServiceResponse(response, json, TAG)
+
         Log.i(TAG, "=== DEBUG ===\n GOT MESSAGES FOR CHANNEL WITH ID: $channelId")
 
         return Json.decodeFromString<GetMessagesResponse>(response.body()).messages
@@ -71,19 +61,7 @@ class MessageService(private val client: HttpClient) : IMessageService {
             setBody(request)
         }
 
-        if (!response.status.isSuccess()) {
-            if (response.contentType() == ContentType.Application.ProblemJson) {
-                val details = json.decodeFromString<ProblemDetails>(response.body())
-                Log.e(TAG, " ${details.title} -> ${details.errors}")
-                throw ServiceException(details.title, ServiceErrorTypes.Common)
-            } else if (response.status == HttpStatusCode.Unauthorized) {
-                Log.e(TAG, "Unauthorized: ${response.status}")
-                throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
-            } else {
-                Log.e(TAG, response.status.toString())
-                throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
-            }
-        }
+        handleServiceResponse(response, json, TAG)
 
         return Json.decodeFromString<CreateMessageResponse>(response.body()).messageId
     }
