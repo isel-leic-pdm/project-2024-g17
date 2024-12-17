@@ -4,6 +4,7 @@ import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import org.junit.Test
 import java.util.UUID
+import kotlin.math.round
 
 class ChannelInvitationModelTests {
     @Test
@@ -51,6 +52,6 @@ class ChannelInvitationModelTests {
     }
 
     companion object {
-        val RANDOM_UUID: UUID = UUID.randomUUID()
+        val RANDOM_UUID: Int = round(Math.random() * 1000).toInt()
     }
 }

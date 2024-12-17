@@ -4,9 +4,18 @@ import android.app.Application
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import androidx.room.Room
+import androidx.room.RoomDatabase
+import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
+import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
-import com.leic52dg17.chimp.core.repositories.UserInfoPreferencesRepository
-import com.leic52dg17.chimp.core.repositories.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
+import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
+import com.leic52dg17.chimp.core.repositories.common.AppDatabase
+import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
+import com.leic52dg17.chimp.core.repositories.messages.MessageRepository
+import com.leic52dg17.chimp.core.repositories.user.UserInfoPreferencesRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -33,13 +42,17 @@ const val TAG = "CHIMP"
 
 interface DependenciesContainer {
     val preferencesDataStore: DataStore<Preferences>
-    val userInfoRepository: UserInfoRepository
+    val roomDatabase: RoomDatabase
+    val userInfoRepository: IUserInfoRepository
+    val channelRepository: IChannelRepository
+    val messageRepository: IMessageRepository
     val channelService: IChannelService
     val messageService: IMessageService
     val authenticationService: IAuthenticationService
     val userService: IUserService
     val channelInvitationService: IChannelInvitationService
     val sseService: ISSEService
+    val channelCacheManager: IChannelCacheManager
 }
 
 class ChimpApplication : Application(), DependenciesContainer {
@@ -63,8 +76,19 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
 
-    override val userInfoRepository: UserInfoRepository by lazy {
+    override val roomDatabase =
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "chimp-local-db").build()
+
+    override val userInfoRepository: IUserInfoRepository by lazy {
         UserInfoPreferencesRepository(preferencesDataStore)
+    }
+
+    override val messageRepository by lazy {
+        MessageRepository()
+    }
+
+    override val channelRepository: IChannelRepository by lazy {
+        ChannelRepository(messageRepository, roomDatabase.channelDao());
     }
 
     private val sseScope = CoroutineScope(Dispatchers.IO)
@@ -91,5 +115,9 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val sseService: ISSEService by lazy {
         SSEService(client, sseScope)
+    }
+
+    override val channelCacheManager by lazy {
+        ChannelCacheManager(channelRepository, channelService)
     }
 }

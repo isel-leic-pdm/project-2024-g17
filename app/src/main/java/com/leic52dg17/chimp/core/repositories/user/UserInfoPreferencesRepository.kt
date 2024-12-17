@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.core.repositories
+package com.leic52dg17.chimp.core.repositories.user
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -12,7 +12,7 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.time.Instant
 
-class UserInfoPreferencesRepository(private val store: DataStore<Preferences>): UserInfoRepository {
+class UserInfoPreferencesRepository(private val store: DataStore<Preferences>): IUserInfoRepository {
     private val authenticatedUserKey = stringPreferencesKey("authenticated_user")
 
     override val authenticatedUser: Flow<AuthenticatedUser?> =

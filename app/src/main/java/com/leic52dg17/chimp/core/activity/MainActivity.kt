@@ -41,7 +41,9 @@ class MainActivity : ComponentActivity() {
                 (application as ChimpApplication).channelInvitationService,
                 (application as ChimpApplication).sseService,
                 (application as ChimpApplication).userInfoRepository,
-            ) { onLogout() }
+                { onLogout() },
+                (application as ChimpApplication).channelCacheManager
+            )
         }
         (application as ChimpApplication).sseService.listen()
         enableEdgeToEdge()
@@ -49,7 +51,8 @@ class MainActivity : ComponentActivity() {
             ChIMPTheme {
                 Scaffold(
                     contentWindowInsets = ScaffoldDefaults.contentWindowInsets.only(
-                        WindowInsetsSides.Start)
+                        WindowInsetsSides.Start
+                    )
                 ) { innerPadding ->
                     Column(
                         modifier = Modifier

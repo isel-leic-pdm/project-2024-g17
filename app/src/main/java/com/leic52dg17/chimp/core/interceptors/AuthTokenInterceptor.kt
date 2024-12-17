@@ -1,6 +1,6 @@
 package com.leic52dg17.chimp.core.interceptors
 
-import com.leic52dg17.chimp.core.repositories.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.request.header
 import io.ktor.util.AttributeKey
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
-class AuthTokenInterceptor(private val userInfoRepository: UserInfoRepository) {
+class AuthTokenInterceptor(private val userInfoRepository: IUserInfoRepository) {
     companion object {
         val Key = AttributeKey<AuthTokenInterceptor>("AuthTokenInterceptor")
     }

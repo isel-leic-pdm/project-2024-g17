@@ -87,4 +87,8 @@ dependencies {
 
     // DATA STORE
     implementation(libs.androidx.datastore)
+
+    // ROOM
+    implementation(libs.androidx.room.runtime)
+    implementation(libs.androidx.room.ktx)
 }

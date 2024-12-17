@@ -5,12 +5,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import com.leic52dg17.chimp.core.ChimpApplication
-import com.leic52dg17.chimp.core.repositories.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class LauncherActivity : ComponentActivity() {
-    private val userInfoRepository: UserInfoRepository by lazy { (application as ChimpApplication).userInfoRepository }
+    private val userInfoRepository: IUserInfoRepository by lazy { (application as ChimpApplication).userInfoRepository }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

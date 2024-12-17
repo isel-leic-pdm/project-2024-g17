@@ -4,7 +4,8 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.repositories.UserInfoRepository
+import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
@@ -32,8 +33,9 @@ class MainViewSelectorViewModel(
     val userService: IUserService,
     val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
-    val userInfoRepository: UserInfoRepository,
+    val userInfoRepository: IUserInfoRepository,
     private val onLogout: () -> Unit,
+    private val channelCacheManager: IChannelCacheManager
 ) : ViewModel() {
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Loading)
@@ -220,8 +222,9 @@ class MainViewSelectorViewModelFactory(
     private val userService: IUserService,
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
-    private val userInfoRepository: UserInfoRepository,
-    private val onLogout: () -> Unit
+    private val userInfoRepository: IUserInfoRepository,
+    private val onLogout: () -> Unit,
+    private val channelCacheManager: IChannelCacheManager
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
@@ -232,6 +235,7 @@ class MainViewSelectorViewModelFactory(
             sseService,
             userInfoRepository,
             onLogout,
+            channelCacheManager
         ) as T
     }
 }
