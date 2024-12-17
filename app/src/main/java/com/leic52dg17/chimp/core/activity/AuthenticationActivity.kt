@@ -30,6 +30,7 @@ class AuthenticationActivity : ComponentActivity() {
                 AuthenticationViewSelector(
                     viewModel = authViewSelectorViewModel,
                     onAuthenticate = {
+                        (application as ChimpApplication).applicationDatabaseManager.clearDB()
                         val intent = Intent(this, LauncherActivity::class.java)
                         this.startActivity(intent)
                     }

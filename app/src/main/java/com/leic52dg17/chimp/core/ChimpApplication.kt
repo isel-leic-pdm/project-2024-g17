@@ -12,6 +12,7 @@ import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
 import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.common.AppDatabase
+import com.leic52dg17.chimp.core.repositories.common.AppDatabaseManager
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.messages.MessageRepository
 import com.leic52dg17.chimp.core.repositories.user.UserInfoPreferencesRepository
@@ -53,6 +54,7 @@ interface DependenciesContainer {
     val channelInvitationService: IChannelInvitationService
     val sseService: ISSEService
     val channelCacheManager: IChannelCacheManager
+    val applicationDatabaseManager: AppDatabaseManager
 }
 
 class ChimpApplication : Application(), DependenciesContainer {
@@ -76,15 +78,16 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val preferencesDataStore: DataStore<Preferences> by preferencesDataStore(name = "preferences")
 
-    override val roomDatabase =
-        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "chimp-local-db").build()
+    override val roomDatabase: AppDatabase by lazy {
+        Room.databaseBuilder(applicationContext, AppDatabase::class.java, "chimp-local-db").fallbackToDestructiveMigration().build()
+    }
 
     override val userInfoRepository: IUserInfoRepository by lazy {
         UserInfoPreferencesRepository(preferencesDataStore)
     }
 
     override val messageRepository by lazy {
-        MessageRepository()
+        MessageRepository(roomDatabase.messageDao())
     }
 
     override val channelRepository: IChannelRepository by lazy {
@@ -118,6 +121,10 @@ class ChimpApplication : Application(), DependenciesContainer {
     }
 
     override val channelCacheManager by lazy {
-        ChannelCacheManager(channelRepository, channelService)
+        ChannelCacheManager(channelRepository, channelService, userInfoRepository)
+    }
+
+    override val applicationDatabaseManager: AppDatabaseManager by lazy {
+        AppDatabaseManager(roomDatabase.messageDao(), roomDatabase.channelDao())
     }
 }

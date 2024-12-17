@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.leic52dg17.chimp.core.repositories.channel.model.ChannelEntity
+import com.leic52dg17.chimp.domain.model.channel.Channel
 
 @Dao
 interface ChannelDAO {
@@ -14,12 +15,12 @@ interface ChannelDAO {
     @Insert
     fun insertAll(channels: List<ChannelEntity>)
 
-    @Query("DELETE FROM channel")
+    @Delete
     fun delete(channel: ChannelEntity)
 
-    @Delete
+    @Query("DELETE FROM channel")
     fun deleteAll()
 
     @Query("SELECT * FROM channel WHERE channelId = :channelId")
-    fun getById(channelId: Int)
+    fun getById(channelId: Int): ChannelEntity
 }

@@ -2,7 +2,9 @@ package com.leic52dg17.chimp.core.cache.channel
 
 import android.util.Log
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.common.ServiceException
@@ -11,12 +13,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class ChannelCacheManager(
     private val channelRepository: IChannelRepository,
-    private val channelService: IChannelService
+    private val channelService: IChannelService,
+    private val userInfoRepository: IUserInfoRepository
 ) : IChannelCacheManager {
     private var successCallback: ((newChannels: List<Channel>) -> Unit)? = {}
     private var errorCallback: ((errorMessage: String) -> Unit)? = {}
@@ -24,14 +28,23 @@ class ChannelCacheManager(
     private var collectionJob: Job? = null
 
     // Set the interval for auto cache update
-    override suspend fun startCollection(userId: Int) {
+    override fun startCollection() {
         collectionJob = CoroutineScope(Dispatchers.IO).launch {
+            val authenticatedUser = userInfoRepository.authenticatedUser.first()
+            if (authenticatedUser?.user == null) {
+                Log.e(TAG, "Could not find authenticated user ID.")
+                return@launch
+            }
+            Log.i(TAG, "Starting collection")
             while (isActive) {
                 try {
                     val storedChannels = channelRepository.getStoredChannels()
-                    val newChannels = channelService.getUserSubscribedChannels(userId)
-                    val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannels)
+                    _currentChannels.emit(storedChannels)
+                    val newChannels =
+                        channelService.getUserSubscribedChannels(authenticatedUser.user.id)
+                    val hasChanged = channelRepository.isUpdateDue(_currentChannels.value, newChannels)
                     if (hasChanged) {
+                        channelRepository.storeChannels(newChannels)
                         _currentChannels.emit(newChannels)
                         runCallback()
                     }
@@ -46,25 +59,32 @@ class ChannelCacheManager(
     }
 
     // Cancels the collection job, effectively stopping updates to the cache
-    override suspend fun stopCollection() {
+    override fun stopCollection() {
         collectionJob?.cancel()
         collectionJob = null
     }
 
     // Forces a cache update (i.e. when creating a channel)
-    override suspend fun forceUpdate(userId: Int) {
-        try {
-            val storedChannels = channelRepository.getStoredChannels()
-            val newChannels = channelService.getUserSubscribedChannels(userId)
-            val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannels)
-            if (hasChanged) {
-                _currentChannels.emit(newChannels)
-                runCallback()
+    override fun forceUpdate() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val authenticatedUser: AuthenticatedUser? = userInfoRepository.authenticatedUser.first()
+                if(authenticatedUser?.user == null) {
+                    Log.e(TAG, "Could not find authenticated user ID.")
+                    return@launch
+                }
+                val storedChannels = channelRepository.getStoredChannels()
+                val newChannels = channelService.getUserSubscribedChannels(authenticatedUser.user.id)
+                val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannels)
+                if (hasChanged) {
+                    _currentChannels.emit(newChannels)
+                    runCallback()
+                }
+            } catch (e: ServiceException) {
+                runErrorCallback(e.message)
+            } catch (e: Exception) {
+                runErrorCallback(ErrorMessages.UNKNOWN)
             }
-        } catch (e: ServiceException) {
-            runErrorCallback(e.message)
-        } catch (e: Exception) {
-            runErrorCallback(ErrorMessages.UNKNOWN)
         }
     }
 
@@ -92,7 +112,7 @@ class ChannelCacheManager(
 
     // Runs the callback, if it's set.
     override suspend fun runCallback() {
-        Log.i(TAG, "Running callback...")
+        Log.i(TAG, "Running callback with channel list size ${_currentChannels.value.size}...")
         if (successCallback == null) {
             Log.w(TAG, "There is no callback registered!!!")
             return
@@ -108,6 +128,10 @@ class ChannelCacheManager(
             return
         } else errorCallback?.invoke(errorMessage)
         Log.i(TAG, "Ran error callback!")
+    }
+
+    override fun getCachedChannels(): List<Channel> {
+        return _currentChannels.value
     }
 
     companion object {

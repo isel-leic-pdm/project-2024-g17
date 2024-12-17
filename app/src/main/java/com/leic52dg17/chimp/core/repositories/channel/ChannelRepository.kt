@@ -69,8 +69,7 @@ class ChannelRepository(
     }
 
     override suspend fun isUpdateDue(oldCache: List<Channel>, newCache: List<Channel>): Boolean {
-        if(getDifferences(oldCache, newCache).isNotEmpty()) return true
-        else return false
+        return getDifferences(oldCache, newCache).isNotEmpty()
     }
 
     companion object {

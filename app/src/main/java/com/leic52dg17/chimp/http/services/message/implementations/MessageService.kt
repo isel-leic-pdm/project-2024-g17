@@ -33,7 +33,7 @@ class MessageService(private val client: HttpClient) : IMessageService {
 
         Log.i(TAG, uri.toString())
 
-        Log.d(TAG, "=== DEBUG ===\n GETTING MESSAGES FOR CHANNEL WITH ID: $channelId")
+        Log.d(TAG, "GETTING MESSAGES FOR CHANNEL WITH ID: $channelId")
 
         val response = client.get(uri) {
             header("Accept", "application/json")
@@ -42,7 +42,7 @@ class MessageService(private val client: HttpClient) : IMessageService {
 
         handleServiceResponse(response, json, TAG)
 
-        Log.i(TAG, "=== DEBUG ===\n GOT MESSAGES FOR CHANNEL WITH ID: $channelId")
+        Log.i(TAG, "GOT MESSAGES FOR CHANNEL WITH ID: $channelId")
 
         return Json.decodeFromString<GetMessagesResponse>(response.body()).messages
     }

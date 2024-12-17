@@ -1,37 +1,41 @@
 package com.leic52dg17.chimp.core.repositories.messages
 
+import com.leic52dg17.chimp.core.repositories.messages.database.MessageDAO
+import com.leic52dg17.chimp.core.repositories.messages.model.MessageEntity
+import com.leic52dg17.chimp.core.repositories.messages.model.mapToMessage
 import com.leic52dg17.chimp.domain.model.message.Message
 
-class MessageRepository: IMessageRepository {
-    override suspend fun registerCallback(callback: () -> Unit) {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun unregisterCallback() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun runCallback() {
-        TODO("Not yet implemented")
-    }
-
-    override suspend fun storeMessages(channels: List<Message>) {
-        TODO("Not yet implemented")
+class MessageRepository(private val messageDAO: MessageDAO) : IMessageRepository {
+    override suspend fun storeMessages(messages: List<Message>) {
+        val messageEntities = messages.map {
+            MessageEntity(
+                it.id,
+                it.userId,
+                it.channelId,
+                it.text,
+                it.createdAt
+            )
+        }
+        messageDAO.insertAll(messageEntities)
     }
 
     override suspend fun getStoredMessages(): List<Message> {
-        TODO("Not yet implemented")
+        val messageEntities = messageDAO.getAll()
+        val messages = messageEntities.map { it.mapToMessage() }
+        return messages
     }
 
     override suspend fun getStoredMessagesForChannel(channelId: Int): List<Message> {
-        TODO("Not yet implemented")
+        val messageEntities = messageDAO.getByAllByChannelId(channelId)
+        val messages = messageEntities.map { it.mapToMessage() }
+        return messages
     }
 
     override suspend fun getDifferences(old: List<Message>, new: List<Message>): List<Message> {
-        TODO("Not yet implemented")
+        return new.filter { message -> !old.contains(message) }
     }
 
     override suspend fun isUpdateDue(oldCache: List<Message>, newCache: List<Message>): Boolean {
-        TODO("Not yet implemented")
+        return getDifferences(oldCache, newCache).isNotEmpty()
     }
 }

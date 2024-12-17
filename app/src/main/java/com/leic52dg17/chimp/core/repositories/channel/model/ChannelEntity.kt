@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.core.repositories.channel.model
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.leic52dg17.chimp.domain.model.channel.Channel
 
 @Entity(tableName = "channel")
 data class ChannelEntity(

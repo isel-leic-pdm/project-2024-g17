@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
+import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
+import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
@@ -18,6 +20,7 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.CacheCallbacks
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
@@ -40,13 +43,24 @@ class MainViewSelectorViewModel(
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Loading)
 
+    private val cacheCallbacks = CacheCallbacks(this)
+    private val channelFunctions = ChannelFunctions(this, channelCacheManager)
+    private val userFunctions = UserFunctions(this)
+    private val messageFunctions = MessageFunctions(this)
+    private val channelInvitationFunctions = ChannelInvitationFunctions(this)
+
     init {
         viewModelScope.launch {
+            channelCacheManager.registerCallback { newChannels ->
+                cacheCallbacks.channelSuccessCallback(newChannels)
+            }
+            channelCacheManager.registerErrorCallback { errorMessage ->
+                cacheCallbacks.channelErrorCallback(errorMessage)
+            }
             stateFlow.emit(
-                MainViewSelectorState.SubscribedChannels(
-                    authenticatedUser = userInfoRepository.authenticatedUser.first(),
-                )
+                MainViewSelectorState.Initialized(authenticatedUser = userInfoRepository.authenticatedUser.first())
             )
+            channelCacheManager.startCollection()
         }
     }
 
@@ -55,11 +69,6 @@ class MainViewSelectorViewModel(
             stateFlow.emit(newState)
         }
     }
-
-    private val channelFunctions = ChannelFunctions(this)
-    private val userFunctions = UserFunctions(this)
-    private val messageFunctions = MessageFunctions(this)
-    private val channelInvitationFunctions = ChannelInvitationFunctions(this)
 
 
     private suspend fun handleIncomingEvent(event: Events) {
@@ -224,7 +233,7 @@ class MainViewSelectorViewModelFactory(
     private val sseService: ISSEService,
     private val userInfoRepository: IUserInfoRepository,
     private val onLogout: () -> Unit,
-    private val channelCacheManager: IChannelCacheManager
+    private val channelCacheManager: IChannelCacheManager,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
@@ -235,7 +244,7 @@ class MainViewSelectorViewModelFactory(
             sseService,
             userInfoRepository,
             onLogout,
-            channelCacheManager
+            channelCacheManager,
         ) as T
     }
 }
