@@ -52,6 +52,6 @@ class MessageModelTests {
     companion object {
         const val MESSAGE_TEXT = "Test message"
         const val EMPTY_TEXT = ""
-        val TIMESTAMP = BigInteger("1731862334")
+        const val TIMESTAMP = 1731862334L
     }
 }

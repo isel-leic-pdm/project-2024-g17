@@ -7,7 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.repositories.UserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.common.ServiceException
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class AuthenticationViewSelectorViewModel(
     private val authenticationService: IAuthenticationService,
-    private val userInfoRepository: UserInfoRepository,
+    private val userInfoRepository: IUserInfoRepository,
     initialState: AuthenticationViewSelectorState = AuthenticationViewSelectorState.Landing
 ) : ViewModel() {
     var state: AuthenticationViewSelectorState by mutableStateOf(initialState)
@@ -154,7 +154,7 @@ class AuthenticationViewSelectorViewModel(
 @Suppress("UNCHECKED_CAST")
 class AuthenticationViewSelectorViewModelFactory(
     private val authenticationService: IAuthenticationService,
-    private val userInfoRepository: UserInfoRepository,
+    private val userInfoRepository: IUserInfoRepository,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AuthenticationViewSelectorViewModel(
