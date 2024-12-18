@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
 
 class ChannelCacheManager(
     private val channelRepository: IChannelRepository,
@@ -40,17 +41,19 @@ class ChannelCacheManager(
                 try {
                     val storedChannels = channelRepository.getStoredChannels()
                     _currentChannels.emit(storedChannels)
-                    val newChannels =
-                        channelService.getUserSubscribedChannels(authenticatedUser.user.id)
+                    val newChannels = channelService.getUserSubscribedChannels(authenticatedUser.user.id)
                     val hasChanged = channelRepository.isUpdateDue(_currentChannels.value, newChannels)
+                    Log.i(TAG, "HAS CHANGED LOOP - $hasChanged")
                     if (hasChanged) {
                         channelRepository.storeChannels(newChannels)
                         _currentChannels.emit(newChannels)
                         runCallback()
                     }
                 } catch (e: ServiceException) {
+                    Log.e(TAG, e.message)
                     runErrorCallback(e.message)
                 } catch (e: Exception) {
+                    Log.e(TAG, e.message.toString())
                     runErrorCallback(ErrorMessages.UNKNOWN)
                 }
                 delay(10000)
@@ -65,7 +68,7 @@ class ChannelCacheManager(
     }
 
     // Forces a cache update (i.e. when creating a channel)
-    override fun forceUpdate() {
+    override fun forceUpdate(channel: Channel) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val authenticatedUser: AuthenticatedUser? = userInfoRepository.authenticatedUser.first()
@@ -74,9 +77,14 @@ class ChannelCacheManager(
                     return@launch
                 }
                 val storedChannels = channelRepository.getStoredChannels()
-                val newChannels = channelService.getUserSubscribedChannels(authenticatedUser.user.id)
-                val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannels)
+                val newChannel = listOf(channel)
+                // This has to happen because the collection loop can run before this line (in edge cases), which means the cache can already have the new channel
+                // This check prevents that race condition
+                val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannel)
+                val newChannels = storedChannels + newChannel
+                Log.i(TAG, "HAS CHANGED FORCED - $hasChanged")
                 if (hasChanged) {
+                    channelRepository.storeChannels(newChannel)
                     _currentChannels.emit(newChannels)
                     runCallback()
                 }

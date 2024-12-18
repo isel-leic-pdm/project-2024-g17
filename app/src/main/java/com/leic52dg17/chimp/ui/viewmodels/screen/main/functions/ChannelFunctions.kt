@@ -73,9 +73,10 @@ class ChannelFunctions(
     fun loadChannelInfo() {
         viewModel.viewModelScope.launch {
             val channel = (viewModel.stateFlow.value as? MainViewSelectorState.ChannelInfo)?.channel
+            Log.i(TAG, "Loading channel info for channel - $channel")
             val currentUser = viewModel.userInfoRepository.authenticatedUser.first()
             if (viewModel.stateFlow.value !is MainViewSelectorState.GettingChannelInfo) {
-                viewModel.transition(MainViewSelectorState.GettingChannelInfo)
+                viewModel.transition(MainViewSelectorState.Loading)
                 try {
                     if (channel == null) viewModel.transition(
                         MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
@@ -90,14 +91,8 @@ class ChannelFunctions(
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                         return@launch
                     } else {
-                        val updatedChannel: Channel
-                        if (channel.users.isEmpty()) {
-                            val channelUsers =
-                                viewModel.userService.getChannelUsers(channel.channelId)
-                            updatedChannel = channel.copy(users = channelUsers)
-                        } else {
-                            updatedChannel = channel
-                        }
+                        val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
+                        val updatedChannel = channel.copy(users = channelUsers)
                         viewModel.transition(
                             MainViewSelectorState.ChannelInfo(
                                 channel = updatedChannel,
@@ -134,16 +129,7 @@ class ChannelFunctions(
                 }
 
                 viewModel.transition(MainViewSelectorState.Loading)
-                val channelsWithoutUsers = channelCacheManager.getCachedChannels()
-
-                val channels = mutableListOf<Channel>()
-
-                for (channel in channelsWithoutUsers) {
-                    val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
-                    val toAdd = channel.copy(users = channelUsers)
-                    channels.add(toAdd)
-                }
-
+                val channels = channelCacheManager.getCachedChannels()
                 Log.i(TAG, "GOT CHANNELS: $channels")
                 viewModel.transition(
                     MainViewSelectorState.SubscribedChannels(
@@ -184,28 +170,21 @@ class ChannelFunctions(
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-                viewModel.transition(MainViewSelectorState.CreatingChannel)
+                viewModel.transition(MainViewSelectorState.CreatingChannel(authenticatedUser = authenticatedUser))
 
                 if (!viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
                 try {
-                    viewModel.channelService.createChannel(
+                    val channelId = viewModel.channelService.createChannel(
                         ownerId,
                         name,
                         isPrivate,
                         channelIconUrl
                     )
-                    viewModel.transition(MainViewSelectorState.Loading)
-                    val channels =
-                        viewModel.channelService.getUserSubscribedChannels(authenticatedUser.user.id)
-                    viewModel.transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            channels = channels,
-                            authenticatedUser = authenticatedUser
-                        )
-                    )
+                    val channelToAdd = viewModel.channelService.getChannelById(channelId)
+                    channelCacheManager.forceUpdate(channelToAdd)
                 } catch (e: ServiceException) {
                     Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
