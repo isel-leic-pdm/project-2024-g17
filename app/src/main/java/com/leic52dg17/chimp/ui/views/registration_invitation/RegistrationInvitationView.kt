@@ -46,7 +46,7 @@ fun RegistrationInvitationView(
         )
 
         Button(
-            onClick = { token =  }, // registration invitation service que faz o pedido à api para gerar um token fun cno viewmodel que retorna token(no scope) e chamo função neste view
+            onClick = { token = TODO() },
             modifier = modifier.padding(16.dp)
         ) {
             Text("Generate Token")
