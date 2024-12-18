@@ -239,14 +239,16 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.RegistrationInvitation -> {
                         isNavBarShown = false
-                        val currentState = viewModel.stateFlow.collectAsState().value as MainViewSelectorState.RegistrationInvitation
-                        if(currentState.authenticatedUser?.user != null) {
+                        val currentState =
+                            viewModel.stateFlow.collectAsState().value as MainViewSelectorState.RegistrationInvitation
+                        if (currentState.authenticatedUser?.user != null) {
                             RegistrationInvitationView(
                                 onBackClick = {
                                     viewModel.transition(
                                         MainViewSelectorState.UserInfo(
                                             user = currentState.authenticatedUser.user,
-                                            authenticatedUser = currentState.authenticatedUser
+                                            authenticatedUser = currentState.authenticatedUser,
+                                            isCurrentUser = true
                                         )
                                     )
                                 }
@@ -328,7 +330,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
                         LaunchedEffect(state.channel?.channelId) {
-                            if((state?.channel?.users) !== null && state.channel.users.isEmpty() || (state?.channel?.users == null)) {
+                            if ((state?.channel?.users) !== null && state.channel.users.isEmpty() || (state?.channel?.users == null)) {
                                 viewModel.loadChannelInfo()
                             }
                         }
@@ -390,9 +392,11 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.UserInfo -> {
+                        val isCurrentUser = state.user.id == authenticatedUser?.user?.id
+                        isNavBarShown = isCurrentUser
                         UserInfoView(
                             user = state.user,
-                            authenticatedUser = authenticatedUser,
+                            isCurrentUser = isCurrentUser,
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(

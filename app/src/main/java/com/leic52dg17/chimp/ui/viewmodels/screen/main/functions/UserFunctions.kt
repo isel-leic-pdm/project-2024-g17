@@ -28,7 +28,8 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                     viewModel.transition(
                         MainViewSelectorState.UserInfo(
                             user,
-                            authenticatedUser = authenticatedUser
+                            authenticatedUser = authenticatedUser,
+                            isCurrentUser = user.id == authenticatedUser.user?.id
                         )
                     )
                 } else {
