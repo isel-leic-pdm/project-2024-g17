@@ -1,6 +1,6 @@
 package com.leic52dg17.chimp.ui.screens.main
 
-import RegistrationInvitationView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +10,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +17,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.dialogs.ConfirmationDialog
@@ -31,7 +29,7 @@ import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
-import com.leic52dg17.chimp.ui.views.UserInfoView
+import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
@@ -39,7 +37,6 @@ import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
-import kotlinx.coroutines.launch
 
 @Composable
 fun MainViewSelector(
@@ -241,19 +238,20 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.RegistrationInvitation -> {
-
                         isNavBarShown = false
-                        val currentState = (viewModel.state as MainViewSelectorState.RegistrationInvitation)
-                        RegistrationInvitationView(
-                            onBackClick = {
-                                viewModel.transition(
-                                    MainViewSelectorState.UserInfo(
-                                        user = currentState.authenticatedUser?.user!!,
-                                        authenticatedUser = currentState.authenticatedUser
+                        val currentState = viewModel.stateFlow.collectAsState().value as MainViewSelectorState.RegistrationInvitation
+                        if(currentState.authenticatedUser?.user != null) {
+                            RegistrationInvitationView(
+                                onBackClick = {
+                                    viewModel.transition(
+                                        MainViewSelectorState.UserInfo(
+                                            user = currentState.authenticatedUser.user,
+                                            authenticatedUser = currentState.authenticatedUser
+                                        )
                                     )
-                                )
-                            }
-                        )
+                                }
+                            )
+                        }
                     }
 
                     is MainViewSelectorState.CreateChannel -> {
@@ -415,7 +413,7 @@ fun MainViewSelector(
                             onRegistrationInvitationClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.RegistrationInvitation(
-                                        authenticatedUser = currentState.authenticatedUser
+                                        authenticatedUser = authenticatedUser
                                     )
                                 )
                             },

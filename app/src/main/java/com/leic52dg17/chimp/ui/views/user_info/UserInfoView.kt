@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.views
+package com.leic52dg17.chimp.ui.views.user_info
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -137,7 +137,6 @@ fun UserInfoView(
                     shape = RoundedCornerShape(20),
                     modifier = modifier
                         .width(250.dp)
-                        .padding(top = 16.dp)
                 ) {
                     Text("Invite a friend to the App!")
                 }

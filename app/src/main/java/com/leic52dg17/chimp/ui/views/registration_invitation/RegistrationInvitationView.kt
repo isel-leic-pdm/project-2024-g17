@@ -1,3 +1,5 @@
+package com.leic52dg17.chimp.ui.views.registration_invitation
+
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
@@ -13,7 +15,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
-import java.util.UUID
 
 @Composable
 fun RegistrationInvitationView(
@@ -46,7 +47,7 @@ fun RegistrationInvitationView(
         )
 
         Button(
-            onClick = { token = TODO() },
+            onClick = { token = "ABC" },
             modifier = modifier.padding(16.dp)
         ) {
             Text("Generate Token")
