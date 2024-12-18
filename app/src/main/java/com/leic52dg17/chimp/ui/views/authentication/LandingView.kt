@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.views
+package com.leic52dg17.chimp.ui.views.authentication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image

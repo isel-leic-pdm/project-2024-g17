@@ -1,4 +1,4 @@
-package com.leic52dg17.chimp.ui.views
+package com.leic52dg17.chimp.ui.views.user_info
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -34,7 +34,7 @@ import com.leic52dg17.chimp.ui.components.buttons.BackButton
 @Composable
 fun UserInfoView(
     user: User,
-    authenticatedUser: AuthenticatedUser?,
+    isCurrentUser: Boolean,
     onBackClick: () -> Unit,
     onInvitationsClick: () -> Unit,
     onLogoutClick: () -> Unit,
@@ -47,19 +47,26 @@ fun UserInfoView(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier.fillMaxWidth()
     ) {
+        val arrangement =
+            if(isCurrentUser) Arrangement.End
+                else Arrangement.SpaceBetween
         Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = arrangement,
             modifier = modifier.fillMaxWidth(),
         ) {
-            BackButton(onBackClick = onBackClick)
-            IconButton(
-                onClick = onInvitationsClick,
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.MailOutline,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = stringResource(R.string.back_button_text_cd)
-                )
+            if(!isCurrentUser) {
+                BackButton(onBackClick = onBackClick)
+            }
+            if(isCurrentUser) {
+                IconButton(
+                    onClick = onInvitationsClick,
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MailOutline,
+                        tint = MaterialTheme.colorScheme.primary,
+                        contentDescription = stringResource(R.string.back_button_text_cd)
+                    )
+                }
             }
         }
 
@@ -103,7 +110,7 @@ fun UserInfoView(
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         ) {
-            if (authenticatedUser?.user?.id == user.id) {
+            if (isCurrentUser) {
                 Button(
                     onClick = onLogoutClick,
                     colors = ButtonDefaults.buttonColors(
@@ -137,7 +144,6 @@ fun UserInfoView(
                     shape = RoundedCornerShape(20),
                     modifier = modifier
                         .width(250.dp)
-                        .padding(top = 16.dp)
                 ) {
                     Text("Invite a friend to the App!")
                 }
@@ -151,10 +157,7 @@ fun UserInfoView(
 fun UserInfoViewPreview() {
     UserInfoView(
         user = User(1, "username", "Harvyyyy"),
-        authenticatedUser = AuthenticatedUser(
-            authenticationToken = "token",
-            user = User(1, "username", "Harvyyyy")
-        ),
+        isCurrentUser = true,
         onBackClick = { },
         onInvitationsClick = { },
         onLogoutClick = { },
