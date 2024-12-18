@@ -30,13 +30,11 @@ import coil.compose.rememberAsyncImagePainter
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.user.User
-import com.leic52dg17.chimp.ui.components.buttons.BackButton
 
 @Composable
 fun UserInfoView(
     user: User,
     authenticatedUser: AuthenticatedUser?,
-    onBackClick: () -> Unit,
     onInvitationsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
@@ -51,7 +49,6 @@ fun UserInfoView(
             horizontalArrangement = Arrangement.SpaceBetween,
             modifier = modifier.fillMaxWidth(),
         ) {
-            BackButton(onBackClick = onBackClick)
             IconButton(
                 onClick = onInvitationsClick,
             ) {
@@ -143,7 +140,6 @@ fun UserInfoViewPreview() {
             authenticationToken = "token",
             user = User(1, "username", "Harvyyyy")
         ),
-        onBackClick = { },
         onInvitationsClick = { },
         onLogoutClick = { },
         onChangePasswordClick = {}
