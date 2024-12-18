@@ -47,7 +47,7 @@ class MainViewSelectorViewModel(
     private val channelFunctions = ChannelFunctions(this, channelCacheManager)
     private val userFunctions = UserFunctions(this)
     private val messageFunctions = MessageFunctions(this)
-    private val channelInvitationFunctions = ChannelInvitationFunctions(this)
+    private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
 
     init {
         viewModelScope.launch {
@@ -69,7 +69,6 @@ class MainViewSelectorViewModel(
             stateFlow.emit(newState)
         }
     }
-
 
     private suspend fun handleIncomingEvent(event: Events) {
         when (event) {

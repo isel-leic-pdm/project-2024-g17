@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import androidx.lifecycle.viewModelScope
+import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
@@ -9,7 +10,7 @@ import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.launch
 
-class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewModel) {
+class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewModel, private val channelCacheManager: IChannelCacheManager) {
     fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
         try {
             viewModel.viewModelScope.launch {
@@ -64,6 +65,9 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
                     )
+                    val invitation = viewModel.channelInvitationService.getChannelInvitationById(invitationId)
+                    val channel = viewModel.channelService.getChannelById(invitation.channelId)
+                    channelCacheManager.forceUpdate(channel)
                     loadChannelInvitations(authenticatedUser)
                 }
             }
