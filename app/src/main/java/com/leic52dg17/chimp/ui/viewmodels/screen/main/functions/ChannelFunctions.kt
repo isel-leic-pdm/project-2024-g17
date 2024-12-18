@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
@@ -10,11 +11,16 @@ import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
+class ChannelFunctions(
+    private val viewModel: MainViewSelectorViewModel,
+    private val channelCacheManager: IChannelCacheManager
+) {
     fun loadChannelMessages() {
         viewModel.viewModelScope.launch {
             val channel =
@@ -117,7 +123,6 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
     }
 
     fun loadSubscribedChannels() {
-        viewModel.transition(MainViewSelectorState.Loading)
         viewModel.viewModelScope.launch {
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             try {
@@ -127,21 +132,19 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-                val channelsWithoutMessagesOrUsers =
-                    viewModel.channelService.getUserSubscribedChannels(currentUser.id)
+
+                viewModel.transition(MainViewSelectorState.Loading)
+                val channelsWithoutUsers = channelCacheManager.getCachedChannels()
+
                 val channels = mutableListOf<Channel>()
 
-                for (channel in channelsWithoutMessagesOrUsers) {
-                    Log.i("DEBUG", channel.displayName)
-                    val channelMessages =
-                        viewModel.messageService.getChannelMessages(channel.channelId)
+                for (channel in channelsWithoutUsers) {
                     val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
-
-                    val toAdd = channel.copy(messages = channelMessages, users = channelUsers)
+                    val toAdd = channel.copy(users = channelUsers)
                     channels.add(toAdd)
                 }
 
-                Log.i(TAG, "=====DEBUG=====\n GOT CHANNELS: $channels")
+                Log.i(TAG, "GOT CHANNELS: $channels")
                 viewModel.transition(
                     MainViewSelectorState.SubscribedChannels(
                         channels = channels,
@@ -174,14 +177,14 @@ class ChannelFunctions(private val viewModel: MainViewSelectorViewModel) {
         isPrivate: Boolean,
         channelIconUrl: String
     ) {
-            viewModel.viewModelScope.launch {
-                val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
-                if (viewModel.stateFlow.value is MainViewSelectorState.CreateChannel) {
-                    if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
-                        viewModel.transition(MainViewSelectorState.Unauthenticated)
-                        return@launch
-                    }
-                    viewModel.transition(MainViewSelectorState.CreatingChannel)
+        viewModel.viewModelScope.launch {
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+            if (viewModel.stateFlow.value is MainViewSelectorState.CreateChannel) {
+                if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+                    viewModel.transition(MainViewSelectorState.Unauthenticated)
+                    return@launch
+                }
+                viewModel.transition(MainViewSelectorState.CreatingChannel)
 
                 if (!viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
