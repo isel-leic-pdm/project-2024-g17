@@ -16,7 +16,7 @@ sealed interface MainViewSelectorState {
     data class CreateChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class ChannelMessages(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
-    data object CreatingChannel: MainViewSelectorState
+    data class CreatingChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class ChannelInfo(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState

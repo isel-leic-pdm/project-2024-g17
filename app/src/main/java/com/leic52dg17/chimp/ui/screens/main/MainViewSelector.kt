@@ -285,7 +285,6 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.CreatingChannel -> {
                         isNavBarShown = false
-
                     }
 
                     is MainViewSelectorState.ChannelMessages -> {
@@ -331,7 +330,9 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
                         LaunchedEffect(state.channel?.channelId) {
-                            viewModel.loadChannelInfo()
+                            if((state?.channel?.users) !== null && state.channel.users.isEmpty() || (state?.channel?.users == null)) {
+                                viewModel.loadChannelInfo()
+                            }
                         }
                         state.channel?.let {
                             ChannelInfoView(

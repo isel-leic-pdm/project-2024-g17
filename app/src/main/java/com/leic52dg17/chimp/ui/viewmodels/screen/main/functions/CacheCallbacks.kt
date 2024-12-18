@@ -13,13 +13,29 @@ import kotlinx.coroutines.launch
 class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
     fun channelSuccessCallback(newChannels: List<Channel>) {
         viewModel.viewModelScope.launch {
-            when(val prevState = viewModel.stateFlow.value) {
+            Log.i("CALLBACKS", "Channel success callback reached")
+                when(val prevState = viewModel.stateFlow.value) {
                 is MainViewSelectorState.SubscribedChannels -> {
+                    Log.i("CALLBACKS", "Coming from $prevState")
                     viewModel.transition(
                         MainViewSelectorState.SubscribedChannels(authenticatedUser = prevState.authenticatedUser, channels = newChannels)
                     )
                 }
-                else -> {}
+                is MainViewSelectorState.CreatingChannel -> {
+                    Log.i("CALLBACKS", "Coming from $prevState")
+                    viewModel.transition(
+                        MainViewSelectorState.SubscribedChannels(authenticatedUser = prevState.authenticatedUser, channels = newChannels)
+                    )
+                }
+                is MainViewSelectorState.Initialized -> {
+                    Log.i("CALLBACKS", "Coming from $prevState")
+                    viewModel.transition(
+                        MainViewSelectorState.SubscribedChannels(authenticatedUser = prevState.authenticatedUser, channels = newChannels)
+                    )
+                }
+                else -> {
+                    Log.i("CALLBACKS", "Coming from $prevState")
+                }
             }
         }
     }
