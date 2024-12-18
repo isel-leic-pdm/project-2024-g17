@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.screens.main
 
+import RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,8 +29,8 @@ import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
-import com.leic52dg17.chimp.ui.views.IncomingInvitationsView
-import com.leic52dg17.chimp.ui.views.InviteUsersToChannelView
+import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
+import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
@@ -239,6 +240,22 @@ fun MainViewSelector(
                         )
                     }
 
+                    is MainViewSelectorState.RegistrationInvitation -> {
+
+                        isNavBarShown = false
+                        val currentState = (viewModel.state as MainViewSelectorState.RegistrationInvitation)
+                        RegistrationInvitationView(
+                            onBackClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.UserInfo(
+                                        user = currentState.authenticatedUser?.user!!,
+                                        authenticatedUser = currentState.authenticatedUser
+                                    )
+                                )
+                            }
+                        )
+                    }
+
                     is MainViewSelectorState.CreateChannel -> {
                         isNavBarShown = false
 
@@ -394,7 +411,14 @@ fun MainViewSelector(
                                         authenticatedUser = state.authenticatedUser
                                     )
                                 )
-                            }
+                            },
+                            onRegistrationInvitationClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.RegistrationInvitation(
+                                        authenticatedUser = currentState.authenticatedUser
+                                    )
+                                )
+                            },
                         )
                     }
 

@@ -31,7 +31,6 @@ import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
-
 @Composable
 fun UserInfoView(
     user: User,
@@ -40,6 +39,7 @@ fun UserInfoView(
     onInvitationsClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onChangePasswordClick: () -> Unit,
+    onRegistrationInvitationClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -128,7 +128,19 @@ fun UserInfoView(
                 ) {
                     Text(stringResource(R.string.change_password_text_en))
                 }
-
+                Button(
+                    onClick = onRegistrationInvitationClick,
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary,
+                        contentColor = MaterialTheme.colorScheme.onPrimary
+                    ),
+                    shape = RoundedCornerShape(20),
+                    modifier = modifier
+                        .width(250.dp)
+                        .padding(top = 16.dp)
+                ) {
+                    Text("Invite a friend to the App!")
+                }
             }
         }
     }
@@ -146,6 +158,7 @@ fun UserInfoViewPreview() {
         onBackClick = { },
         onInvitationsClick = { },
         onLogoutClick = { },
-        onChangePasswordClick = {}
+        onChangePasswordClick = { },
+        onRegistrationInvitationClick = { }
     )
 }
