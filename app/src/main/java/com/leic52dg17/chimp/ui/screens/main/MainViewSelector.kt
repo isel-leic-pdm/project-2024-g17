@@ -131,7 +131,12 @@ fun MainViewSelector(
                             selectedNavIcon = SelectedNavIcon.Messages
                             val currentUser = authenticatedUser?.user
                             if (currentUser != null) {
-                                viewModel.loadSubscribedChannels()
+                                viewModel.transition(
+                                    MainViewSelectorState.SubscribedChannels(
+                                        channels = viewModel.cacheManager.getChannels(),
+                                        authenticatedUser = authenticatedUser
+                                    )
+                                )
                             }
                         },
                         onClickAbout = {
@@ -163,11 +168,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.Initialized -> {
                         LaunchedEffect(Unit) {
                             viewModel.getEventStream()
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = state.authenticatedUser
-                                )
-                            )
+                            viewModel.cacheInitializer.initializeCache(authenticatedUser)
                         }
                     }
 
@@ -186,7 +187,6 @@ fun MainViewSelector(
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
-
                         selectedNavIcon = SelectedNavIcon.Messages
 
                         LaunchedEffect(Unit) {
@@ -230,7 +230,8 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser
+                                        authenticatedUser = state.authenticatedUser,
+                                        channels = viewModel.cacheManager.getChannels()
                                     )
                                 )
                             }
@@ -263,7 +264,8 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser
+                                        authenticatedUser = state.authenticatedUser,
+                                        channels = viewModel.cacheManager.getChannels()
                                     )
                                 )
                             },
@@ -292,17 +294,18 @@ fun MainViewSelector(
                         val currentChannel = state.channel
 
                         LaunchedEffect(Unit) {
-                            if (state.channel?.messages == null) {
+                            if (state.channel?.messages == null)
                                 viewModel.loadChannelMessages()
-                            }
                         }
+
                         if (currentChannel != null) {
                             ChannelMessageView(
                                 channel = currentChannel,
                                 onBackClick = {
                                     viewModel.transition(
                                         MainViewSelectorState.SubscribedChannels(
-                                            authenticatedUser = state.authenticatedUser
+                                            authenticatedUser = state.authenticatedUser,
+                                            channels = viewModel.cacheManager.getChannels()
                                         )
                                     )
                                 },
@@ -400,7 +403,8 @@ fun MainViewSelector(
                             onBackClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser
+                                        authenticatedUser = state.authenticatedUser,
+                                        channels = viewModel.cacheManager.getChannels()
                                     )
                                 )
                             },

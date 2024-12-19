@@ -7,7 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
-import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
+import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
 import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
@@ -53,7 +53,8 @@ interface DependenciesContainer {
     val userService: IUserService
     val channelInvitationService: IChannelInvitationService
     val sseService: ISSEService
-    val channelCacheManager: IChannelCacheManager
+    val channelCacheManager: ChannelCacheManager
+    val messageCacheManager: MessageCacheManager
     val applicationDatabaseManager: AppDatabaseManager
 }
 
@@ -121,7 +122,11 @@ class ChimpApplication : Application(), DependenciesContainer {
     }
 
     override val channelCacheManager by lazy {
-        ChannelCacheManager(channelRepository, channelService, userInfoRepository)
+        ChannelCacheManager(channelRepository, userInfoRepository)
+    }
+
+    override val messageCacheManager by lazy {
+        MessageCacheManager(userInfoRepository, messageRepository)
     }
 
     override val applicationDatabaseManager: AppDatabaseManager by lazy {

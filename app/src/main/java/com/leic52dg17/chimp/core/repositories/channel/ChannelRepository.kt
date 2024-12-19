@@ -27,32 +27,14 @@ class ChannelRepository(
 
     override suspend fun getStoredChannels(): List<Channel> {
         val channelEntities = channelDao.getAll()
-        val messagesForEach: MutableList<List<Message>> = emptyList<List<Message>>().toMutableList()
         val channels: MutableList<Channel> = emptyList<Channel>().toMutableList()
 
         for (channelEntity in channelEntities) {
-            val messageEntityList =
-                messageRepository.getStoredMessagesForChannel(channelEntity.channelId)
-            val messages = messageEntityList.map {
-                Message(
-                    it.id,
-                    it.userId,
-                    it.channelId,
-                    it.text,
-                    it.createdAt
-                )
-            }
-            messagesForEach.add(messages)
-        }
-
-        for (i in 0..<messagesForEach.size) {
-            val channelEntity = channelEntities[i]
-            val messages = messagesForEach[i]
             val channel = Channel(
                 channelEntity.channelId,
                 channelEntity.displayName,
                 channelEntity.ownerId,
-                messages,
+                emptyList(),
                 emptyList(),
                 channelEntity.isPrivate,
                 channelEntity.channelIconUrl

@@ -66,6 +66,21 @@ class MessageService(private val client: HttpClient) : IMessageService {
         return Json.decodeFromString<CreateMessageResponse>(response.body()).messageId
     }
 
+    override suspend fun getMessageById(id: Int): Message {
+        val uri = URL(ApiEndpoints.Message.GET_MESSAGE_BY_ID.replace("{id}", id.toString()))
+
+        Log.i(TAG, "URI - $uri")
+        val response = client.get(uri) {
+            header("Accept", "application/json")
+            header("Content-Type", "application/json")
+        }
+        Log.i(TAG, "RESPONSE - $response")
+
+        handleServiceResponse(response, json, TAG)
+
+        return Json.decodeFromString<Message>(response.body())
+    }
+
     companion object {
         const val TAG = "MESSAGE_SERVICE"
     }
