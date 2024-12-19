@@ -15,11 +15,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
+import io.ktor.client.HttpClient
 
 @Composable
 fun RegistrationInvitationView(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
+    client: HttpClient
 ) {
     var token by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -47,7 +49,7 @@ fun RegistrationInvitationView(
         )
 
         Button(
-            onClick = { token = "ABC" },
+            onClick = { token = "ABC"  },
             modifier = modifier.padding(16.dp)
         ) {
             Text("Generate Token")
@@ -78,6 +80,7 @@ fun RegistrationInvitationView(
 @Composable
 fun RegistrationInvitationViewPreview() {
     RegistrationInvitationView(
-        onBackClick = { }
+        onBackClick = { } ,
+                client = HttpClient()
     )
 }
