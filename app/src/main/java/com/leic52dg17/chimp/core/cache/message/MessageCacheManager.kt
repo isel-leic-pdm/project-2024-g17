@@ -1,45 +1,46 @@
-package com.leic52dg17.chimp.core.cache.channel
+package com.leic52dg17.chimp.core.cache.message
 
 import android.util.Log
+import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
+import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ServiceException
+import com.leic52dg17.chimp.http.services.message.IMessageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class ChannelCacheManager(
-    private val channelRepository: IChannelRepository,
+class MessageCacheManager(
     private val userInfoRepository: IUserInfoRepository,
-) : IChannelCacheManager {
-    private var successCallback: ((newChannels: List<Channel>) -> Unit)? = {}
+    private val messageRepository: IMessageRepository,
+) : IMessageCacheManager {
+    private var successCallback: ((newMessages: List<Message>) -> Unit)? = {}
     private var errorCallback: ((errorMessage: String) -> Unit)? = {}
-    val _currentChannels = MutableStateFlow<List<Channel>>(emptyList())
+    val _currentMessages = MutableStateFlow<List<Message>>(emptyList())
 
-    // Forces a cache update (i.e. when creating a channel)
-    override fun forceUpdate(channel: Channel) {
+    override fun forceUpdate(message: Message) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val authenticatedUser: AuthenticatedUser? = userInfoRepository.authenticatedUser.first()
-                if(authenticatedUser?.user == null) {
-                    Log.e(TAG, "Could not find authenticated user ID.")
+                val authenticatedUser: AuthenticatedUser? =
+                    userInfoRepository.authenticatedUser.first()
+                if (authenticatedUser?.user == null) {
+                    Log.e(ChannelCacheManager.TAG, "Could not find authenticated user ID.")
                     return@launch
                 }
-                val storedChannels = channelRepository.getStoredChannels()
-                val newChannel = listOf(channel)
-                // This has to happen because the collection loop can run before this line (in edge cases), which means the cache can already have the new channel
-                // This check prevents that race condition
-                val hasChanged = channelRepository.isUpdateDue(storedChannels, newChannel)
-                val newChannels = storedChannels + newChannel
-                Log.i(TAG, "HAS CHANGED FORCED - $hasChanged")
+                val storedMessages = messageRepository.getStoredMessages()
+                val newMessage = listOf(message)
+                val hasChanged = messageRepository.isUpdateDue(storedMessages, newMessage)
+                val newMessages = storedMessages + newMessage
+                Log.i(ChannelCacheManager.TAG, "HAS CHANGED FORCED - $hasChanged")
                 if (hasChanged) {
-                    channelRepository.storeChannels(newChannel)
-                    _currentChannels.emit(newChannels)
+                    messageRepository.storeMessages(newMessage)
+                    _currentMessages.emit(newMessages)
                     runCallback()
                 }
             } catch (e: ServiceException) {
@@ -50,21 +51,18 @@ class ChannelCacheManager(
         }
     }
 
-    // Registers a callback to be run on cache update
-    override suspend fun registerCallback(callback: (newChannels: List<Channel>) -> Unit) {
+    override suspend fun registerCallback(callback: (newMessages: List<Message>) -> Unit) {
         Log.i(TAG, "Registering callback...")
         successCallback = callback
         Log.i(TAG, "Registered callback!")
     }
 
-    // Registers a callback to be run on error
     override suspend fun registerErrorCallback(callback: (errorMessage: String) -> Unit) {
         Log.i(TAG, "Registering error callback...")
         errorCallback = callback
         Log.i(TAG, "Registered error callback!")
     }
 
-    // Clears the callback
     override suspend fun unregisterCallbacks() {
         Log.i(TAG, "Unregistering callbacks...")
         successCallback = null
@@ -72,17 +70,15 @@ class ChannelCacheManager(
         Log.i(TAG, "Unregistered callbacks!")
     }
 
-    // Runs the callback, if it's set.
     override suspend fun runCallback() {
-        Log.i(TAG, "Running callback with channel list size ${_currentChannels.value.size}...")
+        Log.i(TAG, "Running callback with message list size ${_currentMessages.value.size}...")
         if (successCallback == null) {
             Log.w(TAG, "There is no callback registered!!!")
             return
-        } else successCallback?.invoke(_currentChannels.value)
+        } else successCallback?.invoke(_currentMessages.value)
         Log.i(TAG, "Ran callback!")
     }
 
-    // Runs the error callback, if it's set
     override suspend fun runErrorCallback(errorMessage: String) {
         Log.i(TAG, "Running error callback...")
         if (errorCallback == null) {
@@ -92,11 +88,11 @@ class ChannelCacheManager(
         Log.i(TAG, "Ran error callback!")
     }
 
-    override fun getCachedChannels(): List<Channel> {
-        return _currentChannels.value
+    override fun getCachedMessage(): List<Message> {
+        return _currentMessages.value
     }
 
     companion object {
-        const val TAG = "CHANNEL_CACHE_MANAGER"
+        const val TAG = "MESSAGE_CACHE_MANAGER"
     }
 }

@@ -38,7 +38,8 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                         MainViewSelectorState.Error(message = ErrorMessages.UNKNOWN) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
                                 )
                             )
                         }
@@ -52,7 +53,8 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                         MainViewSelectorState.Error(message = e.message) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
                                 )
                             )
                         }
