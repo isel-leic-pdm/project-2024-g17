@@ -134,7 +134,7 @@ fun MainViewSelector(
                             if (currentUser != null) {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        channels = viewModel.cacheManager.getChannels(),
+                                        channels = viewModel.getSortedChannels(),
                                         authenticatedUser = authenticatedUser
                                     )
                                 )
@@ -169,7 +169,12 @@ fun MainViewSelector(
                     is MainViewSelectorState.Initialized -> {
                         LaunchedEffect(Unit) {
                             viewModel.getEventStream()
-                            viewModel.cacheInitializer.initializeCache(authenticatedUser)
+                            viewModel.transition(
+                                MainViewSelectorState.SubscribedChannels(
+                                    channels = viewModel.getSortedChannels(),
+                                    authenticatedUser = authenticatedUser
+                                )
+                            )
                         }
                     }
 

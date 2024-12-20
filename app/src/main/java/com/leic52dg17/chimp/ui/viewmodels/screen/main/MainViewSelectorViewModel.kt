@@ -80,6 +80,7 @@ class MainViewSelectorViewModel(
             messageCacheManager.registerErrorCallback { errorMessage ->
                 cacheCallbacks.messageErrorCallback(errorMessage)
             }
+            cacheInitializer.initializeCache(authenticatedUser)
             stateFlow.emit(
                 MainViewSelectorState.Initialized(authenticatedUser = userInfoRepository.authenticatedUser.first())
             )
