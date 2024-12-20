@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.views.subscribed
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -112,12 +113,10 @@ fun SubscribedChannelsView(
     onCreateChannelClick: () -> Unit = {},
     onChannelClick: (Channel) -> Unit = {}
 ) {
+    Log.i("DEBUG_CHANNELS", "SubscribedChannelsView recomposed with channels size: ${channels.size}, latest messages: ${channels.map { it.messages.lastOrNull()?.text }}")
     var searchValue by remember { mutableStateOf("") }
-    var filteredChannels by remember { mutableStateOf(channels) }
-
-    fun filterChannels(input: String) {
-        searchValue = input
-        filteredChannels = channels.filter { it.displayName.contains(searchValue, ignoreCase = true) }
+    val filteredChannels = remember(channels, searchValue) {  // Key on both channels and searchValue
+        channels.filter { it.displayName.contains(searchValue, ignoreCase = true) }
     }
 
     Column(
@@ -172,7 +171,7 @@ fun SubscribedChannelsView(
                     .padding(horizontal = 32.dp)
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
-                onValueChange = { filterChannels(it) },
+                onValueChange = { newValue -> searchValue = newValue  },
                 searchValue = searchValue
             )
         }

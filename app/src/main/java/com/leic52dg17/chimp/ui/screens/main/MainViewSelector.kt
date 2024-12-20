@@ -193,6 +193,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
+                        Log.i("DEBUG", "State channel messages -> ${viewModel.getSortedChannels().map{ it.messages.lastOrNull()}}")
                         selectedNavIcon = SelectedNavIcon.Messages
 
                         LaunchedEffect(Unit) {
@@ -203,7 +204,7 @@ fun MainViewSelector(
 
                         isNavBarShown = true
                         SubscribedChannelsView(
-                            state.channels ?: emptyList(),
+                            channels = viewModel.getSortedChannels(),
                             onCreateChannelClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.CreateChannel(
