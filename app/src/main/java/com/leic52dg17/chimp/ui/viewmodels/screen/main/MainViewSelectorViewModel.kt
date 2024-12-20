@@ -53,13 +53,13 @@ class MainViewSelectorViewModel(
         MutableStateFlow(MainViewSelectorState.Loading)
 
     private val cacheCallbacks = CacheCallbacks(this)
+    val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
     private val userFunctions = UserFunctions(this)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
     val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
-    val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     val openEmail = { openEmailApp() }
 
     init {
@@ -92,34 +92,16 @@ class MainViewSelectorViewModel(
     }
 
     private suspend fun handleIncomingEvent(event: Events) {
+        val state = stateFlow.value
+        Log.i(TAG, "Handling event in current state -> ${state}.")
         when (event) {
             is Events.ChannelMessage -> {
-                when (val state = stateFlow.last()) {
-                    is MainViewSelectorState.SubscribedChannels -> {
-                        val updatedChannels =
-                            (state).channels?.map { channel ->
-                                if (channel.channelId == event.message.channelId) {
-                                    channel.copy(messages = channel.messages + event.message)
-                                } else {
-                                    channel
-                                }
-                            }
-                        transition((state).copy(channels = updatedChannels))
-                    }
-
-                    is MainViewSelectorState.ChannelMessages -> {
-                        messageCacheManager.forceUpdate(event.message)
-                    }
-
-                    else -> {}
-                }
+                messageCacheManager.forceUpdate(event.message)
             }
 
             is Events.Invitation -> {
-                when (val state = stateFlow.last()) {
+                when (state) {
                     is MainViewSelectorState.UserInvitations -> {
-                        val currState = (state)
-
                         viewModelScope.launch {
                             val channel =
                                 channelService.getChannelById(event.channelInvitation.channelId)
@@ -135,9 +117,9 @@ class MainViewSelectorViewModel(
                             )
 
                             transition(
-                                currState.copy(
-                                    invitations = currState.invitations + incomingInvitation,
-                                    authenticatedUser = currState.authenticatedUser
+                                state.copy(
+                                    invitations = state.invitations + incomingInvitation,
+                                    authenticatedUser = state.authenticatedUser
                                 )
                             )
                         }

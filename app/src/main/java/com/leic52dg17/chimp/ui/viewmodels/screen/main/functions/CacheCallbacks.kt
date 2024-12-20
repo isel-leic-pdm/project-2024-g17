@@ -11,7 +11,10 @@ import kotlinx.coroutines.launch
 class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
     fun channelSuccessCallback(newChannels: List<Channel>) {
         viewModel.viewModelScope.launch {
-            Log.i("CHANNEL_CALLBACK", "Channel success callback reached with channels -> $newChannels")
+            Log.i(
+                "CHANNEL_CALLBACK",
+                "Channel success callback reached with channels -> $newChannels"
+            )
             when (val prevState = viewModel.stateFlow.value) {
                 is MainViewSelectorState.SubscribedChannels -> {
                     Log.i("CHANNEL_CALLBACK", "CHANNEL CALLBACK - Coming from $prevState")
@@ -32,8 +35,12 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
                         )
                     )
                 }
+
                 else -> {
-                    Log.i("CHANNEL_CALLBACK", "(UNREGISTERED) CHANNEL CALLBACK - Coming from $prevState")
+                    Log.i(
+                        "CHANNEL_CALLBACK",
+                        "(UNREGISTERED) CHANNEL CALLBACK - Coming from $prevState"
+                    )
                 }
             }
         }
@@ -51,7 +58,10 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
 
     fun messageSuccessCallback(newMessages: List<Message>) {
         viewModel.viewModelScope.launch {
-            Log.i("MESSAGE_CALLBACK", "Message success callback reached with messages -> $newMessages")
+            Log.i(
+                "MESSAGE_CALLBACK",
+                "Message success callback reached with messages -> $newMessages"
+            )
             when (val prevState = viewModel.stateFlow.value) {
                 is MainViewSelectorState.ChannelMessages -> {
                     Log.i("MESSAGE_CALLBACK", "Coming from $prevState")
@@ -62,19 +72,27 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
                         )
                     )
                 }
+
                 is MainViewSelectorState.SubscribedChannels -> {
                     Log.i("MESSAGE_CALLBACK", "Coming from $prevState")
-                    val newChannels = prevState.channels?.map { channel ->
-                        val messages = newMessages.filter { it.channelId == channel.channelId }
-                        channel.copy(messages = messages)
-                    }
+                    val newChannels = viewModel.getSortedChannels()
+                    val newState = MainViewSelectorState.SubscribedChannels(
+                        channels = newChannels,
+                        authenticatedUser = prevState.authenticatedUser
+                    )
+                    Log.i(
+                        "MESSAGE_CALLBACK",
+                        "New state latest messages = ${newState.channels?.map { it.messages.lastOrNull()?.text }}"
+                    )
+                    Log.i(
+                        "MESSAGE_CALLBACK",
+                        "New channel messages -> ${newChannels?.map { it.messages.lastOrNull() }}"
+                    )
                     viewModel.transition(
-                        MainViewSelectorState.SubscribedChannels(
-                            channels = newChannels?.sortedByDescending { it.messages.lastOrNull()?.createdAt },
-                            authenticatedUser = prevState.authenticatedUser
-                        )
+                        newState
                     )
                 }
+
                 else -> {
                     Log.i("MESSAGE_CALLBACK", "Coming from $prevState")
                 }
