@@ -45,6 +45,9 @@ class MainActivity : ComponentActivity() {
                 (application as ChimpApplication).userInfoRepository,
                 { onLogout() },
                 (application as ChimpApplication).channelCacheManager,
+                (application as ChimpApplication).messageCacheManager,
+                (application as ChimpApplication).channelRepository,
+                (application as ChimpApplication).messageRepository
             )
         }
         (application as ChimpApplication).sseService.listen()

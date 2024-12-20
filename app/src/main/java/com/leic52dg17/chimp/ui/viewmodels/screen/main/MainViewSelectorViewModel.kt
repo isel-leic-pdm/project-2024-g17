@@ -5,6 +5,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
+import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
+import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
+import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
+import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
+import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
+import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
@@ -39,30 +45,42 @@ class MainViewSelectorViewModel(
     private val sseService: ISSEService,
     val userInfoRepository: IUserInfoRepository,
     private val onLogout: () -> Unit,
-    private val channelCacheManager: IChannelCacheManager
+    private val channelCacheManager: ChannelCacheManager,
+    private val messageCacheManager: MessageCacheManager,
+    private val channelRepository: IChannelRepository,
+    private val messageRepository: IMessageRepository
 ) : ViewModel() {
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Loading)
 
     private val cacheCallbacks = CacheCallbacks(this)
-    private val channelFunctions = ChannelFunctions(this, channelCacheManager)
+    private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
     private val userFunctions = UserFunctions(this)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
-    private val messageFunctions = MessageFunctions(this)
+    private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
+    val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
+    val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
 
     init {
         viewModelScope.launch {
+            val authenticatedUser = userInfoRepository.authenticatedUser.first()
+
             channelCacheManager.registerCallback { newChannels ->
                 cacheCallbacks.channelSuccessCallback(newChannels)
             }
             channelCacheManager.registerErrorCallback { errorMessage ->
                 cacheCallbacks.channelErrorCallback(errorMessage)
             }
+            messageCacheManager.registerCallback { newMessages ->
+                cacheCallbacks.messageSuccessCallback(newMessages)
+            }
+            messageCacheManager.registerErrorCallback { errorMessage ->
+                cacheCallbacks.messageErrorCallback(errorMessage)
+            }
             stateFlow.emit(
                 MainViewSelectorState.Initialized(authenticatedUser = userInfoRepository.authenticatedUser.first())
             )
-            channelCacheManager.startCollection()
         }
     }
 
@@ -242,7 +260,10 @@ class MainViewSelectorViewModelFactory(
     private val sseService: ISSEService,
     private val userInfoRepository: IUserInfoRepository,
     private val onLogout: () -> Unit,
-    private val channelCacheManager: IChannelCacheManager,
+    private val channelCacheManager: ChannelCacheManager,
+    private val messageCacheManager: MessageCacheManager,
+    private val channelRepository: IChannelRepository,
+    private val messageRepository: IMessageRepository
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
@@ -255,6 +276,9 @@ class MainViewSelectorViewModelFactory(
             userInfoRepository,
             onLogout,
             channelCacheManager,
+            messageCacheManager,
+            channelRepository,
+            messageRepository
         ) as T
     }
 }

@@ -25,6 +25,7 @@ object ApiEndpoints {
 
     object Message {
         val GET_MESSAGE = "$BASE_URL/messages"
+        val GET_MESSAGE_BY_ID = "$BASE_URL/messages/{id}"
         val GET_BY_CHANNEL_ID = "$BASE_URL/messages"
         val CREATE_MESSAGE = "$BASE_URL/messages"
     }
