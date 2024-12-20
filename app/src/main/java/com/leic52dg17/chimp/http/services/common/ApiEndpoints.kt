@@ -40,6 +40,7 @@ object ApiEndpoints {
 
     object RegistrationInvitation {
         val CREATE = "$BASE_URL/registration-invitation"
+        val GET_BY_ID = "$BASE_URL/registration-invitation/{id}"
     }
 
     object Chat {

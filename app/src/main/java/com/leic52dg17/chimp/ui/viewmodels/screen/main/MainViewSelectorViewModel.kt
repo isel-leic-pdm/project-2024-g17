@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
-import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
-import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
@@ -16,6 +14,7 @@ import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
 import com.leic52dg17.chimp.http.services.message.IMessageService
+import com.leic52dg17.chimp.http.services.registration_invitation.IRegistrationInvitationService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
@@ -24,6 +23,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.CacheCallbacks
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
+import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.RegistrationInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
@@ -33,6 +33,7 @@ import kotlinx.coroutines.launch
 class MainViewSelectorViewModel(
     val channelService: IChannelService,
     val messageService: IMessageService,
+    val registrationInvitationService: IRegistrationInvitationService,
     val userService: IUserService,
     val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
@@ -46,6 +47,7 @@ class MainViewSelectorViewModel(
     private val cacheCallbacks = CacheCallbacks(this)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager)
     private val userFunctions = UserFunctions(this)
+    private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this)
     private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
 
@@ -182,6 +184,13 @@ class MainViewSelectorViewModel(
         channelFunctions.leaveChannel(userId, channel)
 
     /**
+     *  Registration functions
+     */
+
+    fun createRegistrationInvitation(creatorId: Int) = registrationInvitationFunctions.createRegistrationInvitation(creatorId)
+
+
+    /**
      * De-authentication functions
      */
     fun logout() {
@@ -227,6 +236,7 @@ class MainViewSelectorViewModel(
 class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
+    private val registrationInvitationService: IRegistrationInvitationService,
     private val userService: IUserService,
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
@@ -238,6 +248,7 @@ class MainViewSelectorViewModelFactory(
         return MainViewSelectorViewModel(
             channelService,
             messageService,
+            registrationInvitationService,
             userService,
             channelInvitationService,
             sseService,

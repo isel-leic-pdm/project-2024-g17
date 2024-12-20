@@ -4,9 +4,6 @@ import android.util.Log
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
-import com.leic52dg17.chimp.http.services.common.ProblemDetails
-import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
-import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.common.handleServiceResponse
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.requests.CreateMessageRequest
@@ -18,10 +15,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
-import io.ktor.http.ContentType
-import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import kotlinx.serialization.json.Json
 import java.net.URL
 

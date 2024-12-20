@@ -38,6 +38,7 @@ class MainActivity : ComponentActivity() {
             MainViewSelectorViewModelFactory(
                 (application as ChimpApplication).channelService,
                 (application as ChimpApplication).messageService,
+                (application as ChimpApplication).registrationInvitationService,
                 (application as ChimpApplication).userService,
                 (application as ChimpApplication).channelInvitationService,
                 (application as ChimpApplication).sseService,

@@ -4,6 +4,10 @@ interface IRegistrationInvitationService {
 
     suspend fun createRegistrationInvitation(
         creatorId: Int,
+    ): Int
+
+    suspend fun getRegistrationInvitation(
+        inviteId: Int,
     ): String
 
 }

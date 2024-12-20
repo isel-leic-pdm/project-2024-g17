@@ -21,9 +21,9 @@ import io.ktor.client.HttpClient
 fun RegistrationInvitationView(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    client: HttpClient
+    token: String,
+    getToken: () -> Unit
 ) {
-    var token by remember { mutableStateOf("") }
     val context = LocalContext.current
 
     Column(
@@ -49,7 +49,7 @@ fun RegistrationInvitationView(
         )
 
         Button(
-            onClick = { token = "ABC"  },
+            onClick = { getToken() },
             modifier = modifier.padding(16.dp)
         ) {
             Text("Generate Token")
@@ -76,11 +76,3 @@ fun RegistrationInvitationView(
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RegistrationInvitationViewPreview() {
-    RegistrationInvitationView(
-        onBackClick = { } ,
-                client = HttpClient()
-    )
-}
