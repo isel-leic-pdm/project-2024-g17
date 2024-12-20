@@ -33,7 +33,6 @@ class RegistrationInvitationService(private val client: HttpClient) : IRegistrat
 
         val responseBody = json.decodeFromString<CreateRegistrationInvitationResponse>(response.body())
         return responseBody.inviteId
-
     }
 
     override suspend fun getRegistrationInvitation(inviteId: Int): String {
@@ -46,10 +45,6 @@ class RegistrationInvitationService(private val client: HttpClient) : IRegistrat
         handleServiceResponse(response, json, TAG)
 
         val responseBody = json.decodeFromString<GetRegistrationInvitationResponse>(response.body())
-
         return responseBody.token
-
     }
-
-
 }
