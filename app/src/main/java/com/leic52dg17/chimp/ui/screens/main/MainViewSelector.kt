@@ -219,6 +219,8 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChangePassword -> {
 
                         isNavBarShown = false
+                        val currentState =
+                            viewModel.stateFlow.collectAsState().value as MainViewSelectorState.ChangePassword
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
                                 viewModel.transition(
@@ -229,10 +231,15 @@ fun MainViewSelector(
                             },
                             onBackClick = {
                                 viewModel.transition(
-                                    MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
-                                    )
+                                    if(currentState.authenticatedUser?.user != null) {
+                                        MainViewSelectorState.UserInfo(
+                                            user = currentState.authenticatedUser.user,
+                                            authenticatedUser = currentState.authenticatedUser,
+                                            isCurrentUser = true
+                                        )
+                                    } else {
+                                        MainViewSelectorState.Unauthenticated
+                                    }
                                 )
                             }
                         )
