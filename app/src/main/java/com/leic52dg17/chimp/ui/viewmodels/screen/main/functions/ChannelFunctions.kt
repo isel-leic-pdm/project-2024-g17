@@ -41,7 +41,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -69,7 +69,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -92,7 +92,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = currentUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -158,7 +158,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -296,7 +296,7 @@ class ChannelFunctions(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             } else {
@@ -361,7 +361,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }

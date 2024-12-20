@@ -55,7 +55,7 @@ class ChannelInvitationFunctions(
                         viewModel.transition(
                             MainViewSelectorState.SubscribedChannels(
                                 authenticatedUser = authenticatedUser,
-                                channels = viewModel.cacheManager.getChannels()
+                                channels = viewModel.getSortedChannels()
                             )
                         )
                     }
@@ -118,7 +118,7 @@ class ChannelInvitationFunctions(
                         viewModel.transition(
                             MainViewSelectorState.SubscribedChannels(
                                 authenticatedUser = authenticatedUser,
-                                channels = viewModel.cacheManager.getChannels()
+                                channels = viewModel.getSortedChannels()
                             )
                         )
                     }

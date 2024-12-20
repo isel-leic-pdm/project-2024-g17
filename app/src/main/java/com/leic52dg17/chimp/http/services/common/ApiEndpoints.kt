@@ -39,6 +39,11 @@ object ApiEndpoints {
         val GET_BY_USER_ID = "$BASE_URL/channels/invitations/users/{id}"
     }
 
+    object RegistrationInvitation {
+        val CREATE = "$BASE_URL/registration-invitation"
+        val GET_BY_ID = "$BASE_URL/registration-invitation/{id}"
+    }
+
     object Chat {
         val LISTEN = "$BASE_URL/chat/listen"
     }

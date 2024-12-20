@@ -232,7 +232,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             }
@@ -253,6 +253,12 @@ fun MainViewSelector(
                                             isCurrentUser = true
                                         )
                                     )
+                                },
+                                token = currentState.token,
+                                getToken = {
+                                    viewModel.createRegistrationInvitation(
+                                        currentState.authenticatedUser.user.id
+                                    )
                                 }
                             )
                         }
@@ -266,7 +272,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             },
@@ -306,7 +312,7 @@ fun MainViewSelector(
                                     viewModel.transition(
                                         MainViewSelectorState.SubscribedChannels(
                                             authenticatedUser = state.authenticatedUser,
-                                            channels = viewModel.cacheManager.getChannels()
+                                            channels = viewModel.getSortedChannels()
                                         )
                                     )
                                 },
@@ -406,7 +412,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             },
@@ -422,11 +428,9 @@ fun MainViewSelector(
                                 )
                             },
                             onRegistrationInvitationClick = {
-                                viewModel.transition(
-                                    MainViewSelectorState.RegistrationInvitation(
-                                        authenticatedUser = authenticatedUser
-                                    )
-                                )
+                                if(state.authenticatedUser?.user != null) {
+                                    viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
+                                }
                             },
                         )
                     }

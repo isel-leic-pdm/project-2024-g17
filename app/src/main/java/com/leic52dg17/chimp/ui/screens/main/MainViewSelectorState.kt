@@ -25,7 +25,7 @@ sealed interface MainViewSelectorState {
     data object About: MainViewSelectorState
     data object PrivacyPolicy: MainViewSelectorState
     data class ChangePassword(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class RegistrationInvitation(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class RegistrationInvitation(val authenticatedUser: AuthenticatedUser?, val token: String): MainViewSelectorState
     data object Unauthenticated: MainViewSelectorState
     data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
   
