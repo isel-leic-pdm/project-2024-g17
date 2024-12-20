@@ -31,6 +31,7 @@ import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
+import com.leic52dg17.chimp.ui.views.about.PrivacyPolicyView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
@@ -219,6 +220,8 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChangePassword -> {
 
                         isNavBarShown = false
+                        val currentState =
+                            viewModel.stateFlow.collectAsState().value as MainViewSelectorState.ChangePassword
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
                                 viewModel.transition(
@@ -229,10 +232,15 @@ fun MainViewSelector(
                             },
                             onBackClick = {
                                 viewModel.transition(
-                                    MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.getSortedChannels()
-                                    )
+                                    if(currentState.authenticatedUser?.user != null) {
+                                        MainViewSelectorState.UserInfo(
+                                            user = currentState.authenticatedUser.user,
+                                            authenticatedUser = currentState.authenticatedUser,
+                                            isCurrentUser = true
+                                        )
+                                    } else {
+                                        MainViewSelectorState.Unauthenticated
+                                    }
                                 )
                             }
                         )
@@ -324,7 +332,6 @@ fun MainViewSelector(
                                     )
                                 },
                                 onSendClick = { messageText ->
-                                    // THIS WILL CHANGE, IF YOU SHIP IT, YOU KEEP IT
                                     viewModel.sendMessage(currentChannel.channelId, messageText)
                                 },
                                 authenticatedUser = state.authenticatedUser
@@ -339,7 +346,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
                         LaunchedEffect(state.channel?.channelId) {
-                            if ((state?.channel?.users) !== null && state.channel.users.isEmpty() || (state?.channel?.users == null)) {
+                            if ((state.channel?.users) !== null && state.channel.users.isEmpty() || (state.channel?.users == null)) {
                                 viewModel.loadChannelInfo()
                             }
                         }
@@ -358,7 +365,9 @@ fun MainViewSelector(
                                     viewModel.transition(
                                         MainViewSelectorState.InvitingUsers(
                                             channel = it,
-                                            authenticatedUser = state.authenticatedUser
+                                            authenticatedUser = state.authenticatedUser,
+                                            users = emptyList(),
+                                            page = 0
                                         )
                                     )
                                 },
@@ -434,9 +443,26 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.About -> {
-
                         isNavBarShown = true
-                        AboutView()
+                        AboutView(
+                            onEmailClick =  { viewModel.openEmail() },
+                            onPrivacyClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.PrivacyPolicy
+                                )
+                            }
+                        )
+                    }
+
+                    MainViewSelectorState.PrivacyPolicy -> {
+                        isNavBarShown = false
+                        PrivacyPolicyView(
+                            onBackClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.About
+                                )
+                            }
+                        )
                     }
 
                     is MainViewSelectorState.InvitingUsers -> {
@@ -458,7 +484,16 @@ fun MainViewSelector(
                                     permission
                                 )
                             },
-                            users = state.channel.users
+                            users = state.users,
+                            onSearch = { username ->
+                                viewModel.loadAvailableUsersToInvite(
+                                    channel = currentChannel,
+                                    // Will default to 10 on the API
+                                    limit = null,
+                                    page = state.page,
+                                    username = username
+                                )
+                            }
                         )
                     }
 
