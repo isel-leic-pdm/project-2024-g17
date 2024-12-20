@@ -102,29 +102,6 @@ class MainViewSelectorViewModel(
                     }
 
                     is MainViewSelectorState.ChannelMessages -> {
-                        /**val channel = (state).channel
-                        viewModelScope.launch {
-                            if (channel == null) {
-                                val authenticatedUser = userInfoRepository.authenticatedUser.first()
-                                transition(
-                                    MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
-                                        transition(
-                                            MainViewSelectorState.SubscribedChannels(
-                                                authenticatedUser = authenticatedUser
-                                            )
-                                        )
-                                    }
-                                )
-                            } else {
-                                val updatedChannel: Channel =
-                                    if (event.message.channelId == channel.channelId) {
-                                        channel.copy(messages = channel.messages + event.message)
-                                    } else {
-                                        channel
-                                    }
-                                transition((state).copy(channel = updatedChannel))
-                            }
-                        }**/
                         messageCacheManager.forceUpdate(event.message)
                     }
 
