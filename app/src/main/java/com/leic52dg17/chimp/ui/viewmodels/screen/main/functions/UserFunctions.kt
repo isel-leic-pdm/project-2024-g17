@@ -39,7 +39,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -54,7 +54,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
