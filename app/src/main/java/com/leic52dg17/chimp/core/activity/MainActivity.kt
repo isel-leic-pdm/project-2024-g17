@@ -1,11 +1,15 @@
 package com.leic52dg17.chimp.core.activity
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -13,8 +17,8 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScaffoldDefaults
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.core.content.ContextCompat
 import com.leic52dg17.chimp.core.ChimpApplication
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelector
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
@@ -25,7 +29,16 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 
+
 class MainActivity : ComponentActivity() {
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            startEventStreamService()
+        }
+    }
 
     private fun onLogout() {
         val intent = Intent(this@MainActivity, LauncherActivity::class.java)
@@ -46,6 +59,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        } else {
+            startEventStreamService()
+        }
 
         val mainViewSelectorViewModel by viewModels<MainViewSelectorViewModel> {
             MainViewSelectorViewModelFactory(
@@ -91,5 +112,15 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun startEventStreamService() {
+        val intent = Intent(this, (application as ChimpApplication).eventStreamService::class.java)
+        ContextCompat.startForegroundService(this, intent)
+    }
+
+    companion object {
+        const val TAG = "MAIN_ACTIVITY"
+        private const val REQUEST_CODE_POST_NOTIFICATIONS = 1
     }
 }

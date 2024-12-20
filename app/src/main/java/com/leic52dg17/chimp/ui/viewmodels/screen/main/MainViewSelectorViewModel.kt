@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
 import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
@@ -12,7 +11,6 @@ import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
-import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
@@ -80,6 +78,7 @@ class MainViewSelectorViewModel(
             messageCacheManager.registerErrorCallback { errorMessage ->
                 cacheCallbacks.messageErrorCallback(errorMessage)
             }
+            cacheInitializer.initializeCache(authenticatedUser)
             stateFlow.emit(
                 MainViewSelectorState.Initialized(authenticatedUser = userInfoRepository.authenticatedUser.first())
             )

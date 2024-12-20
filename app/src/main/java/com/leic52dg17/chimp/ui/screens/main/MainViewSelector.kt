@@ -134,7 +134,7 @@ fun MainViewSelector(
                             if (currentUser != null) {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        channels = viewModel.cacheManager.getChannels(),
+                                        channels = viewModel.getSortedChannels(),
                                         authenticatedUser = authenticatedUser
                                     )
                                 )
@@ -169,12 +169,17 @@ fun MainViewSelector(
                     is MainViewSelectorState.Initialized -> {
                         LaunchedEffect(Unit) {
                             viewModel.getEventStream()
-                            viewModel.cacheInitializer.initializeCache(authenticatedUser)
+                            viewModel.transition(
+                                MainViewSelectorState.SubscribedChannels(
+                                    channels = viewModel.getSortedChannels(),
+                                    authenticatedUser = authenticatedUser
+                                )
+                            )
                         }
                     }
 
                     is MainViewSelectorState.Error -> {
-                        Log.i("MAIN_VIEW_SELECTOR", "Got into error")
+                        Log.i("MAIN_VIEW_SELECTOR", "Got into error: ${state.message}")
 
                         ApplicationErrorView(
                             message = state.message,
