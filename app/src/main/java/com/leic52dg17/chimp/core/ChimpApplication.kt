@@ -23,6 +23,7 @@ import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel.implementations.ChannelService
 import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
 import com.leic52dg17.chimp.http.services.channel_invitations.implementations.ChannelInvitationService
+import com.leic52dg17.chimp.http.services.foreground.EventStreamService
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.implementations.MessageService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
@@ -56,6 +57,7 @@ interface DependenciesContainer {
     val channelCacheManager: ChannelCacheManager
     val messageCacheManager: MessageCacheManager
     val applicationDatabaseManager: AppDatabaseManager
+    val eventStreamService: EventStreamService
 }
 
 class ChimpApplication : Application(), DependenciesContainer {
@@ -131,5 +133,9 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val applicationDatabaseManager: AppDatabaseManager by lazy {
         AppDatabaseManager(roomDatabase.messageDao(), roomDatabase.channelDao())
+    }
+
+    override val eventStreamService: EventStreamService by lazy {
+        EventStreamService()
     }
 }

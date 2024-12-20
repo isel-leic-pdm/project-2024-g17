@@ -33,6 +33,9 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val eventStreamIntent = Intent(this, (application as ChimpApplication).eventStreamService::class.java)
+        startForegroundService(eventStreamIntent)
+
         val mainViewSelectorViewModel by viewModels<MainViewSelectorViewModel> {
             MainViewSelectorViewModelFactory(
                 (application as ChimpApplication).channelService,
@@ -75,5 +78,9 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        const val TAG = "MAIN_ACTIVITY"
     }
 }
