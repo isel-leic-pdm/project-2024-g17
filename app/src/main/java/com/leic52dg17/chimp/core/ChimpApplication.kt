@@ -26,6 +26,8 @@ import com.leic52dg17.chimp.http.services.channel_invitations.implementations.Ch
 import com.leic52dg17.chimp.http.services.foreground.EventStreamService
 import com.leic52dg17.chimp.http.services.message.IMessageService
 import com.leic52dg17.chimp.http.services.message.implementations.MessageService
+import com.leic52dg17.chimp.http.services.registration_invitation.IRegistrationInvitationService
+import com.leic52dg17.chimp.http.services.registration_invitation.Implementations.RegistrationInvitationService
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.implementations.SSEService
 import com.leic52dg17.chimp.http.services.user.IUserService
@@ -48,6 +50,7 @@ interface DependenciesContainer {
     val userInfoRepository: IUserInfoRepository
     val channelRepository: IChannelRepository
     val messageRepository: IMessageRepository
+    val registrationInvitationService: IRegistrationInvitationService
     val channelService: IChannelService
     val messageService: IMessageService
     val authenticationService: IAuthenticationService
@@ -105,6 +108,10 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val messageService: IMessageService by lazy {
         MessageService(client)
+    }
+
+    override val registrationInvitationService : IRegistrationInvitationService by lazy {
+        RegistrationInvitationService(client)
     }
 
     override val authenticationService: IAuthenticationService by lazy {

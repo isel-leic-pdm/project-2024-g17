@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -44,6 +45,18 @@ class MainActivity : ComponentActivity() {
         this@MainActivity.startActivity(intent)
     }
 
+    private fun openEmailApp() {
+        val emailAddress = "info@chimp.com"
+        val intent = Intent(Intent.ACTION_SENDTO).apply {
+            data = Uri.parse("mailto:$emailAddress")
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
+
+        if(intent.resolveActivity(applicationContext.packageManager) != null) {
+            applicationContext.startActivity(intent)
+        }
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -59,6 +72,7 @@ class MainActivity : ComponentActivity() {
             MainViewSelectorViewModelFactory(
                 (application as ChimpApplication).channelService,
                 (application as ChimpApplication).messageService,
+                (application as ChimpApplication).registrationInvitationService,
                 (application as ChimpApplication).userService,
                 (application as ChimpApplication).channelInvitationService,
                 (application as ChimpApplication).sseService,
@@ -67,7 +81,8 @@ class MainActivity : ComponentActivity() {
                 (application as ChimpApplication).channelCacheManager,
                 (application as ChimpApplication).messageCacheManager,
                 (application as ChimpApplication).channelRepository,
-                (application as ChimpApplication).messageRepository
+                (application as ChimpApplication).messageRepository,
+                { openEmailApp() }
             )
         }
         (application as ChimpApplication).sseService.listen()

@@ -3,11 +3,11 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
-import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -39,7 +39,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -54,7 +54,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -62,5 +62,32 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                 }
             }
         }
+    }
+
+    fun loadAvailableToInviteUsers(channel: Channel, username: String?, page: Int?, limit: Int?) {
+        viewModel.viewModelScope.launch {
+            Log.i(TAG, "Getting users...")
+            val users = viewModel.userService.getAllUsers(username, page, limit)
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+            Log.i(TAG, "Got users -> $users")
+
+            if (authenticatedUser == null) {
+                viewModel.transition(
+                    MainViewSelectorState.Unauthenticated
+                )
+            }
+            Log.i(TAG, "Transitioning to inviting users with page $page and new users -> $users")
+            viewModel.transition(
+                MainViewSelectorState.InvitingUsers(
+                    channel = channel,
+                    authenticatedUser = authenticatedUser,
+                    users = users,
+                    page = page ?: 0
+                )
+            )
+        }
+    }
+    companion object {
+        const val TAG = "USER_FUNCTIONS"
     }
 }

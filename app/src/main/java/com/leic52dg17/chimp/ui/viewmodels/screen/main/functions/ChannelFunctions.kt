@@ -38,7 +38,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -66,7 +66,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -89,7 +89,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = currentUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -155,7 +155,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
@@ -261,11 +261,10 @@ class ChannelFunctions(
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
                 return@launch
             }
+            val channel = viewModel.channelService.getChannelById(channelId)
 
             // WE WILL HAVE TO MAKE A PROPER SOLUTION FOR THIS, THIS IS ONLY A WORKAROUND!!!
-            var channelNullCheck = true
-            val channel = viewModel.channelService.getChannelById(channelId)
-            channelNullCheck = false
+            var channelNullCheck = false
             try {
                 viewModel.channelService.createChannelInvitation(
                     channelId,
@@ -278,7 +277,9 @@ class ChannelFunctions(
                         channel = channel,
                         showAlertDialog = true,
                         dialogText = "User invited!",
-                        authenticatedUser = authenticatedUser
+                        authenticatedUser = authenticatedUser,
+                        page = (viewModel.stateFlow.value as MainViewSelectorState.InvitingUsers).page,
+                        users = (viewModel.stateFlow.value as MainViewSelectorState.InvitingUsers).users
                     )
                 )
             } catch (e: ServiceException) {
@@ -292,14 +293,16 @@ class ChannelFunctions(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             } else {
                                 viewModel.transition(
                                     MainViewSelectorState.InvitingUsers(
                                         channel = channel,
-                                        authenticatedUser = authenticatedUser
+                                        authenticatedUser = authenticatedUser,
+                                        page = 0,
+                                        users = emptyList()
                                     )
                                 )
                             }
@@ -355,7 +358,7 @@ class ChannelFunctions(
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }
