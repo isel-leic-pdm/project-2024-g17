@@ -231,7 +231,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             }
@@ -271,7 +271,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             },
@@ -311,7 +311,7 @@ fun MainViewSelector(
                                     viewModel.transition(
                                         MainViewSelectorState.SubscribedChannels(
                                             authenticatedUser = state.authenticatedUser,
-                                            channels = viewModel.cacheManager.getChannels()
+                                            channels = viewModel.getSortedChannels()
                                         )
                                     )
                                 },
@@ -410,7 +410,7 @@ fun MainViewSelector(
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
                                         authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.cacheManager.getChannels()
+                                        channels = viewModel.getSortedChannels()
                                     )
                                 )
                             },
@@ -458,7 +458,6 @@ fun MainViewSelector(
                                     permission
                                 )
                             },
-                            // TODO: Show available users (paginated)
                             users = state.channel.users
                         )
                     }

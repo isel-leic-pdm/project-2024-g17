@@ -107,29 +107,7 @@ class MainViewSelectorViewModel(
                     }
 
                     is MainViewSelectorState.ChannelMessages -> {
-                        val channel = (state).channel
-                        viewModelScope.launch {
-                            if (channel == null) {
-                                val authenticatedUser = userInfoRepository.authenticatedUser.first()
-                                transition(
-                                    MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
-                                        transition(
-                                            MainViewSelectorState.SubscribedChannels(
-                                                authenticatedUser = authenticatedUser
-                                            )
-                                        )
-                                    }
-                                )
-                            } else {
-                                val updatedChannel: Channel =
-                                    if (event.message.channelId == channel.channelId) {
-                                        channel.copy(messages = channel.messages + event.message)
-                                    } else {
-                                        channel
-                                    }
-                                transition((state).copy(channel = updatedChannel))
-                            }
-                        }
+                        messageCacheManager.forceUpdate(event.message)
                     }
 
                     else -> {}
@@ -191,6 +169,14 @@ class MainViewSelectorViewModel(
     fun loadChannelInfo() = channelFunctions.loadChannelInfo()
     fun createChannel(ownerId: Int, name: String, isPrivate: Boolean, channelIconUrl: String) =
         channelFunctions.createChannel(ownerId, name, isPrivate, channelIconUrl)
+    fun getSortedChannels(): List<Channel> {
+        val cached = cacheManager.getChannels()
+        return if (cached.isNotEmpty()) {
+            cached.sortedByDescending { it.messages.lastOrNull()?.createdAt }
+        } else {
+            cached
+        }
+    }
 
     fun removeUserFromChannel(userId: Int, channelId: Int) =
         channelFunctions.removeUserFromChannel(userId, channelId)
