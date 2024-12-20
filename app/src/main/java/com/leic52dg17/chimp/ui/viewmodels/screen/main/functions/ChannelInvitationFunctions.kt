@@ -10,7 +10,10 @@ import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.launch
 
-class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewModel, private val channelCacheManager: IChannelCacheManager) {
+class ChannelInvitationFunctions(
+    private val viewModel: MainViewSelectorViewModel,
+    private val channelCacheManager: IChannelCacheManager
+) {
     fun loadChannelInvitations(authenticatedUser: AuthenticatedUser?) {
         try {
             viewModel.viewModelScope.launch {
@@ -19,7 +22,9 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     return@launch
                 }
                 val invitations =
-                    viewModel.channelInvitationService.getChannelInvitationsByReceiverId(authenticatedUser.user.id)
+                    viewModel.channelInvitationService.getChannelInvitationsByReceiverId(
+                        authenticatedUser.user.id
+                    )
                 val invitationDetails = invitations.map { invitation ->
                     val sender = viewModel.userService.getUserById(invitation.senderId)
                     val channel = viewModel.channelService.getChannelById(invitation.channelId)
@@ -48,7 +53,10 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                 viewModel.transition(
                     MainViewSelectorState.Error(message = e.message) {
                         viewModel.transition(
-                            MainViewSelectorState.SubscribedChannels(authenticatedUser = authenticatedUser)
+                            MainViewSelectorState.SubscribedChannels(
+                                authenticatedUser = authenticatedUser,
+                                channels = viewModel.cacheManager.getChannels()
+                            )
                         )
                     }
                 )
@@ -65,7 +73,8 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
                     )
-                    val invitation = viewModel.channelInvitationService.getChannelInvitationById(invitationId)
+                    val invitation =
+                        viewModel.channelInvitationService.getChannelInvitationById(invitationId)
                     val channel = viewModel.channelService.getChannelById(invitation.channelId)
                     channelCacheManager.forceUpdate(channel)
                     loadChannelInvitations(authenticatedUser)
@@ -108,7 +117,8 @@ class ChannelInvitationFunctions(private val viewModel: MainViewSelectorViewMode
                     MainViewSelectorState.Error(e.message) {
                         viewModel.transition(
                             MainViewSelectorState.SubscribedChannels(
-                                authenticatedUser = authenticatedUser
+                                authenticatedUser = authenticatedUser,
+                                channels = viewModel.cacheManager.getChannels()
                             )
                         )
                     }

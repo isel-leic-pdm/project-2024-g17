@@ -3,6 +3,7 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
+import com.leic52dg17.chimp.core.cache.message.IMessageCacheManager
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
@@ -11,20 +12,19 @@ import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ChannelFunctions(
     private val viewModel: MainViewSelectorViewModel,
-    private val channelCacheManager: IChannelCacheManager
+    private val channelCacheManager: IChannelCacheManager,
+    private val messageCacheManager: IMessageCacheManager
 ) {
     fun loadChannelMessages() {
         viewModel.viewModelScope.launch {
             val channel =
-                (viewModel.stateFlow.last() as? MainViewSelectorState.ChannelMessages)?.channel
+                (viewModel.stateFlow.value as? MainViewSelectorState.ChannelMessages)?.channel
+            Log.i(TAG, "Loading channel messages for channel with ID: ${channel?.channelId}")
             viewModel.transition(MainViewSelectorState.GettingChannelMessages(channel))
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             try {
@@ -36,20 +36,25 @@ class ChannelFunctions(
                     viewModel.transition(
                         MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
                             viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(authenticatedUser = authenticatedUser)
+                                MainViewSelectorState.SubscribedChannels(
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
+                                )
                             )
                         }
                     )
                     return@launch
                 } else {
-                    val channelMessages =
-                        viewModel.messageService.getChannelMessages(channel.channelId)
+                    val channelMessages = messageCacheManager.getCachedMessage()
+                        .filter { it.channelId == channel.channelId }
+                    Log.i(TAG, "Channel messages -> $channelMessages")
                     viewModel.transition(
                         MainViewSelectorState.ChannelMessages(
                             channel = channel.copy(messages = channelMessages),
                             authenticatedUser = authenticatedUser
                         )
                     )
+                    return@launch
                 }
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
@@ -60,7 +65,8 @@ class ChannelFunctions(
                         MainViewSelectorState.Error(message = e.message) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
                                 )
                             )
                         }
@@ -82,7 +88,8 @@ class ChannelFunctions(
                         MainViewSelectorState.Error(message = ErrorMessages.CHANNEL_NOT_FOUND) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = currentUser
+                                    authenticatedUser = currentUser,
+                                    channels = viewModel.cacheManager.getChannels()
                                 )
                             )
                         }
@@ -147,7 +154,8 @@ class ChannelFunctions(
                         MainViewSelectorState.Error(message = e.message) {
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
                                 )
                             )
                         }
@@ -283,7 +291,8 @@ class ChannelFunctions(
                             if (channelNullCheck) {
                                 viewModel.transition(
                                     MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = authenticatedUser
+                                        authenticatedUser = authenticatedUser,
+                                        channels = viewModel.cacheManager.getChannels()
                                     )
                                 )
                             } else {
@@ -344,7 +353,10 @@ class ChannelFunctions(
                     viewModel.transition(
                         MainViewSelectorState.Error(e.message) {
                             viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(authenticatedUser = authenticatedUser)
+                                MainViewSelectorState.SubscribedChannels(
+                                    authenticatedUser = authenticatedUser,
+                                    channels = viewModel.cacheManager.getChannels()
+                                )
                             )
                         }
                     )
