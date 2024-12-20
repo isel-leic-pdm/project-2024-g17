@@ -6,10 +6,10 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
-import android.os.Binder
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import androidx.core.app.ServiceCompat
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.core.ChimpApplication
@@ -30,6 +30,7 @@ import io.ktor.client.request.header
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -41,44 +42,12 @@ import kotlinx.serialization.modules.polymorphic
 
 
 class EventStreamService: Service() {
-    private lateinit var client: HttpClient
+    private val notificationManager by lazy { getSystemService(NotificationManager::class.java) }
     private val channelId = "event_stream_channel"
-    private val json = Json {
-        ignoreUnknownKeys = true
-        classDiscriminator = "type"
-        serializersModule = SerializersModule {
-            polymorphic(EventContent::class) {
-                subclass(MessageContent::class, MessageContent.serializer())
-                subclass(InvitationContent::class, InvitationContent.serializer())
-            }
-        }
-    }
+    private var eventListenerJob: Job? = null
 
-    // Binder given to clients
-    private val binder: IBinder = LocalBinder()
-
-    // Method for clients to interact with the service
-    inner class LocalBinder : Binder() {
-        val service: EventStreamService
-            get() = this@EventStreamService
-    }
-
-    override fun onBind(p0: Intent?): IBinder {
-        return binder
-    }
-
-    override fun onCreate() {
-        Log.i(TAG, "Creating foreground service")
-        super.onCreate()
-        createNotificationChannel()
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Log.i(TAG, "On start command called")
-        val notification = createNotification()
-        startForeground(notification)
-
-        client = HttpClient {
+    private val client: HttpClient by lazy {
+        HttpClient {
             install(SSE)
             install(ContentNegotiation) {
                 json(Json {
@@ -98,8 +67,40 @@ class EventStreamService: Service() {
                 }
             }
         }
+    }
 
-        CoroutineScope(Dispatchers.IO).launch {
+    private val json = Json {
+        ignoreUnknownKeys = true
+        classDiscriminator = "type"
+        serializersModule = SerializersModule {
+            polymorphic(EventContent::class) {
+                subclass(MessageContent::class, MessageContent.serializer())
+                subclass(InvitationContent::class, InvitationContent.serializer())
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(TAG, "Destroying foreground service")
+        eventListenerJob?.cancel()
+    }
+
+    override fun onBind(p0: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(TAG, "Creating foreground service")
+        createNotificationChannel()
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        Log.i(TAG, "On start command called")
+        val notification = createNotification()
+
+        startForeground(notification)
+
+        eventListenerJob = CoroutineScope(Dispatchers.IO).launch {
             listenForEvents()
         }
 
@@ -112,23 +113,22 @@ class EventStreamService: Service() {
             "Event Stream Channel",
             NotificationManager.IMPORTANCE_HIGH
         )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun createNotification(): Notification {
         return NotificationCompat.Builder(this, channelId)
-            .setContentTitle("Event Stream")
-            .setContentText("Listening for updates from the server...")
-            .setSmallIcon(R.mipmap.chimp_logo)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setContentTitle("ChIMP")
+            .setContentText("Staying up-to-date with the latest events...")
+            .setSmallIcon(R.drawable.chimp_blue_final)
+            .setPriority(NotificationManagerCompat.IMPORTANCE_NONE)
             .build()
     }
 
     private fun startForeground(notification: Notification) {
         ServiceCompat.startForeground(
             this,
-            100,
+            SERVICE_ID,
             notification,
             ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
         )
@@ -137,12 +137,10 @@ class EventStreamService: Service() {
     private suspend fun listenForEvents() {
         Log.i(TAG, "Connecting to SSE")
         client.sse(ApiEndpoints.Chat.LISTEN) {
-            while (true) {
-                incoming.collect { event ->
-                    val eventData = event.data
-                    if (eventData != null) {
-                        handleEvent(eventData)
-                    }
+            incoming.collect { event ->
+                val eventData = event.data
+                if (eventData != null) {
+                    handleEvent(eventData)
                 }
             }
         }
@@ -167,11 +165,12 @@ class EventStreamService: Service() {
                 val notification = NotificationCompat.Builder(this, channelId)
                     .setContentTitle("New message")
                     .setContentText(message.text)
-                    .setSmallIcon(R.mipmap.chimp_logo)
+                    .setSmallIcon(R.drawable.chimp_blue_final)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setChannelId(channelId)
                     .build()
 
-                emitNotification(message.id, notification)
+                emitNotification(MESSAGE_NOTIFICATION_TAG, message.id, notification)
             }
 
             MessageTypes.Invitation -> {
@@ -189,22 +188,25 @@ class EventStreamService: Service() {
                 val notification = NotificationCompat.Builder(this, channelId)
                     .setContentTitle("New invitation")
                     .setContentText("You were invited to a channel")
-                    .setSmallIcon(R.mipmap.chimp_logo)
+                    .setSmallIcon(R.drawable.chimp_blue_final)
                     .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .setChannelId(channelId)
                     .build()
 
-                emitNotification(invitation.id, notification)
+                emitNotification(INVITATION_NOTIFICATION_TAG, invitation.id, notification)
             }
         }
     }
 
-    private fun emitNotification(id: Int, notification: Notification) {
-        Log.i(TAG, "Emitting notification")
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.notify(id, notification)
+    private fun emitNotification(tag: String, id: Int, notification: Notification) {
+        Log.i(TAG, "Emitting notification with TAG: $tag and ID: $id")
+        notificationManager.notify(tag, id, notification)
     }
 
     companion object {
+        private const val MESSAGE_NOTIFICATION_TAG = "MESSAGE_NOTIFICATION"
+        private const val INVITATION_NOTIFICATION_TAG = "INVITATION_NOTIFICATION"
+        private const val SERVICE_ID = 100
         const val TAG = "EVENT_STREAM_SERVICE"
     }
 }
