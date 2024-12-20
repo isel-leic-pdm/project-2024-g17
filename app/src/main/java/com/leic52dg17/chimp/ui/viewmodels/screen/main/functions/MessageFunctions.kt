@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.message.IMessageCacheManager
+import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
@@ -10,7 +11,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class MessageFunctions(private val viewModel: MainViewSelectorViewModel, private val messageCacheManager: IMessageCacheManager) {
+class MessageFunctions(private val viewModel: MainViewSelectorViewModel, private val messageCacheManager: MessageCacheManager) {
     fun sendMessage(channelId: Int, messageText: String) {
         viewModel.viewModelScope.launch {
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
@@ -36,7 +37,7 @@ class MessageFunctions(private val viewModel: MainViewSelectorViewModel, private
                             viewModel.transition(
                                 MainViewSelectorState.SubscribedChannels(
                                     authenticatedUser = authenticatedUser,
-                                    channels = viewModel.cacheManager.getChannels()
+                                    channels = viewModel.getSortedChannels()
                                 )
                             )
                         }

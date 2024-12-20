@@ -56,8 +56,20 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
                 is MainViewSelectorState.ChannelMessages -> {
                     viewModel.transition(
                         MainViewSelectorState.ChannelMessages(
-                            channel = prevState.channel?.copy(messages = newMessages),
+                            channel = prevState.channel?.copy(messages = newMessages.filter { it.channelId == prevState.channel.channelId }),
                             authenticatedUser = prevState.authenticatedUser,
+                        )
+                    )
+                }
+                is MainViewSelectorState.SubscribedChannels -> {
+                    val newChannels = prevState.channels?.map { channel ->
+                        val messages = newMessages.filter { it.channelId == channel.channelId }
+                        channel.copy(messages = messages)
+                    }
+                    viewModel.transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            channels = newChannels?.sortedByDescending { it.messages.lastOrNull()?.createdAt },
+                            authenticatedUser = prevState.authenticatedUser
                         )
                     )
                 }
