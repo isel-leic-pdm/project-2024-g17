@@ -3,7 +3,6 @@ package com.leic52dg17.chimp.core.cache.channel
 import android.util.Log
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
-import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -16,7 +15,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 
 class ChannelCacheManager(
     private val channelRepository: IChannelRepository,
@@ -54,7 +52,7 @@ class ChannelCacheManager(
                     runErrorCallback(e.message)
                 } catch (e: Exception) {
                     Log.e(TAG, e.message.toString())
-                    runErrorCallback(ErrorMessages.UNKNOWN)
+                    runErrorCallback(e.message.toString())
                 }
                 delay(10000)
             }
@@ -91,7 +89,7 @@ class ChannelCacheManager(
             } catch (e: ServiceException) {
                 runErrorCallback(e.message)
             } catch (e: Exception) {
-                runErrorCallback(ErrorMessages.UNKNOWN)
+                runErrorCallback(e.message.toString())
             }
         }
     }
