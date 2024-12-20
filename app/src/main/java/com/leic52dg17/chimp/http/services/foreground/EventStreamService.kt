@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Intent
 import android.content.pm.ServiceInfo
+import android.os.Binder
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
 import androidx.core.app.ServiceCompat
@@ -21,6 +22,9 @@ import com.leic52dg17.chimp.http.services.sse.events.MessageTypes
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.plugins.sse.sse
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.decodeFromJsonElement
 import kotlinx.serialization.modules.SerializersModule
@@ -41,12 +45,36 @@ class EventStreamService: Service() {
         }
     }
 
+    // Binder given to clients
+    private val binder: IBinder = LocalBinder()
+
+    // Method for clients to interact with the service
+    inner class LocalBinder : Binder() {
+        val service: EventStreamService
+            get() = this@EventStreamService
+    }
+
+    override fun onBind(p0: Intent?): IBinder {
+        return binder
+    }
+
     override fun onCreate() {
         super.onCreate()
         createNotificationChannel()
         client = HttpClient {
             install(SSE)
         }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val notification = createNotification()
+        startForeground(notification)
+
+        CoroutineScope(Dispatchers.IO).launch {
+            listenForEvents()
+        }
+
+        return START_STICKY
     }
 
     private fun createNotificationChannel() {
@@ -105,7 +133,14 @@ class EventStreamService: Service() {
                     createdAt = messageContent.createdAt
                 )
 
-                // TODO("NOTIFICATION LOGIC")
+                val notification = NotificationCompat.Builder(this, channelId)
+                    .setContentTitle("New message")
+                    .setContentText(message.text)
+                    .setSmallIcon(R.mipmap.chimp_logo)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build()
+
+                emitNotification(message.id, notification)
             }
 
             MessageTypes.Invitation -> {
@@ -119,17 +154,20 @@ class EventStreamService: Service() {
                     permissionLevel = invitationContent.permissionLevel
                 )
 
-                // TODO("NOTIFICATION LOGIC")
+                val notification = NotificationCompat.Builder(this, channelId)
+                    .setContentTitle("New invitation")
+                    .setContentText("You were invited to a channel")
+                    .setSmallIcon(R.mipmap.chimp_logo)
+                    .setPriority(NotificationCompat.PRIORITY_HIGH)
+                    .build()
+
+                emitNotification(invitation.id, notification)
             }
         }
     }
 
-    private suspend fun emitNotification(id: Int, notification: Notification) {
+    private fun emitNotification(id: Int, notification: Notification) {
         val notificationManager = getSystemService(NotificationManager::class.java)
         notificationManager.notify(id, notification)
-    }
-
-    override fun onBind(p0: Intent?): IBinder? {
-        TODO("Not yet implemented")
     }
 }
