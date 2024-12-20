@@ -2,14 +2,12 @@ package com.leic52dg17.chimp.core.cache.message
 
 import android.util.Log
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
-import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ServiceException
-import com.leic52dg17.chimp.http.services.message.IMessageService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

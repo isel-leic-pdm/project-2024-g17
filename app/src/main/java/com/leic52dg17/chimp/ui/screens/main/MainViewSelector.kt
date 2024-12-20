@@ -179,7 +179,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.Error -> {
-                        Log.i("MAIN_VIEW_SELECTOR", "Got into error")
+                        Log.i("MAIN_VIEW_SELECTOR", "Got into error: ${state.message}")
 
                         ApplicationErrorView(
                             message = state.message,

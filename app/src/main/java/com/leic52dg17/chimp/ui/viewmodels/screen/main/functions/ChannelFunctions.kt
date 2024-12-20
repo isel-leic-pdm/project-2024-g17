@@ -12,11 +12,8 @@ import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel.Companion.TAG
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class ChannelFunctions(
     private val viewModel: MainViewSelectorViewModel,

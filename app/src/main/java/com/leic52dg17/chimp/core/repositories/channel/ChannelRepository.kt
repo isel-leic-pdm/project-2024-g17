@@ -1,12 +1,9 @@
 package com.leic52dg17.chimp.core.repositories.channel
 
-import android.util.Log
 import com.leic52dg17.chimp.core.repositories.channel.database.ChannelDAO
 import com.leic52dg17.chimp.core.repositories.channel.model.ChannelEntity
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
-
 import com.leic52dg17.chimp.domain.model.channel.Channel
-import com.leic52dg17.chimp.domain.model.message.Message
 
 class ChannelRepository(
     private val messageRepository: IMessageRepository,

@@ -1,7 +1,6 @@
 package com.leic52dg17.chimp.http.services.message.implementations
 
 import android.util.Log
-import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.handleServiceResponse
@@ -24,7 +23,7 @@ class MessageService(private val client: HttpClient) : IMessageService {
     override suspend fun getChannelMessages(channelId: Int): List<Message> {
         val uri = URL(ApiEndpoints.Message.GET_BY_CHANNEL_ID + "?channelId=$channelId")
 
-        Log.i(TAG, uri.toString())
+        // Log.i(TAG, uri.toString())
 
         Log.d(TAG, "GETTING MESSAGES FOR CHANNEL WITH ID: $channelId")
 

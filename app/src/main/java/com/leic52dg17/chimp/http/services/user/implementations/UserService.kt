@@ -1,14 +1,8 @@
 package com.leic52dg17.chimp.http.services.user.implementations
 
-import android.util.Log
-import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
-import com.leic52dg17.chimp.http.services.common.ProblemDetails
-import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
-import com.leic52dg17.chimp.http.services.common.ServiceException
 import com.leic52dg17.chimp.http.services.common.handleServiceResponse
-import com.leic52dg17.chimp.http.services.message.implementations.MessageService
 import com.leic52dg17.chimp.http.services.user.IUserService
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
