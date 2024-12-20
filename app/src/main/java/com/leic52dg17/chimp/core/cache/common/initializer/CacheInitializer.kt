@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.core.cache.common.initializer
 
+import android.util.Log
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
@@ -38,7 +39,6 @@ class CacheInitializer(
                     )
                     return@launch
                 }
-                viewModel.transition(MainViewSelectorState.Loading)
                 val userChannels = channelService.getUserSubscribedChannels(authenticatedUser.user.id)
                 val storedChannels = channelRepository.getStoredChannels()
                 // Emits current channel storage to the cache flow, until we don't have the new results (TODO: ADD VISUAL REPRESENTATION OF STILL LOADING STATE)
@@ -48,17 +48,13 @@ class CacheInitializer(
                 val storedMessages = messageRepository.getStoredMessages()
                 messageCacheManager._currentMessages.emit(storedMessages)
 
+                Log.i("CACHE_INITIALIZER", "Stored messages -> $storedMessages \n Stored channels -> $storedChannels\n")
                 val storedChannelsWithMessages = storedChannels.map { channel ->
                     val messagesForChannel = storedMessages.filter { it.channelId == channel.channelId }
                     channel.copy(messages = messagesForChannel)
                 }
 
-                viewModel.transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        channels = storedChannelsWithMessages,
-                        authenticatedUser = authenticatedUser
-                    )
-                )
+                Log.i("CACHE_INITIALIZER", "Transitioning to initialized with channels -> $storedChannelsWithMessages")
 
                 val haveChannelsChanged =
                     channelRepository.isUpdateDue(storedChannels, userChannels)
@@ -85,8 +81,8 @@ class CacheInitializer(
                 // Emits updated messages after update
                 messageCacheManager._currentMessages.emit(newMessages)
 
-                messageCacheManager.runCallback()
                 channelCacheManager.runCallback()
+                messageCacheManager.runCallback()
             } catch (e: ServiceException) {
                 val prevState = viewModel.stateFlow.value
                 viewModel.transition(
