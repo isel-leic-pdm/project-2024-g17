@@ -219,6 +219,8 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChangePassword -> {
 
                         isNavBarShown = false
+                        val currentState =
+                            viewModel.stateFlow.collectAsState().value as MainViewSelectorState.ChangePassword
                         ChangePasswordView(
                             onChangePassword = { _, _, _, _ ->
                                 viewModel.transition(
@@ -229,10 +231,15 @@ fun MainViewSelector(
                             },
                             onBackClick = {
                                 viewModel.transition(
-                                    MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = state.authenticatedUser,
-                                        channels = viewModel.getSortedChannels()
-                                    )
+                                    if(currentState.authenticatedUser?.user != null) {
+                                        MainViewSelectorState.UserInfo(
+                                            user = currentState.authenticatedUser.user,
+                                            authenticatedUser = currentState.authenticatedUser,
+                                            isCurrentUser = true
+                                        )
+                                    } else {
+                                        MainViewSelectorState.Unauthenticated
+                                    }
                                 )
                             }
                         )
@@ -339,7 +346,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
                         LaunchedEffect(state.channel?.channelId) {
-                            if ((state?.channel?.users) !== null && state.channel.users.isEmpty() || (state?.channel?.users == null)) {
+                            if ((state.channel?.users) !== null && state.channel.users.isEmpty() || (state.channel?.users == null)) {
                                 viewModel.loadChannelInfo()
                             }
                         }
