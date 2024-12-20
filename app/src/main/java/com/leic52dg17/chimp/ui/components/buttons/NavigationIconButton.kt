@@ -38,7 +38,7 @@ fun NavigationIconButton(
 fun NavigationIconButtonPreview() {
     ChIMPTheme {
         NavigationIconButton(
-            onClick = { /*TODO*/ },
+            onClick = { },
             imageVector = Icons.Default.AccountCircle ,
             contentDescription = "Preview"
         )
