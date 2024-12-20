@@ -27,7 +27,9 @@ import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
-fun PrivacyPolicyView() {
+fun PrivacyPolicyView(
+    onBackClick: () -> Unit
+) {
 
     Column(
         modifier = Modifier
@@ -41,7 +43,7 @@ fun PrivacyPolicyView() {
 
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { onBackClick() },
                 modifier = Modifier
                     .align(Alignment.BottomStart)
             ) {
@@ -97,6 +99,6 @@ fun PrivacyPolicyView() {
 @Composable
 fun PrivacyPolicyPreview() {
     ChIMPTheme {
-        PrivacyPolicyView()
+        PrivacyPolicyView({})
     }
 }

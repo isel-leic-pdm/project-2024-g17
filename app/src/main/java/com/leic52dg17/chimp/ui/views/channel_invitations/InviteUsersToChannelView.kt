@@ -49,17 +49,14 @@ fun InviteUsersToChannelView(
     users: List<User>,
     onBackClick: () -> Unit,
     onInviteUserClick: (Int, Int, PermissionLevel) -> Unit,
+    onSearch: (username: String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     var searchValue by remember { mutableStateOf("") }
-    var filteredUsers by remember { mutableStateOf(users) }
 
     fun searchUsers(input: String) {
         searchValue = input
-        filteredUsers = users.filter { user ->
-            user.displayName.contains(searchValue, ignoreCase = true) &&
-                    channel.users.none { channelUser -> channelUser.id == user.id }
-        }
+        onSearch(searchValue)
     }
 
     Column(
@@ -92,9 +89,8 @@ fun InviteUsersToChannelView(
                 .fillMaxHeight()
                 .fillMaxWidth()
         ) {
-            val toDisplay = filteredUsers
 
-            for (user in toDisplay) {
+            for (user in users) {
                 var showDropdown by remember { mutableStateOf(false) }
 
                 Row(
@@ -169,6 +165,7 @@ fun InviteUsersToChannelViewPreview() {
         channel = FakeData.channels.first(),
         users = FakeData.users,
         onBackClick = { },
-        onInviteUserClick = { channelId, userId, perm -> }
+        onInviteUserClick = { channelId, userId, perm -> },
+        onSearch = {name -> }
     )
 }

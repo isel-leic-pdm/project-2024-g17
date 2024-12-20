@@ -29,7 +29,10 @@ import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 val authorNames: Array<String> = arrayOf("João Cardoso", "Francisco Antunes", "Rúben Said")
 
 @Composable
-fun AboutView() {
+fun AboutView(
+    onEmailClick : () -> Unit,
+    onPrivacyClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .padding(bottom = 100.dp)
@@ -118,7 +121,7 @@ fun AboutView() {
                 verticalArrangement = Arrangement.Center,
             ) {
                 AboutButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onEmailClick() },
                     text = stringResource(id = R.string.about_send_email_button_text_en),
                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
                     fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
@@ -128,7 +131,7 @@ fun AboutView() {
                         .size(170.dp, 50.dp)
                 )
                 AboutButton(
-                    onClick = { /*TODO*/ },
+                    onClick = { onPrivacyClick() },
                     text = stringResource(id = R.string.about_privacy_policy_button_text_en),
                     fontSize = MaterialTheme.typography.titleSmall.fontSize,
                     fontWeight = MaterialTheme.typography.titleSmall.fontWeight,
@@ -147,6 +150,6 @@ fun AboutView() {
 @Composable
 fun AboutViewPreview() {
     ChIMPTheme {
-        AboutView()
+        AboutView({}, {})
     }
 }

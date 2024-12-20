@@ -48,7 +48,8 @@ class MainViewSelectorViewModel(
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
     private val channelRepository: IChannelRepository,
-    private val messageRepository: IMessageRepository
+    private val messageRepository: IMessageRepository,
+    private val openEmailApp: () -> Unit
 ) : ViewModel() {
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Loading)
@@ -61,6 +62,7 @@ class MainViewSelectorViewModel(
     private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
     val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
     val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
+    val openEmail = { openEmailApp() }
 
     init {
         viewModelScope.launch {
@@ -212,6 +214,7 @@ class MainViewSelectorViewModel(
      * User functions
      */
     fun getUserProfile(id: Int) = userFunctions.getUserProfile(id)
+    fun loadAvailableUsersToInvite(channel: Channel, username: String, page: Int?, limit: Int?) = userFunctions.loadAvailableToInviteUsers(channel, username, page, limit)
 
     /**
      * Message functions
@@ -249,7 +252,8 @@ class MainViewSelectorViewModelFactory(
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
     private val channelRepository: IChannelRepository,
-    private val messageRepository: IMessageRepository
+    private val messageRepository: IMessageRepository,
+    private val openEmailApp: () -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return MainViewSelectorViewModel(
@@ -264,7 +268,8 @@ class MainViewSelectorViewModelFactory(
             channelCacheManager,
             messageCacheManager,
             channelRepository,
-            messageRepository
+            messageRepository,
+            openEmailApp
         ) as T
     }
 }
