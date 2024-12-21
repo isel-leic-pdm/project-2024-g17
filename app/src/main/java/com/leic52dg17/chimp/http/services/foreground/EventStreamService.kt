@@ -146,7 +146,7 @@ class EventStreamService: Service() {
         }
     }
 
-    private fun handleEvent(jsonString: String) {
+    private suspend fun handleEvent(jsonString: String) {
         val eventResponse = json.decodeFromString<EventResponse>(jsonString)
 
         when (eventResponse.data.type) {
@@ -161,6 +161,17 @@ class EventStreamService: Service() {
                     text = messageContent.text,
                     createdAt = messageContent.createdAt
                 )
+
+                val authenticatedUser = (application as ChimpApplication).userInfoRepository.authenticatedUser.first()
+
+                if (authenticatedUser?.user == null) {
+                    Log.i(TAG, "No authenticated user found")
+                    return
+                }
+
+                if (message.userId == authenticatedUser.user.id) {
+                    return
+                }
 
                 val notification = NotificationCompat.Builder(this, channelId)
                     .setContentTitle("New message")

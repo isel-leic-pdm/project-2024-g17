@@ -1,6 +1,5 @@
 package com.leic52dg17.chimp.ui.screens.main
 
-import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,17 +26,18 @@ import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
-import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
-import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
-import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.about.PrivacyPolicyView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
+import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
+import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
+import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 
 @Composable
 fun MainViewSelector(
@@ -193,14 +193,13 @@ fun MainViewSelector(
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
-                        Log.i("DEBUG", "State channel messages -> ${viewModel.getSortedChannels().map{ it.messages.lastOrNull()}}")
+                        Log.i(
+                            "DEBUG",
+                            "State channel messages -> ${
+                                viewModel.getSortedChannels().map { it.messages.lastOrNull() }
+                            }"
+                        )
                         selectedNavIcon = SelectedNavIcon.Messages
-
-                        LaunchedEffect(Unit) {
-                            if (state.channels == null) {
-                                viewModel.loadSubscribedChannels()
-                            }
-                        }
 
                         isNavBarShown = true
                         SubscribedChannelsView(
@@ -212,13 +211,8 @@ fun MainViewSelector(
                                     )
                                 )
                             },
-                            onChannelClick = {
-                                viewModel.transition(
-                                    MainViewSelectorState.ChannelMessages(
-                                        channel = it,
-                                        authenticatedUser = state.authenticatedUser
-                                    )
-                                )
+                            onChannelClick = { channelId: Int ->
+                                viewModel.loadChannelMessages(channelId)
                             }
                         )
                     }
@@ -238,7 +232,7 @@ fun MainViewSelector(
                             },
                             onBackClick = {
                                 viewModel.transition(
-                                    if(currentState.authenticatedUser?.user != null) {
+                                    if (currentState.authenticatedUser?.user != null) {
                                         MainViewSelectorState.UserInfo(
                                             user = currentState.authenticatedUser.user,
                                             authenticatedUser = currentState.authenticatedUser,
@@ -313,36 +307,30 @@ fun MainViewSelector(
                         isNavBarShown = false
                         val currentChannel = state.channel
 
-                        LaunchedEffect(Unit) {
-                            if (state.channel?.messages == null)
-                                viewModel.loadChannelMessages()
-                        }
-
-                        if (currentChannel != null) {
-                            ChannelMessageView(
-                                channel = currentChannel,
-                                onBackClick = {
-                                    viewModel.transition(
-                                        MainViewSelectorState.SubscribedChannels(
-                                            authenticatedUser = state.authenticatedUser,
-                                            channels = viewModel.getSortedChannels()
-                                        )
+                        ChannelMessageView(
+                            channel = currentChannel,
+                            onBackClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.SubscribedChannels(
+                                        authenticatedUser = state.authenticatedUser,
+                                        channels = viewModel.getSortedChannels()
                                     )
-                                },
-                                onChannelNameClick = {
-                                    viewModel.transition(
-                                        MainViewSelectorState.ChannelInfo(
-                                            currentChannel,
-                                            authenticatedUser = state.authenticatedUser
-                                        )
+                                )
+                            },
+                            onChannelNameClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.ChannelInfo(
+                                        currentChannel,
+                                        authenticatedUser = state.authenticatedUser
                                     )
-                                },
-                                onSendClick = { messageText ->
-                                    viewModel.sendMessage(currentChannel.channelId, messageText)
-                                },
-                                authenticatedUser = state.authenticatedUser
-                            )
-                        }
+                                )
+                            },
+                            onSendClick = { messageText ->
+                                viewModel.sendMessage(currentChannel.channelId, messageText)
+                            },
+                            hasWritePermissions = state.hasWritePermissions,
+                            authenticatedUser = state.authenticatedUser
+                        )
                     }
 
                     is MainViewSelectorState.GettingChannelMessages -> {
@@ -351,67 +339,52 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
-                        LaunchedEffect(state.channel?.channelId) {
-                            if ((state.channel?.users) !== null && state.channel.users.isEmpty() || (state.channel?.users == null)) {
-                                viewModel.loadChannelInfo()
-                            }
-                        }
-                        state.channel?.let {
-                            ChannelInfoView(
-                                channel = it,
-                                onBackClick = {
-                                    viewModel.transition(
-                                        MainViewSelectorState.ChannelMessages(
-                                            channel = it,
-                                            authenticatedUser = state.authenticatedUser
-                                        )
+
+                        val channel = state.channel
+
+                        ChannelInfoView(
+                            channel = channel,
+                            onBackClick = { viewModel.loadChannelMessages(channel.channelId) },
+                            onAddToUserChannelClick = {
+                                viewModel.transition(
+                                    MainViewSelectorState.InvitingUsers(
+                                        channel = channel,
+                                        authenticatedUser = state.authenticatedUser,
+                                        users = emptyList(),
+                                        page = 0
                                     )
-                                },
-                                onAddToUserChannelClick = {
-                                    viewModel.transition(
-                                        MainViewSelectorState.InvitingUsers(
-                                            channel = it,
-                                            authenticatedUser = state.authenticatedUser,
-                                            users = emptyList(),
-                                            page = 0
-                                        )
-                                    )
-                                },
-                                onRemoveUser = { userId, channelId ->
-                                    confirmationDialogConfirmFunction = {
-                                        viewModel.removeUserFromChannel(userId, channelId)
-                                        handleConfirmationDialogVisibilitySwitch()
-                                    }
-                                    confirmationDialogText =
-                                        "Are you sure you wish to remove this user from the channel?"
-                                    confirmationDialogTitle = "Confirm user removal"
-                                    confirmationDialogCancelText = "No"
-                                    confirmationDialogConfirmText = "Yes"
+                                )
+                            },
+                            onRemoveUser = { userId, channelId ->
+                                confirmationDialogConfirmFunction = {
+                                    viewModel.removeUserFromChannel(userId, channelId)
                                     handleConfirmationDialogVisibilitySwitch()
-                                },
-                                onUserClick = { userId -> viewModel.getUserProfile(userId) },
-                                onLeaveChannelClick = {
-                                    confirmationDialogConfirmFunction = {
-                                        viewModel.leaveChannel(
-                                            state.authenticatedUser?.user?.id,
-                                            it
-                                        )
-                                        handleConfirmationDialogVisibilitySwitch()
-                                    }
-                                    confirmationDialogText =
-                                        "Are you sure you want to leave the channel?\n The oldest user will be assigned as the new owner.\n This is not reversible."
-                                    confirmationDialogTitle = "Confirm your leave"
-                                    confirmationDialogCancelText = "No"
-                                    confirmationDialogConfirmText = "Yes"
+                                }
+                                confirmationDialogText =
+                                    "Are you sure you wish to remove this user from the channel?"
+                                confirmationDialogTitle = "Confirm user removal"
+                                confirmationDialogCancelText = "No"
+                                confirmationDialogConfirmText = "Yes"
+                                handleConfirmationDialogVisibilitySwitch()
+                            },
+                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
+                            onLeaveChannelClick = {
+                                confirmationDialogConfirmFunction = {
+                                    viewModel.leaveChannel(state.authenticatedUser?.user?.id, channel)
                                     handleConfirmationDialogVisibilitySwitch()
-                                },
-                                authenticatedUser = state.authenticatedUser
-                            )
-                        }
+                                }
+                                confirmationDialogText =
+                                    "Are you sure you want to leave the channel?\nThe oldest user will be assigned as the new owner.\nThis is not reversible."
+                                confirmationDialogTitle = "Confirm your leave"
+                                confirmationDialogCancelText = "No"
+                                confirmationDialogConfirmText = "Yes"
+                                handleConfirmationDialogVisibilitySwitch()
+                            },
+                            authenticatedUser = state.authenticatedUser
+                        )
                     }
 
                     is MainViewSelectorState.GettingChannelInfo -> {
-
                         isNavBarShown = false
                     }
 
@@ -441,7 +414,7 @@ fun MainViewSelector(
                                 )
                             },
                             onRegistrationInvitationClick = {
-                                if(state.authenticatedUser?.user != null) {
+                                if (state.authenticatedUser?.user != null) {
                                     viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
                                 }
                             },
@@ -451,7 +424,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.About -> {
                         isNavBarShown = true
                         AboutView(
-                            onEmailClick =  { viewModel.openEmail() },
+                            onEmailClick = { viewModel.openEmail() },
                             onPrivacyClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.PrivacyPolicy
@@ -494,8 +467,7 @@ fun MainViewSelector(
                             onSearch = { username ->
                                 viewModel.loadAvailableUsersToInvite(
                                     channel = currentChannel,
-                                    // Will default to 10 on the API
-                                    limit = null,
+                                    limit = null, // Will default to 10 on the API
                                     page = state.page,
                                     username = username
                                 )
@@ -519,9 +491,7 @@ fun MainViewSelector(
                         } else {
                             IncomingInvitationsView(
                                 invitations = state.invitations,
-                                onBackClick = {
-                                    viewModel.getUserProfile(state.authenticatedUser.user.id)
-                                },
+                                onBackClick = { viewModel.getUserProfile(state.authenticatedUser.user.id) },
                                 onAcceptClick = { invitationId ->
                                     viewModel.acceptChannelInvitation(
                                         invitationId,

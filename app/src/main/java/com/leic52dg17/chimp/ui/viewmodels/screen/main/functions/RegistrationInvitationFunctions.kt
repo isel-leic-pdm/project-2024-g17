@@ -25,7 +25,7 @@ class RegistrationInvitationFunctions(private val viewModel: MainViewSelectorVie
             } catch (e: ServiceException) {
                 viewModel.transition(
                     MainViewSelectorState.Error(message = e.message) {
-                        viewModel.transition(MainViewSelectorState.SubscribedChannels(authenticatedUser = authenticatedUser))
+                        viewModel.loadSubscribedChannels()
                     }
                 )
             }
