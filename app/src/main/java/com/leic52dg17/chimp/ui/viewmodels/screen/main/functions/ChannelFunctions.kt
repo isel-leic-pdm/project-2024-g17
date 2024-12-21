@@ -198,12 +198,14 @@ class ChannelFunctions(
 
             val channel = viewModel.channelService.getChannelById(channelId)
             try {
+                viewModel.transition(
+                    MainViewSelectorState.RemovingUser
+                )
                 viewModel.channelService.removeUserFromChannel(userId, channelId)
                 viewModel.transition(
-                    MainViewSelectorState.ChannelInfo(
-                        channel = channel,
-                        authenticatedUser = currentUser
-                    )
+                    MainViewSelectorState.RemovedUser {
+                        viewModel.loadChannelInfo(channelId)
+                    }
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
