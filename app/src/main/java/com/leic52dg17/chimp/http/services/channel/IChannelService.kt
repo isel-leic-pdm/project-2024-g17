@@ -22,8 +22,7 @@ interface IChannelService {
 
     suspend fun getChannelById(channelId: Int): Channel
 
-    suspend fun removeUserFromChannel(
-        userId: Int,
-        channelId: Int
-    ): Int
+    suspend fun removeUserFromChannel(userId: Int, channelId: Int): Int
+
+    suspend fun getUserPermissionsByChannelId(userId: Int, channelId: Int): PermissionLevel
 }

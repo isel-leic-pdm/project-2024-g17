@@ -76,13 +76,9 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
             )
             when (val prevState = viewModel.stateFlow.value) {
                 is MainViewSelectorState.ChannelMessages -> {
+                    val state = viewModel.stateFlow.value as MainViewSelectorState.ChannelMessages
                     Log.i("MESSAGE_CALLBACK", "Coming from $prevState")
-                    viewModel.transition(
-                        MainViewSelectorState.ChannelMessages(
-                            channel = prevState.channel?.copy(messages = newMessages.filter { it.channelId == prevState.channel.channelId }),
-                            authenticatedUser = prevState.authenticatedUser,
-                        )
-                    )
+                    viewModel.loadChannelMessages(state.channel.channelId)
                 }
 
                 is MainViewSelectorState.SubscribedChannels -> {
@@ -98,7 +94,7 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
                     )
                     Log.i(
                         "MESSAGE_CALLBACK",
-                        "New channel messages -> ${newChannels?.map { it.messages.lastOrNull() }}"
+                        "New channel messages -> ${newChannels.map { it.messages.lastOrNull() }}"
                     )
                     viewModel.transition(
                         newState

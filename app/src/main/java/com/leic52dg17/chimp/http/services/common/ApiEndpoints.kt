@@ -21,6 +21,7 @@ object ApiEndpoints {
         val GET_BY_ID = "$BASE_URL/channels/{id}"
         val GET_USER_SUBSCRIBED = "$BASE_URL/channels/user/{id}"
         val REMOVE_USER_FROM_CHANNEL = "$BASE_URL/channels/remove-user"
+        val GET_USER_PERMISSIONS_IN_CHANNEL = "$BASE_URL/channels/{channelId}/users/{userId}/permissions"
     }
 
     object Message {

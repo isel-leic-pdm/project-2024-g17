@@ -112,7 +112,7 @@ private val mockChannelList = listOf(
 fun SubscribedChannelsView(
     channels: List<Channel>,
     onCreateChannelClick: () -> Unit = {},
-    onChannelClick: (Channel) -> Unit = {}
+    onChannelClick: (Int) -> Unit = {}
 ) {
     Log.i(
         "DEBUG_CHANNELS",
@@ -201,7 +201,7 @@ fun SubscribedChannelsView(
                 ChannelCard(
                     channel = channel
                 ) {
-                    onChannelClick(channel)
+                    onChannelClick(channel.channelId)
                 }
             }
         }

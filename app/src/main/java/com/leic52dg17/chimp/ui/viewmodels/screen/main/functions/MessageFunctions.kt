@@ -9,17 +9,19 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class MessageFunctions(private val viewModel: MainViewSelectorViewModel, private val messageCacheManager: MessageCacheManager) {
+class MessageFunctions(
+    private val viewModel: MainViewSelectorViewModel,
+    private val messageCacheManager: MessageCacheManager
+) {
     fun sendMessage(channelId: Int, messageText: String) {
         viewModel.viewModelScope.launch {
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             try {
-                val prevState = viewModel.stateFlow.value
                 if (authenticatedUser?.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-               val messageId = viewModel.messageService.createMessageInChannel(
+                val messageId = viewModel.messageService.createMessageInChannel(
                     messageText,
                     channelId,
                     authenticatedUser.user.id
@@ -32,12 +34,7 @@ class MessageFunctions(private val viewModel: MainViewSelectorViewModel, private
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }

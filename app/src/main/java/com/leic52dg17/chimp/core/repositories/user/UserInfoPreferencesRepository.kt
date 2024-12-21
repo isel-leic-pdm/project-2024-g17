@@ -43,11 +43,4 @@ class UserInfoPreferencesRepository(private val store: DataStore<Preferences>): 
             } ?: false
         } ?: false
     }
-
-
-//    suspend fun getAuthenticatedUser(): AuthenticatedUser? {
-//        val preferences = store.data.first()
-//        val userJson = preferences[authenticatedUserKey]
-//        return userJson?.let { Json.decodeFromString(it) }
-//    }
 }

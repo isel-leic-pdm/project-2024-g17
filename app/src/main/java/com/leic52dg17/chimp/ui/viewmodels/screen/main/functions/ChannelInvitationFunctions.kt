@@ -23,10 +23,12 @@ class ChannelInvitationFunctions(
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
+
                 val invitations =
                     viewModel.channelInvitationService.getChannelInvitationsByReceiverId(
                         authenticatedUser.user.id
                     )
+
                 val invitationDetails = invitations.map { invitation ->
                     val sender = viewModel.userService.getUserById(invitation.senderId)
                     val channel = viewModel.channelService.getChannelById(invitation.channelId)
@@ -54,12 +56,7 @@ class ChannelInvitationFunctions(
             } else {
                 viewModel.transition(
                     MainViewSelectorState.Error(message = e.message) {
-                        viewModel.transition(
-                            MainViewSelectorState.SubscribedChannels(
-                                authenticatedUser = authenticatedUser,
-                                channels = viewModel.getSortedChannels()
-                            )
-                        )
+                        viewModel.loadSubscribedChannels()
                     }
                 )
             }
@@ -90,11 +87,7 @@ class ChannelInvitationFunctions(
             } else {
                 viewModel.transition(
                     MainViewSelectorState.Error(message = e.message) {
-                        viewModel.transition(
-                            MainViewSelectorState.SubscribedChannels(
-                                authenticatedUser = authenticatedUser
-                            )
-                        )
+                        viewModel.loadSubscribedChannels()
                     }
                 )
             }
@@ -119,12 +112,7 @@ class ChannelInvitationFunctions(
             } else {
                 viewModel.transition(
                     MainViewSelectorState.Error(e.message) {
-                        viewModel.transition(
-                            MainViewSelectorState.SubscribedChannels(
-                                authenticatedUser = authenticatedUser,
-                                channels = viewModel.getSortedChannels()
-                            )
-                        )
+                        viewModel.loadSubscribedChannels()
                     }
                 )
             }
