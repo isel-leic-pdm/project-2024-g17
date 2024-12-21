@@ -69,16 +69,24 @@ class ChannelInvitationFunctions(
                 if (authenticatedUser.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
+                    viewModel.transition(
+                        MainViewSelectorState.AcceptingInvitation
+                    )
                     viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
                     )
                     val invitation =
                         viewModel.channelInvitationService.getChannelInvitationById(invitationId)
                     val channel = viewModel.channelService.getChannelById(invitation.channelId)
-                    val messages = viewModel.messageService.getChannelMessages(channelId = channel.channelId)
+                    val messages =
+                        viewModel.messageService.getChannelMessages(channelId = channel.channelId)
+                    viewModel.transition(MainViewSelectorState.AcceptedInvitation {
+                        viewModel.loadChannelInvitations(
+                            authenticatedUser
+                        )
+                    })
                     messageCacheManager.forceUpdate(messages)
                     channelCacheManager.forceUpdate(channel)
-                    loadChannelInvitations(authenticatedUser)
                 }
             }
         } catch (e: ServiceException) {
