@@ -161,19 +161,26 @@ class ChimpApplication : Application(), DependenciesContainer {
             onLostCallback = {
                 Log.i(TAG, "Stopped listening to server sent events")
                 sseService.stopListening()
+                stopEventStreamService()
             },
             onAvailableCallback = {
                 Log.i(TAG, "Listening to server sent events")
                 sseService.listen()
+                startEventStream()
             }
         )
     }
 
     fun stopEventStreamService() {
-        Log.i(TAG, "Stopping event stream service")
         val intent = Intent(this, EventStreamService::class.java)
         stopService(intent)
         eventStreamService.stopListening()
+    }
+
+    fun startEventStream() {
+        Log.i(TAG, "Starting event stream service")
+        val intent = Intent(this, EventStreamService::class.java)
+        startService(intent)
     }
 
     companion object {

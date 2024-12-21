@@ -141,13 +141,17 @@ class EventStreamService: Service() {
 
     private suspend fun listenForEvents() {
         Log.i(TAG, "Connecting to SSE")
-        client.sse(ApiEndpoints.Chat.LISTEN) {
-            incoming.collect { event ->
-                val eventData = event.data
-                if (eventData != null) {
-                    handleEvent(eventData)
+        try {
+            client.sse(ApiEndpoints.Chat.LISTEN) {
+                incoming.collect { event ->
+                    val eventData = event.data
+                    if (eventData != null) {
+                        handleEvent(eventData)
+                    }
                 }
             }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to connect to SSE: ${e.message}")
         }
     }
 
