@@ -217,7 +217,8 @@ fun ChannelMessageView(
                     .width(textFieldWidth)
                     .heightIn(min = 56.dp, max = 128.dp),
                 messageText = messageText,
-                onMessageTextChange = { messageText = it }
+                enabled = hasWritePermissions,
+                onMessageTextChange = { messageText = it },
             )
             val imageResource3 = painterResource((R.drawable.send_icon))
             if (isSendIconVisible) {

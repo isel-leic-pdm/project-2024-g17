@@ -54,12 +54,7 @@ class ChannelFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }
@@ -129,12 +124,7 @@ class ChannelFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            loadSubscribedChannels()
                         }
                     )
                 }
@@ -240,8 +230,6 @@ class ChannelFunctions(
             }
             val channel = viewModel.channelService.getChannelById(channelId)
 
-            // WE WILL HAVE TO MAKE A PROPER SOLUTION FOR THIS, THIS IS ONLY A WORKAROUND!!!
-            var channelNullCheck = false
             try {
                 viewModel.channelService.createChannelInvitation(
                     channelId,
@@ -266,23 +254,7 @@ class ChannelFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            if (channelNullCheck) {
-                                viewModel.transition(
-                                    MainViewSelectorState.SubscribedChannels(
-                                        authenticatedUser = authenticatedUser,
-                                        channels = viewModel.getSortedChannels()
-                                    )
-                                )
-                            } else {
-                                viewModel.transition(
-                                    MainViewSelectorState.InvitingUsers(
-                                        channel = channel,
-                                        authenticatedUser = authenticatedUser,
-                                        page = 0,
-                                        users = emptyList()
-                                    )
-                                )
-                            }
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }
@@ -332,12 +304,7 @@ class ChannelFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }

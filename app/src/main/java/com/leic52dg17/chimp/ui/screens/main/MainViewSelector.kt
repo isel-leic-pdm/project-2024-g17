@@ -201,12 +201,6 @@ fun MainViewSelector(
                         )
                         selectedNavIcon = SelectedNavIcon.Messages
 
-                        LaunchedEffect(Unit) {
-                            if (state.channels == null) {
-                                viewModel.loadSubscribedChannels()
-                            }
-                        }
-
                         isNavBarShown = true
                         SubscribedChannelsView(
                             channels = viewModel.getSortedChannels(),
@@ -380,7 +374,7 @@ fun MainViewSelector(
                                     handleConfirmationDialogVisibilitySwitch()
                                 }
                                 confirmationDialogText =
-                                    "Are you sure you want to leave the channel?\n The oldest user will be assigned as the new owner.\n This is not reversible."
+                                    "Are you sure you want to leave the channel?\nThe oldest user will be assigned as the new owner.\nThis is not reversible."
                                 confirmationDialogTitle = "Confirm your leave"
                                 confirmationDialogCancelText = "No"
                                 confirmationDialogConfirmText = "Yes"
@@ -473,8 +467,7 @@ fun MainViewSelector(
                             onSearch = { username ->
                                 viewModel.loadAvailableUsersToInvite(
                                     channel = currentChannel,
-                                    // Will default to 10 on the API
-                                    limit = null,
+                                    limit = null, // Will default to 10 on the API
                                     page = state.page,
                                     username = username
                                 )
@@ -498,9 +491,7 @@ fun MainViewSelector(
                         } else {
                             IncomingInvitationsView(
                                 invitations = state.invitations,
-                                onBackClick = {
-                                    viewModel.getUserProfile(state.authenticatedUser.user.id)
-                                },
+                                onBackClick = { viewModel.getUserProfile(state.authenticatedUser.user.id) },
                                 onAcceptClick = { invitationId ->
                                     viewModel.acceptChannelInvitation(
                                         invitationId,

@@ -34,12 +34,7 @@ class MessageFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }

@@ -31,7 +31,6 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.RegistrationInvi
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 
 class MainViewSelectorViewModel(
@@ -53,13 +52,13 @@ class MainViewSelectorViewModel(
         MutableStateFlow(MainViewSelectorState.Loading)
 
     private val cacheCallbacks = CacheCallbacks(this)
-    val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
+    private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
     private val userFunctions = UserFunctions(this)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
-    val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
+    private val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
     val openEmail = { openEmailApp() }
 
     init {
