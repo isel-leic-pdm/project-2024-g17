@@ -209,13 +209,6 @@ class EventStreamService: Service() {
         }
     }
 
-    private suspend fun isUserInChannel(channelId: Int, userId: Int): Boolean {
-        val channelService = (application as ChimpApplication).channelService
-        val channelUsers = channelService.getChannelById(channelId).users
-
-        return channelUsers.any { user -> user.id == userId }
-    }
-
     private fun emitNotification(tag: String, id: Int, notification: Notification) {
         Log.i(TAG, "Emitting notification with TAG: $tag and ID: $id")
         notificationManager.notify(tag, id, notification)
