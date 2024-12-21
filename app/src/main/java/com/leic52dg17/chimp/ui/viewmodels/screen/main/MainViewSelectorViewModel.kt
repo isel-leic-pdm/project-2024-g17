@@ -15,6 +15,7 @@ import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
+import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
 import com.leic52dg17.chimp.http.services.channel_invitations.IChannelInvitationService
 import com.leic52dg17.chimp.http.services.message.IMessageService
@@ -37,6 +38,7 @@ class MainViewSelectorViewModel(
     val channelService: IChannelService,
     val messageService: IMessageService,
     val registrationInvitationService: IRegistrationInvitationService,
+    private val authenticationService: IAuthenticationService,
     val userService: IUserService,
     val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
@@ -139,10 +141,6 @@ class MainViewSelectorViewModel(
         }
     }
 
-    private fun stopEventStream() {
-        sseService.stopListening()
-    }
-
     /**
      *  Channel functions
      */
@@ -182,10 +180,8 @@ class MainViewSelectorViewModel(
     fun logout() {
         transition(MainViewSelectorState.Loading)
 
-        // SharedPreferencesHelper.logout(context)
         viewModelScope.launch {
-            userInfoRepository.clearAuthenticatedUser()
-            stopEventStream()
+            authenticationService.logout()
             onLogout()
         }
     }
@@ -224,6 +220,7 @@ class MainViewSelectorViewModelFactory(
     private val channelService: IChannelService,
     private val messageService: IMessageService,
     private val registrationInvitationService: IRegistrationInvitationService,
+    private val authenticationService: IAuthenticationService,
     private val userService: IUserService,
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
@@ -240,6 +237,7 @@ class MainViewSelectorViewModelFactory(
             channelService,
             messageService,
             registrationInvitationService,
+            authenticationService,
             userService,
             channelInvitationService,
             sseService,
