@@ -33,6 +33,8 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoLoadingView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InvitedUserView
@@ -548,6 +550,16 @@ fun MainViewSelector(
                                     )
                                 }
                             )
+                        }
+                    }
+
+                    is MainViewSelectorState.AcceptingInvitation -> {
+                        AcceptingInvitationView()
+                    }
+
+                    is MainViewSelectorState.AcceptedInvitation -> {
+                        AcceptedInvitationView {
+                            state.onBackClick()
                         }
                     }
                 }

@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -161,7 +162,11 @@ fun ChannelMessageView(
                     ) {
                         // TODO: Refactor so we get the actual users name
                        val userDisplayName = channel.users.firstOrNull { it.id == message.userId }?.displayName ?: "User ${message.userId}"
-                        Column(modifier = Modifier.padding(8.dp)) {
+                        val alignment = if (message.userId == authenticatedUser?.user?.id) Alignment.End else Alignment.Start
+                        Column(
+                            horizontalAlignment = alignment,
+                            modifier = Modifier.padding(8.dp)
+                        ) {
                             Text(
                                 text = message.text,
                                 fontSize = 18.sp,
@@ -170,11 +175,13 @@ fun ChannelMessageView(
                             Row (
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
-                                modifier = Modifier.fillMaxWidth(),
-                            ){
+                                modifier = Modifier,
+                            ) {
                                 Text(
                                     fontSize = 12.sp,
-                                    text = userDisplayName
+                                    text = userDisplayName,
+                                    modifier = Modifier
+                                        .padding(horizontal = 8.dp)
                                 )
                                 Text(
                                     text = formatHours(message.createdAt),

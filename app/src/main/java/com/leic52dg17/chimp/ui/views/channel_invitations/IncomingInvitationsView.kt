@@ -65,6 +65,7 @@ fun IncomingInvitationsView(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
+                    .verticalScroll(rememberScrollState())
                     .fillMaxHeight()
                     .fillMaxWidth()
                     .weight(1f)

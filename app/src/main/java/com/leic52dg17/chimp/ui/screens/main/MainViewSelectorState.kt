@@ -34,6 +34,8 @@ sealed interface MainViewSelectorState {
     data class LoadingRegistrationInvitation(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object Unauthenticated: MainViewSelectorState
     data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data object AcceptingInvitation: MainViewSelectorState
+    data class AcceptedInvitation(val onBackClick: () -> Unit): MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(
