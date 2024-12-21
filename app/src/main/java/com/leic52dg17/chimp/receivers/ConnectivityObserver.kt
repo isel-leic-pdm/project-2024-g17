@@ -13,14 +13,12 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class ConnectivityObserver(
-    context: Context,
-) {
+class ConnectivityObserver(context: Context) {
     private val connectivityManager by lazy {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
-    private fun observe() = callbackFlow<Boolean> {
+    private fun observe() = callbackFlow {
         val callback = object : NetworkCallback() {
             override fun onAvailable(network: Network) {
                 super.onAvailable(network)
@@ -36,7 +34,7 @@ class ConnectivityObserver(
         Log.i(TAG, "Registering network callback")
         connectivityManager.registerDefaultNetworkCallback(callback)
 
-        // Called when there are no more collectors for this flow
+        // Called when there are no more collectors
         awaitClose {
             Log.i(TAG, "Unregistering network callback")
             connectivityManager.unregisterNetworkCallback(callback)
