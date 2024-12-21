@@ -1,13 +1,15 @@
 package com.leic52dg17.chimp.ui.screens.authentication
 
-import android.content.Intent
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
-import com.leic52dg17.chimp.core.activity.MainActivity
 import com.leic52dg17.chimp.ui.components.overlays.LoadingOverlay
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.viewmodels.screen.auth.AuthenticationViewSelectorViewModel
@@ -18,6 +20,7 @@ import com.leic52dg17.chimp.ui.views.authentication.LoginView
 import com.leic52dg17.chimp.ui.views.authentication.SignUpView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
 
+
 @Composable
 fun AuthenticationViewSelector(
     viewModel: AuthenticationViewSelectorViewModel,
@@ -25,10 +28,25 @@ fun AuthenticationViewSelector(
 ) {
     ChIMPTheme {
         val currentState = viewModel.state
-        val context = LocalContext.current
+        var isLoading by rememberSaveable { mutableStateOf(false) }
+        var showNoWifiDialog by rememberSaveable { mutableStateOf(false) }
+        val connectivityStatus by viewModel.connectivityStatus.collectAsState()
 
-        var isLoading by rememberSaveable {
-            mutableStateOf(false)
+        LaunchedEffect(connectivityStatus) {
+            showNoWifiDialog = !connectivityStatus
+        }
+
+        if (showNoWifiDialog) {
+            AlertDialog(
+                onDismissRequest = { showNoWifiDialog = false },
+                title = { Text(text = "No Wi-Fi Connection") },
+                text = { Text(text = "Please check your internet connection and try again.") },
+                confirmButton = {
+                    Button(onClick = { showNoWifiDialog = false }) {
+                        Text("OK")
+                    }
+                }
+            )
         }
 
         if (isLoading) {
@@ -36,7 +54,6 @@ fun AuthenticationViewSelector(
         }
 
         when (currentState) {
-
             is AuthenticationViewSelectorState.Error -> {
                 ApplicationErrorView(
                     message = currentState.message
@@ -65,11 +82,15 @@ fun AuthenticationViewSelector(
                 isLoading = false
                 LoginView(
                     onLogInClick = { username, password ->
-                        viewModel.loginUser(
-                            username,
-                            password,
-                            onAuthenticate
-                        )
+                        if (!connectivityStatus) {
+                            showNoWifiDialog = true
+                        } else {
+                            viewModel.loginUser(
+                                username,
+                                password,
+                                onAuthenticate
+                            )
+                        }
                     },
                     onSignUpClick = {
                         viewModel.transition(
@@ -85,11 +106,15 @@ fun AuthenticationViewSelector(
                 isLoading = false
                 SignUpView(
                     onSignUpClick = { username, displayName, password ->
-                        viewModel.signUpUser(
-                            username,
-                            displayName,
-                            password
-                        )
+                        if (!connectivityStatus) {
+                            showNoWifiDialog = true
+                        } else {
+                            viewModel.signUpUser(
+                                username,
+                                displayName,
+                                password
+                            )
+                        }
                     },
                     onLogInClick = {
                         viewModel.transition(
@@ -123,10 +148,7 @@ fun AuthenticationViewSelector(
                 )
             }
 
-            is AuthenticationViewSelectorState.Authenticated -> {
-                val intent = Intent(context, MainActivity::class.java)
-                context.startActivity(intent)
-            }
+            is AuthenticationViewSelectorState.Authenticated -> { onAuthenticate() }
 
             is AuthenticationViewSelectorState.AuthenticationLoading -> {
                 isLoading = true

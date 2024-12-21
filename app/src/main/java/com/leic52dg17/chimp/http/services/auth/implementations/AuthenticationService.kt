@@ -1,6 +1,8 @@
 package com.leic52dg17.chimp.http.services.auth.implementations
 
+import android.app.Application
 import android.util.Log
+import com.leic52dg17.chimp.core.ChimpApplication
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
@@ -21,7 +23,7 @@ import io.ktor.client.request.setBody
 import kotlinx.serialization.json.Json
 import java.net.URL
 
-class AuthenticationService(private val client: HttpClient) : IAuthenticationService {
+class AuthenticationService(private val client: HttpClient, private val application: Application) : IAuthenticationService {
     private val json = Json { ignoreUnknownKeys = true }
 
     override suspend fun loginUser(username: String, password: String): AuthenticatedUser {
@@ -84,6 +86,16 @@ class AuthenticationService(private val client: HttpClient) : IAuthenticationSer
 
     override suspend fun forgotPassword(email: String): AuthenticatedUser {
         TODO("Not yet implemented")
+    }
+
+    override suspend fun logout() {
+        val chimpApplication = application as ChimpApplication
+
+        chimpApplication.userInfoRepository.clearAuthenticatedUser()
+
+        // Stop SSE listeners and stop EventStream foreground service
+        chimpApplication.sseService.stopListening()
+        application.stopEventStreamService()
     }
 
     private suspend fun getUserByToken(token: String): User {

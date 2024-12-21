@@ -11,6 +11,7 @@ import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.common.ServiceException
+import com.leic52dg17.chimp.receivers.ConnectivityObserver
 import com.leic52dg17.chimp.ui.screens.authentication.AuthenticationViewSelectorState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -18,9 +19,11 @@ import kotlinx.coroutines.launch
 class AuthenticationViewSelectorViewModel(
     private val authenticationService: IAuthenticationService,
     private val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: ConnectivityObserver,
     initialState: AuthenticationViewSelectorState = AuthenticationViewSelectorState.Landing
 ) : ViewModel() {
     var state: AuthenticationViewSelectorState by mutableStateOf(initialState)
+    val connectivityStatus = connectivityObserver.connectivityStatusFlow
 
     fun transition(newState: AuthenticationViewSelectorState) {
         state = newState
@@ -28,6 +31,7 @@ class AuthenticationViewSelectorViewModel(
 
     fun loginUser(username: String, password: String, onAuthenticate: () -> Unit) {
         Log.i(TAG, "Logging $username in")
+
         if (state is AuthenticationViewSelectorState.Login) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
@@ -155,11 +159,13 @@ class AuthenticationViewSelectorViewModel(
 class AuthenticationViewSelectorViewModelFactory(
     private val authenticationService: IAuthenticationService,
     private val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: ConnectivityObserver
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return AuthenticationViewSelectorViewModel(
             authenticationService,
             userInfoRepository,
+            connectivityObserver
         ) as T
     }
 }

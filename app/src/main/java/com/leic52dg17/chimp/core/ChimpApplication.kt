@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.core
 
 import android.app.Application
+import android.content.Intent
 import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
@@ -118,7 +119,7 @@ class ChimpApplication : Application(), DependenciesContainer {
     }
 
     override val authenticationService: IAuthenticationService by lazy {
-        AuthenticationService(client)
+        AuthenticationService(client, this)
     }
 
     override val userService: IUserService by lazy {
@@ -160,12 +161,26 @@ class ChimpApplication : Application(), DependenciesContainer {
             onLostCallback = {
                 Log.i(TAG, "Stopped listening to server sent events")
                 sseService.stopListening()
+                stopEventStreamService()
             },
             onAvailableCallback = {
                 Log.i(TAG, "Listening to server sent events")
                 sseService.listen()
+                startEventStream()
             }
         )
+    }
+
+    fun stopEventStreamService() {
+        val intent = Intent(this, EventStreamService::class.java)
+        stopService(intent)
+        eventStreamService.stopListening()
+    }
+
+    fun startEventStream() {
+        Log.i(TAG, "Starting event stream service")
+        val intent = Intent(this, EventStreamService::class.java)
+        startService(intent)
     }
 
     companion object {
