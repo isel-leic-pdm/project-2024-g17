@@ -146,7 +146,7 @@ class EventStreamService: Service() {
         }
     }
 
-    private fun handleEvent(jsonString: String) {
+    private suspend fun handleEvent(jsonString: String) {
         val eventResponse = json.decodeFromString<EventResponse>(jsonString)
 
         when (eventResponse.data.type) {
@@ -161,6 +161,17 @@ class EventStreamService: Service() {
                     text = messageContent.text,
                     createdAt = messageContent.createdAt
                 )
+
+                val authenticatedUser = (application as ChimpApplication).userInfoRepository.authenticatedUser.first()
+
+                if (authenticatedUser?.user == null) {
+                    Log.i(TAG, "No authenticated user found")
+                    return
+                }
+
+                if (message.userId == authenticatedUser.user.id) {
+                    return
+                }
 
                 val notification = NotificationCompat.Builder(this, channelId)
                     .setContentTitle("New message")
@@ -196,6 +207,13 @@ class EventStreamService: Service() {
                 emitNotification(INVITATION_NOTIFICATION_TAG, invitation.id, notification)
             }
         }
+    }
+
+    private suspend fun isUserInChannel(channelId: Int, userId: Int): Boolean {
+        val channelService = (application as ChimpApplication).channelService
+        val channelUsers = channelService.getChannelById(channelId).users
+
+        return channelUsers.any { user -> user.id == userId }
     }
 
     private fun emitNotification(tag: String, id: Int, notification: Notification) {
