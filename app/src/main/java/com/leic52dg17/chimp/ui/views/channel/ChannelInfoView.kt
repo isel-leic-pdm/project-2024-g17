@@ -145,7 +145,14 @@ fun ChannelInfoView(
                                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                                             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                         )
-                                        if (authenticatedUser?.user?.id == user.id) {
+                                        if(user.id == authenticatedUser?.user?.id) {
+                                            Text(
+                                                modifier = Modifier
+                                                    .padding(horizontal = 8.dp),
+                                                text = "(You)"
+                                            )
+                                        }
+                                        if (channel.ownerId == user.id) {
                                             Icon(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp),
