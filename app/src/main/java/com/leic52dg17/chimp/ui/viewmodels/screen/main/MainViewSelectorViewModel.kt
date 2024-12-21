@@ -147,9 +147,9 @@ class MainViewSelectorViewModel(
     /**
      *  Channel functions
      */
-    fun loadChannelMessages() = channelFunctions.loadChannelMessages()
+    fun loadChannelMessages(channelId: Int) = channelFunctions.loadChannelMessages(channelId)
     fun loadSubscribedChannels() = channelFunctions.loadSubscribedChannels()
-    fun loadChannelInfo() = channelFunctions.loadChannelInfo()
+    fun loadChannelInfo(channelId: Int) = channelFunctions.loadChannelInfo(channelId)
     fun createChannel(ownerId: Int, name: String, isPrivate: Boolean, channelIconUrl: String) =
         channelFunctions.createChannel(ownerId, name, isPrivate, channelIconUrl)
     fun getSortedChannels(): List<Channel> {

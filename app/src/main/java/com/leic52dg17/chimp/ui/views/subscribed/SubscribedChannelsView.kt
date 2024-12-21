@@ -111,7 +111,7 @@ val mockChannelList = listOf(
 fun SubscribedChannelsView(
     channels: List<Channel>,
     onCreateChannelClick: () -> Unit = {},
-    onChannelClick: (Channel) -> Unit = {}
+    onChannelClick: (Int) -> Unit = {}
 ) {
     Log.i("DEBUG_CHANNELS", "SubscribedChannelsView recomposed with channels size: ${channels.size}, latest messages: ${channels.map { it.messages.lastOrNull()?.text }}")
     var searchValue by remember { mutableStateOf("") }
@@ -196,7 +196,7 @@ fun SubscribedChannelsView(
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
-                        .clickable { onChannelClick(channel) }
+                        .clickable { onChannelClick(channel.channelId) }
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
