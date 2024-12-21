@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
@@ -31,13 +32,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -51,6 +55,7 @@ import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.utils.formatHours
 import com.leic52dg17.chimp.domain.model.user.User
+import com.leic52dg17.chimp.domain.utils.deriveDateFrom
 
 
 @Composable
@@ -68,7 +73,7 @@ fun ChannelMessageView(
     val listState = rememberLazyListState()
 
     LaunchedEffect(channel.messages.size) {
-        if(channel.messages.isNotEmpty()) {
+        if (channel.messages.isNotEmpty()) {
             listState.scrollToItem(channel.messages.size - 1)
         }
     }
@@ -149,22 +154,34 @@ fun ChannelMessageView(
                     ) {
                     Surface(
                         modifier = Modifier
+                            .shadow(8.dp, RoundedCornerShape(8.dp))
                             .wrapContentSize(),
                         shape = RoundedCornerShape(8.dp),
                         color = backgroundColor
                     ) {
+                        // TODO: Refactor so we get the actual users name
+                       val userDisplayName = channel.users.firstOrNull { it.id == message.userId }?.displayName ?: "User ${message.userId}"
                         Column(modifier = Modifier.padding(8.dp)) {
                             Text(
                                 text = message.text,
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSecondary
                             )
-                            Text(
-                                text = formatHours(message.createdAt),
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSecondary,
-                                modifier = Modifier.align(Alignment.End)
-                            )
+                            Row (
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth(),
+                            ){
+                                Text(
+                                    fontSize = 12.sp,
+                                    text = userDisplayName
+                                )
+                                Text(
+                                    text = formatHours(message.createdAt),
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSecondary,
+                                )
+                            }
                         }
                     }
                 }
@@ -186,15 +203,18 @@ fun ChannelMessageView(
                 color = MaterialTheme.colorScheme.tertiary
 
             ) {
-                Text(
-                    text = "10 October", // TODO: Replace with the actual date
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(12.dp),
-                    textAlign = TextAlign.Center,
-                    fontSize = 14.sp,
-                    color = MaterialTheme.colorScheme.onTertiary
-                )
+                if (channel.messages.isNotEmpty()) {
+                    val firstVisibleMessageIndex by remember { derivedStateOf { listState.firstVisibleItemIndex } }
+                    Text(
+                        text = channel.messages[firstVisibleMessageIndex].createdAt.deriveDateFrom(),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(12.dp),
+                        textAlign = TextAlign.Center,
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onTertiary
+                    )
+                }
             }
         }
         Row(

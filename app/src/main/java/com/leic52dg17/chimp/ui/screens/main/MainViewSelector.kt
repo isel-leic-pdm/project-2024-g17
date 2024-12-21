@@ -30,16 +30,22 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.ui.views.about.AboutView
 import com.leic52dg17.chimp.ui.views.about.PrivacyPolicyView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
+import com.leic52dg17.chimp.ui.views.channel.ChannelInfoLoadingView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
+import com.leic52dg17.chimp.ui.views.channel_invitations.InvitedUserView
+import com.leic52dg17.chimp.ui.views.channel_invitations.InvitingUserView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
+import com.leic52dg17.chimp.ui.views.create_channel.CreatingChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
 import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
+import com.leic52dg17.chimp.ui.views.user_info.UserInfoLoadingView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
+import com.leic52dg17.chimp.ui.views.user_info.UserInfoViewPreview
 
 @Composable
 fun MainViewSelector(
@@ -319,7 +325,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.CreatingChannel -> {
-                        isLoading = true
+                        CreatingChannelView(channelName = state.channelName)
                         isNavBarShown = false
                     }
 
@@ -348,7 +354,9 @@ fun MainViewSelector(
                         )
                     }
 
-                    is MainViewSelectorState.GettingChannelMessages -> {}
+                    is MainViewSelectorState.GettingChannelMessages -> {
+                        // Placeholder state
+                    }
 
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
@@ -383,7 +391,10 @@ fun MainViewSelector(
                             onUserClick = { userId -> viewModel.getUserProfile(userId) },
                             onLeaveChannelClick = {
                                 confirmationDialogConfirmFunction = {
-                                    viewModel.leaveChannel(state.authenticatedUser?.user?.id, channel)
+                                    viewModel.leaveChannel(
+                                        state.authenticatedUser?.user?.id,
+                                        channel
+                                    )
                                     handleConfirmationDialogVisibilitySwitch()
                                 }
                                 confirmationDialogText =
@@ -399,6 +410,7 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.GettingChannelInfo -> {
                         isNavBarShown = false
+                        ChannelInfoLoadingView()
                     }
 
                     is MainViewSelectorState.UserInfo -> {
@@ -431,6 +443,13 @@ fun MainViewSelector(
                                     viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
                                 }
                             },
+                        )
+                    }
+
+                    is MainViewSelectorState.GettingUserInfo -> {
+                        UserInfoLoadingView(
+                            isCurrentUser = state.isCurrentUser,
+                            onBackClick = state.onBackClick
                         )
                     }
 
@@ -469,11 +488,12 @@ fun MainViewSelector(
                                     )
                                 )
                             },
-                            onInviteUserClick = { userId, channelId, permission ->
+                            onInviteUserClick = { userId, channelId, permission, userDisplayName ->
                                 viewModel.inviteUserToChannel(
                                     userId,
                                     channelId,
-                                    permission
+                                    permission,
+                                    userDisplayName
                                 )
                             },
                             users = state.users,
@@ -486,6 +506,16 @@ fun MainViewSelector(
                                 )
                             }
                         )
+                    }
+
+                    is MainViewSelectorState.InvitingUser -> {
+                        InvitingUserView(userDisplayName = state.userDisplayName)
+                    }
+
+                    is MainViewSelectorState.InvitedUser -> {
+                        InvitedUserView(userDisplayName = state.userDisplayName) {
+                            state.onBackClick()
+                        }
                     }
 
                     MainViewSelectorState.Unauthenticated -> {

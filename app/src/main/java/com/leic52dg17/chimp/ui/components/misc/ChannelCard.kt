@@ -77,6 +77,8 @@ fun ChannelCard (
                 Text(
                     fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
                     text = if (channel.messages.isEmpty()) "" else channel.messages.last().text,
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 1,
                     modifier = Modifier
                         .padding(bottom = 16.dp)
                         .alpha(0.60f)
