@@ -23,8 +23,6 @@ class MessageService(private val client: HttpClient) : IMessageService {
     override suspend fun getChannelMessages(channelId: Int): List<Message> {
         val uri = URL(ApiEndpoints.Message.GET_BY_CHANNEL_ID + "?channelId=$channelId")
 
-        // Log.i(TAG, uri.toString())
-
         Log.d(TAG, "GETTING MESSAGES FOR CHANNEL WITH ID: $channelId")
 
         val response = client.get(uri) {
