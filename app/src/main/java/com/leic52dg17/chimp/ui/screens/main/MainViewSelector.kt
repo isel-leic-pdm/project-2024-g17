@@ -32,9 +32,14 @@ import com.leic52dg17.chimp.ui.views.about.PrivacyPolicyView
 import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
+import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
+import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
+import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
+import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 
 @Composable
 fun MainViewSelector(
@@ -333,12 +338,7 @@ fun MainViewSelector(
                                 )
                             },
                             onChannelNameClick = {
-                                viewModel.transition(
-                                    MainViewSelectorState.ChannelInfo(
-                                        currentChannel,
-                                        authenticatedUser = state.authenticatedUser
-                                    )
-                                )
+                                viewModel.loadChannelInfo(currentChannel.channelId)
                             },
                             onSendClick = { messageText ->
                                 viewModel.sendMessage(currentChannel.channelId, messageText)

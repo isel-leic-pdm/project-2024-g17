@@ -9,5 +9,5 @@ object Environment {
     /*fun getHostUrl(): String = dotenv[HOST_KEY]
         ?: System.getenv(HOST_KEY)
         ?: throw Exception("Missing HOST environment variable")*/
-    fun getHostUrl() : String = "https://1b6a-2001-818-d83e-2100-bcd6-34a4-c2e-f135.ngrok-free.app"
+    fun getHostUrl() : String = "https://b07b-2001-818-d83e-2100-b110-3373-3865-2cdd.ngrok-free.app"
 }
