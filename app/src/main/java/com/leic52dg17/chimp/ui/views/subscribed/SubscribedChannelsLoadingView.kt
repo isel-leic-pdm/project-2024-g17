@@ -1,8 +1,10 @@
 package com.leic52dg17.chimp.ui.views.subscribed
 
+import android.graphics.drawable.shapes.Shape
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +36,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -44,7 +49,7 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.inputs.SearchBar
-import com.leic52dg17.chimp.ui.components.misc.ChannelCard
+import com.leic52dg17.chimp.ui.components.misc.ChannelCardSkeleton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
@@ -109,21 +114,7 @@ private val mockChannelList = listOf(
 )
 
 @Composable
-fun SubscribedChannelsView(
-    channels: List<Channel>,
-    onCreateChannelClick: () -> Unit = {},
-    onChannelClick: (Channel) -> Unit = {}
-) {
-    Log.i(
-        "DEBUG_CHANNELS",
-        "SubscribedChannelsView recomposed with channels size: ${channels.size}, latest messages: ${channels.map { it.messages.lastOrNull()?.text }}"
-    )
-    var searchValue by remember { mutableStateOf("") }
-    val filteredChannels =
-        remember(channels, searchValue) {  // Key on both channels and searchValue
-            channels.filter { it.displayName.contains(searchValue, ignoreCase = true) }
-        }
-
+fun SubscribedChannelsLoadingView() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -146,21 +137,18 @@ fun SubscribedChannelsView(
                 painter = painterResource(id = R.drawable.chimp_blue_final),
                 contentDescription = stringResource(id = R.string.app_logo_cd)
             )
-            Text(
-                fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
-                text = stringResource(id = R.string.subscribed_channel_title_text_en),
-            )
-            IconButton(
-                onClick = {
-                    onCreateChannelClick()
-                }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                Icon(
-                    imageVector = Icons.Default.Create,
-                    tint = MaterialTheme.colorScheme.primary,
-                    contentDescription = stringResource(id = R.string.search_icon_cd)
+                Text(
+                    modifier = Modifier
+                        .padding(end = 32.dp),
+                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
+                    fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                    text = stringResource(id = R.string.subscribed_channel_title_text_en),
                 )
             }
         }
@@ -176,16 +164,15 @@ fun SubscribedChannelsView(
                     .padding(horizontal = 32.dp)
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
-                onValueChange = { newValue -> searchValue = newValue },
-                searchValue = searchValue
+                onValueChange = { },
+                searchValue = ""
             )
         }
         // Chats section
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .verticalScroll(rememberScrollState())
                 .background(MaterialTheme.colorScheme.background)
                 .topBottomBorder(2.dp, MaterialTheme.colorScheme.secondary)
                 .heightIn(min = 800.dp)
@@ -193,16 +180,8 @@ fun SubscribedChannelsView(
                 .fillMaxWidth()
 
         ) {
-            val toDisplay = filteredChannels.ifEmpty {
-                channels
-            }
-
-            for (channel in toDisplay) {
-                ChannelCard(
-                    channel = channel
-                ) {
-                    onChannelClick(channel)
-                }
+            for(i in 0..15) {
+                ChannelCardSkeleton()
             }
         }
     }
@@ -210,8 +189,8 @@ fun SubscribedChannelsView(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun SubscribedChannelsViewPreview() {
+fun SubscribedChannelsLoadingViewPreview() {
     ChIMPTheme {
-        SubscribedChannelsView(mockChannelList)
+        SubscribedChannelsLoadingView()
     }
 }

@@ -135,7 +135,6 @@ class ChannelFunctions(
                     return@launch
                 }
 
-                viewModel.transition(MainViewSelectorState.Loading)
                 val channels = channelCacheManager.getCachedChannels()
                 Log.i(TAG, "GOT CHANNELS: $channels")
                 viewModel.transition(

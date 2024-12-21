@@ -6,6 +6,8 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.fold
 import kotlinx.coroutines.launch
 
 class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
@@ -16,6 +18,16 @@ class CacheCallbacks(private val viewModel: MainViewSelectorViewModel) {
                 "Channel success callback reached with channels -> $newChannels"
             )
             when (val prevState = viewModel.stateFlow.value) {
+                is MainViewSelectorState.GettingSubscribedChannels -> {
+                    Log.i("CHANNEL_CALLBACK", "CHANNEL CALLBACK - Coming from $prevState")
+                    viewModel.transition(
+                        MainViewSelectorState.SubscribedChannels(
+                            authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first(),
+                            channels = newChannels
+                        )
+                    )
+                }
+
                 is MainViewSelectorState.SubscribedChannels -> {
                     Log.i("CHANNEL_CALLBACK", "CHANNEL CALLBACK - Coming from $prevState")
                     viewModel.transition(

@@ -13,10 +13,11 @@ sealed interface MainViewSelectorState {
     data class Error(val message: String, val onDismiss: () -> Unit): MainViewSelectorState
     data class Initialized(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class SubscribedChannels(val channels: List<Channel>? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data object GettingSubscribedChannels: MainViewSelectorState
     data class CreateChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class CreatingChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class ChannelMessages(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
-    data class CreatingChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class ChannelInfo(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
@@ -26,6 +27,7 @@ sealed interface MainViewSelectorState {
     data object PrivacyPolicy: MainViewSelectorState
     data class ChangePassword(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class RegistrationInvitation(val authenticatedUser: AuthenticatedUser?, val token: String): MainViewSelectorState
+    data class LoadingRegistrationInvitation(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object Unauthenticated: MainViewSelectorState
     data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
   
