@@ -161,8 +161,8 @@ class MainViewSelectorViewModel(
     fun removeUserFromChannel(userId: Int, channelId: Int) =
         channelFunctions.removeUserFromChannel(userId, channelId)
 
-    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) =
-        channelFunctions.inviteUserToChannel(userId, channelId, permission)
+    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel, userDisplayName: String) =
+        channelFunctions.inviteUserToChannel(userId, channelId, permission, userDisplayName)
 
     fun leaveChannel(userId: Int?, channel: Channel) =
         channelFunctions.leaveChannel(userId, channel)

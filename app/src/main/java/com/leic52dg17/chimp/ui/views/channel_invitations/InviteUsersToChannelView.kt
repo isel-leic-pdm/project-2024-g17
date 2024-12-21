@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -50,7 +51,7 @@ fun InviteUsersToChannelView(
     channel: Channel,
     users: List<User>,
     onBackClick: () -> Unit,
-    onInviteUserClick: (Int, Int, PermissionLevel) -> Unit,
+    onInviteUserClick: (Int, Int, PermissionLevel, String) -> Unit,
     onSearch: (username: String) -> Unit,
     modifier: Modifier = Modifier,
     authenticatedUser: AuthenticatedUser? = null
@@ -72,7 +73,8 @@ fun InviteUsersToChannelView(
             BackButton(onBackClick = onBackClick)
         }
 
-        Column(
+        Row(
+            horizontalArrangement = Arrangement.Center,
             modifier = modifier
                 .fillMaxWidth()
                 .height(60.dp)
@@ -82,7 +84,7 @@ fun InviteUsersToChannelView(
                 onValueChange = { searchUsers(it) },
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
                 textFieldModifier = Modifier
-                    .fillMaxWidth()
+                    .width(356.dp)
             )
         }
 
@@ -115,7 +117,7 @@ fun InviteUsersToChannelViewPreview() {
         channel = FakeData.channels.first(),
         users = FakeData.users,
         onBackClick = { },
-        onInviteUserClick = { channelId, userId, perm -> },
+        onInviteUserClick = { channelId, userId, perm, displayName -> },
         onSearch = {name -> }
     )
 }

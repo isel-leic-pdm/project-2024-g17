@@ -73,7 +73,8 @@
     <string name="email_text_en">Email</string>
     <string name="reset_password_text_en">Reset Password</string>
 
-
+    <!--Incoming invitations View-->
+    <string name="no_invitations_en">You don\'t have any pending invitations</string>
 
 
     <!--Common-->
@@ -83,6 +84,7 @@
     <string name="message_text_field_en">Message</string>
     <string name="channel_icon_cd_en">Channel Icon</string>
     <string name="user_icon_cd_en">User Icon</string>
+    <string name="green_check_icon_cd_en">Green check</string>
 
     <!--Create Channel View-->
     <string name="create_channel_title_en">Create a channel</string>

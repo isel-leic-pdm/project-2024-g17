@@ -39,7 +39,7 @@ fun MessageTextField(
             enabled = enabled,
             placeholder = {
                 if (!enabled) {
-                    Text("You have no write permission...")
+                    Text("You cannot write here...")
                 } else {
                     Text("Message...")
                 }
