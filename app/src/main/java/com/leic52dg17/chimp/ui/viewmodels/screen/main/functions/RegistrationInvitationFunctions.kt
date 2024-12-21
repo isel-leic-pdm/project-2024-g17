@@ -18,6 +18,7 @@ class RegistrationInvitationFunctions(private val viewModel: MainViewSelectorVie
             }
 
             try {
+                viewModel.transition(MainViewSelectorState.LoadingRegistrationInvitation(authenticatedUser))
                 val registrationInvitationId = viewModel.registrationInvitationService.createRegistrationInvitation(creatorId)
                 val token = viewModel.registrationInvitationService.getRegistrationInvitation(registrationInvitationId)
 

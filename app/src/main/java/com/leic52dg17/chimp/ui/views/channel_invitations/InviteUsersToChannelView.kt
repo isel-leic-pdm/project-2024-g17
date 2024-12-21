@@ -35,12 +35,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.SearchBar
+import com.leic52dg17.chimp.ui.components.misc.InviteUserCard
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 
 @Composable
@@ -51,6 +53,7 @@ fun InviteUsersToChannelView(
     onInviteUserClick: (Int, Int, PermissionLevel) -> Unit,
     onSearch: (username: String) -> Unit,
     modifier: Modifier = Modifier,
+    authenticatedUser: AuthenticatedUser? = null
 ) {
     var searchValue by remember { mutableStateOf("") }
 
@@ -78,6 +81,8 @@ fun InviteUsersToChannelView(
                 searchValue = searchValue,
                 onValueChange = { searchUsers(it) },
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
+                textFieldModifier = Modifier
+                    .fillMaxWidth()
             )
         }
 
@@ -91,67 +96,12 @@ fun InviteUsersToChannelView(
         ) {
 
             for (user in users) {
-                var showDropdown by remember { mutableStateOf(false) }
-
-                Row(
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = modifier
-                        .fillMaxWidth()
-                        .height(75.dp)
-                        .bottomBorder(0.2.dp, MaterialTheme.colorScheme.secondary)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Image(
-                            painter = painterResource(id = R.drawable.chimp_blue_final),
-                            contentDescription = stringResource(id = R.string.user_icon_cd_en),
-                            modifier = Modifier
-                                .padding(horizontal = 16.dp)
-                                .size(50.dp)
-                                .clip(CircleShape)
-                        )
-                        Text(user.displayName)
-                    }
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        IconButton(onClick = { showDropdown = true }) {
-                            Icon(
-                                tint = MaterialTheme.colorScheme.primary,
-                                imageVector = Icons.Default.AddCircleOutline,
-                                contentDescription = "Add user to channel"
-                            )
-                        }
-                        DropdownMenu(
-                            expanded = showDropdown,
-                            onDismissRequest = { showDropdown = false }
-                        ) {
-                            DropdownMenuItem(
-                                onClick = {
-                                    onInviteUserClick(
-                                        user.id,
-                                        channel.channelId,
-                                        PermissionLevel.RR
-                                    )
-                                    showDropdown = false
-                                },
-                                text = { Text("Read Only Permissions") }
-                            )
-                            DropdownMenuItem(
-                                onClick = {
-                                    onInviteUserClick(
-                                        user.id,
-                                        channel.channelId,
-                                        PermissionLevel.RW
-                                    )
-                                    showDropdown = false
-                                },
-                                text = { Text("Read Write Permissions") }
-                            )
-                        }
-                    }
+                if(!channel.users.contains(user) && user.id != authenticatedUser?.user?.id)  {
+                    InviteUserCard(
+                        user = user,
+                        channel = channel,
+                        onInviteUserClick = onInviteUserClick
+                    )
                 }
             }
         }

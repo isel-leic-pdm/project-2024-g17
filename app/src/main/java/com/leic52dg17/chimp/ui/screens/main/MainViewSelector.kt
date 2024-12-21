@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.screens.main
 
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,7 +36,8 @@ import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
-import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
+import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
 
@@ -217,6 +219,10 @@ fun MainViewSelector(
                         )
                     }
 
+                    MainViewSelectorState.GettingSubscribedChannels -> {
+                        SubscribedChannelsLoadingView()
+                    }
+
                     is MainViewSelectorState.ChangePassword -> {
 
                         isNavBarShown = false
@@ -248,26 +254,39 @@ fun MainViewSelector(
 
                     is MainViewSelectorState.RegistrationInvitation -> {
                         isNavBarShown = false
-                        val currentState =
-                            viewModel.stateFlow.collectAsState().value as MainViewSelectorState.RegistrationInvitation
-                        if (currentState.authenticatedUser?.user != null) {
+                        if (state.authenticatedUser?.user != null) {
                             RegistrationInvitationView(
                                 onBackClick = {
                                     viewModel.transition(
                                         MainViewSelectorState.UserInfo(
-                                            user = currentState.authenticatedUser.user,
-                                            authenticatedUser = currentState.authenticatedUser,
+                                            user = state.authenticatedUser.user,
+                                            authenticatedUser = state.authenticatedUser,
                                             isCurrentUser = true
                                         )
                                     )
                                 },
-                                token = currentState.token,
+                                token = state.token,
                                 getToken = {
                                     viewModel.createRegistrationInvitation(
-                                        currentState.authenticatedUser.user.id
+                                        state.authenticatedUser.user.id
                                     )
                                 }
                             )
+                        }
+                    }
+
+                    is MainViewSelectorState.LoadingRegistrationInvitation -> {
+                        if (state.authenticatedUser?.user != null) {
+                            RegistrationInvitationLoadingView(
+                                onBackClick = {
+                                    viewModel.transition(
+                                        MainViewSelectorState.UserInfo(
+                                            user = state.authenticatedUser.user,
+                                            authenticatedUser = state.authenticatedUser,
+                                            isCurrentUser = true
+                                        )
+                                    )
+                                })
                         }
                     }
 
@@ -300,6 +319,7 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.CreatingChannel -> {
+                        isLoading = true
                         isNavBarShown = false
                     }
 
@@ -318,12 +338,7 @@ fun MainViewSelector(
                                 )
                             },
                             onChannelNameClick = {
-                                viewModel.transition(
-                                    MainViewSelectorState.ChannelInfo(
-                                        currentChannel,
-                                        authenticatedUser = state.authenticatedUser
-                                    )
-                                )
+                                viewModel.loadChannelInfo(currentChannel.channelId)
                             },
                             onSendClick = { messageText ->
                                 viewModel.sendMessage(currentChannel.channelId, messageText)
@@ -333,9 +348,7 @@ fun MainViewSelector(
                         )
                     }
 
-                    is MainViewSelectorState.GettingChannelMessages -> {
-
-                    }
+                    is MainViewSelectorState.GettingChannelMessages -> {}
 
                     is MainViewSelectorState.ChannelInfo -> {
                         isNavBarShown = false
@@ -424,7 +437,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.About -> {
                         isNavBarShown = true
                         AboutView(
-                            onEmailClick = { viewModel.openEmail() },
+                            onEmailClick = { viewModel.openEmail },
                             onPrivacyClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.PrivacyPolicy

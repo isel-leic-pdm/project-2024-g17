@@ -57,7 +57,7 @@ class MainViewSelectorViewModel(
     private val userFunctions = UserFunctions(this)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
-    private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager)
+    private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager, messageCacheManager)
     private val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
     val openEmail = { openEmailApp() }
 

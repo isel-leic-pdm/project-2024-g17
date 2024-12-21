@@ -39,7 +39,7 @@ fun IncomingInvitationsView(
                 .fillMaxWidth()
         ) {
             Text(
-                text = "Incomming Invitations",
+                text = "Incoming Invitations",
                 style = MaterialTheme.typography.titleLarge,
                 modifier = modifier.padding(16.dp)
             )
