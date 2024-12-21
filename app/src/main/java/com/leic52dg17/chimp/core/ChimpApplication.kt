@@ -1,6 +1,7 @@
 package com.leic52dg17.chimp.core
 
 import android.app.Application
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -32,6 +33,7 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.implementations.SSEService
 import com.leic52dg17.chimp.http.services.user.IUserService
 import com.leic52dg17.chimp.http.services.user.implementations.UserService
+import com.leic52dg17.chimp.receivers.ConnectivityObserver
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -61,6 +63,7 @@ interface DependenciesContainer {
     val messageCacheManager: MessageCacheManager
     val applicationDatabaseManager: AppDatabaseManager
     val eventStreamService: EventStreamService
+    val connectivityObserver: ConnectivityObserver
 }
 
 class ChimpApplication : Application(), DependenciesContainer {
@@ -144,5 +147,28 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val eventStreamService: EventStreamService by lazy {
         EventStreamService()
+    }
+
+    override val connectivityObserver: ConnectivityObserver by lazy {
+        ConnectivityObserver(this)
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        Log.i(TAG, "Registering connectivity observer")
+        connectivityObserver.startObserving(
+            onLostCallback = {
+                Log.i(TAG, "Stopped listening to server sent events")
+                sseService.stopListening()
+            },
+            onAvailableCallback = {
+                Log.i(TAG, "Listening to server sent events")
+                sseService.listen()
+            }
+        )
+    }
+
+    companion object {
+        private const val TAG = "CHIMP_APPLICATION"
     }
 }
