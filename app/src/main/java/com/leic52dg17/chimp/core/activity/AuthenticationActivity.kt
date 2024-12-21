@@ -21,6 +21,7 @@ class AuthenticationActivity : ComponentActivity() {
                 AuthenticationViewSelectorViewModelFactory(
                     (application as ChimpApplication).authenticationService,
                     (application as ChimpApplication).userInfoRepository,
+                    (application as ChimpApplication).connectivityObserver
                 )
             }
         )
