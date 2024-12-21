@@ -5,6 +5,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -17,9 +18,10 @@ import androidx.compose.ui.unit.dp
 fun MessageTextField(
     messageText: String,
     onMessageTextChange: (String) -> Unit,
+    enabled: Boolean,
+    modifier: Modifier = Modifier,
     textColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
     inputBoxColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    modifier: Modifier = Modifier,
     minLines: Int = 1,
     maxLines: Int = 5
 ) {
@@ -34,6 +36,14 @@ fun MessageTextField(
             modifier = modifier.fillMaxWidth(),
             maxLines = maxLines,
             minLines = minLines,
+            enabled = enabled,
+            placeholder = {
+                if (!enabled) {
+                    Text("You have no write permission...")
+                } else {
+                    Text("Message...")
+                }
+            },
             colors = TextFieldDefaults.textFieldColors(
                 focusedTextColor = textColor,
                 containerColor = inputBoxColor,

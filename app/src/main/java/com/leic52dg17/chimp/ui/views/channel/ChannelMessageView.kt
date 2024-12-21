@@ -59,11 +59,12 @@ fun ChannelMessageView(
     onBackClick: () -> Unit,
     onChannelNameClick: () -> Unit,
     onSendClick: (String) -> Unit,
+    hasWritePermissions: Boolean,
     authenticatedUser: AuthenticatedUser?
 ) {
     var textFieldWidth by remember { mutableStateOf(400.dp) }
     var messageText by remember { mutableStateOf("") }
-    var isSendIconVisible = messageText.isNotEmpty()
+    val isSendIconVisible = messageText.isNotEmpty() && hasWritePermissions
     val listState = rememberLazyListState()
 
     LaunchedEffect(channel.messages.size) {
@@ -189,7 +190,6 @@ fun ChannelMessageView(
                     text = "10 October", // TODO: Replace with the actual date
                     modifier = Modifier
                         .weight(1f)
-
                         .padding(12.dp),
                     textAlign = TextAlign.Center,
                     fontSize = 14.sp,
@@ -217,7 +217,8 @@ fun ChannelMessageView(
                     .width(textFieldWidth)
                     .heightIn(min = 56.dp, max = 128.dp),
                 messageText = messageText,
-                onMessageTextChange = { messageText = it }
+                enabled = hasWritePermissions,
+                onMessageTextChange = { messageText = it },
             )
             val imageResource3 = painterResource((R.drawable.send_icon))
             if (isSendIconVisible) {
@@ -247,13 +248,14 @@ fun ChannelMessageViewLayoutPreview() {
         channel = FakeData.channels[0],
         onChannelNameClick = {},
         onSendClick = {},
+        hasWritePermissions = false,
         authenticatedUser = AuthenticatedUser(
             "",
             User(
                 1,
                 "username",
                 "display_name"
-            )
+            ),
         )
     )
 

@@ -12,12 +12,12 @@ import com.leic52dg17.chimp.ui.screens.main.nav.SelectedNavIcon
 sealed interface MainViewSelectorState {
     data class Error(val message: String, val onDismiss: () -> Unit): MainViewSelectorState
     data class Initialized(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class SubscribedChannels(val channels: List<Channel>? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class SubscribedChannels(val channels: List<Channel>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data class CreateChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class ChannelMessages(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class GettingChannelMessages(val channel: Channel? = null): MainViewSelectorState
+    data class ChannelMessages(val channel: Channel, val authenticatedUser: AuthenticatedUser?, val hasWritePermissions: Boolean): MainViewSelectorState
+    data class GettingChannelMessages(val channel: Channel): MainViewSelectorState
     data class CreatingChannel(val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
-    data class ChannelInfo(val channel: Channel? = null, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
+    data class ChannelInfo(val channel: Channel, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object GettingChannelInfo: MainViewSelectorState
     data object Loading: MainViewSelectorState
     data class UserInfo(val user: User, val authenticatedUser: AuthenticatedUser?, val isCurrentUser: Boolean): MainViewSelectorState

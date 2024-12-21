@@ -10,6 +10,7 @@ import com.leic52dg17.chimp.http.services.channel_invitations.responses.CreateCh
 import com.leic52dg17.chimp.http.services.channel.responses.CreateChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelsResponse
+import com.leic52dg17.chimp.http.services.channel.responses.GetUserPermissionsResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.handleServiceResponse
 import io.ktor.client.HttpClient
@@ -134,6 +135,22 @@ class ChannelService(private val client: HttpClient) : IChannelService {
         handleServiceResponse(response, json, TAG)
 
         return userId
+    }
+
+    override suspend fun getUserPermissionsByChannelId(userId: Int, channelId: Int): PermissionLevel {
+        val uri = URL(ApiEndpoints.Channel.GET_USER_PERMISSIONS_IN_CHANNEL
+                .replace("{channelId}", channelId.toString())
+                .replace("{userId}", userId.toString()))
+
+        val response = client.get(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        handleServiceResponse(response, json, TAG)
+
+        val getUserPermissionsResponse = json.decodeFromString<GetUserPermissionsResponse>(response.body())
+
+        return getUserPermissionsResponse.permissionLevel
     }
 
     companion object {

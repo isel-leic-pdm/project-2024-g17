@@ -36,12 +36,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                     Log.e(TAG, "Error fetching user profile for user with ID: $id")
                     viewModel.transition(
                         MainViewSelectorState.Error(message = ErrorMessages.UNKNOWN) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }
@@ -51,12 +46,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    authenticatedUser = authenticatedUser,
-                                    channels = viewModel.getSortedChannels()
-                                )
-                            )
+                            viewModel.loadSubscribedChannels()
                         }
                     )
                 }
