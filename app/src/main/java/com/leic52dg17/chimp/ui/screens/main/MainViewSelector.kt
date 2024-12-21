@@ -33,6 +33,8 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoLoadingView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
+import com.leic52dg17.chimp.ui.views.channel.RemovedUserView
+import com.leic52dg17.chimp.ui.views.channel.RemovingUserView
 import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
 import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
@@ -408,6 +410,15 @@ fun MainViewSelector(
                             },
                             authenticatedUser = state.authenticatedUser
                         )
+                    }
+
+                    is MainViewSelectorState.RemovingUser -> {
+                        RemovingUserView()
+                    }
+                    is MainViewSelectorState.RemovedUser -> {
+                        RemovedUserView {
+                            state.onBackClick()
+                        }
                     }
 
                     is MainViewSelectorState.GettingChannelInfo -> {
