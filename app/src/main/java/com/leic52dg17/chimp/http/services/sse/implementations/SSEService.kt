@@ -18,7 +18,6 @@ import com.leic52dg17.chimp.http.services.sse.results.SSEServiceError
 import com.leic52dg17.chimp.http.services.sse.results.SSEServiceResult
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.sse.sse
-import io.ktor.utils.io.ByteReadChannel
 import io.ktor.utils.io.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -36,7 +35,6 @@ class SSEService(
     override val eventFlow = MutableSharedFlow<Events>()
 
     private var sseJob: Job? = null
-    lateinit var channel: ByteReadChannel
     private val json = Json {
         ignoreUnknownKeys = true
         classDiscriminator = "type"
@@ -72,7 +70,6 @@ class SSEService(
 
         sseJob?.invokeOnCompletion { throwable ->
             if (throwable is CancellationException) {
-                channel.cancel(null)
                 Log.i(TAG, "SSE Coroutine was cancelled and channel was closed")
             }
         }

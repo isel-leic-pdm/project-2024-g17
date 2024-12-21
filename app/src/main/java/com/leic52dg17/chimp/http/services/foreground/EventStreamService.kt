@@ -107,6 +107,11 @@ class EventStreamService: Service() {
         return START_STICKY
     }
 
+    fun stopListening() {
+        Log.i(TAG, "Cancelling event listener")
+        eventListenerJob?.cancel()
+    }
+
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
             channelId,
