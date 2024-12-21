@@ -67,6 +67,7 @@ class CacheInitializer(
                 channelCacheManager._currentChannels.emit(userChannels)
 
                 val newMessages = mutableListOf<Message>()
+                viewModel.transition(MainViewSelectorState.GettingSubscribedChannels)
                 for (channel in channelCacheManager._currentChannels.value) {
                     val messages = messageService.getChannelMessages(channel.channelId)
                     newMessages.addAll(messages)

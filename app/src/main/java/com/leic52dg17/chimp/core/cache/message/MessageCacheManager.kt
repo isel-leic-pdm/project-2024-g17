@@ -49,6 +49,32 @@ class MessageCacheManager(
         }
     }
 
+    override fun forceUpdate(messages: List<Message>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val authenticatedUser: AuthenticatedUser? =
+                    userInfoRepository.authenticatedUser.first()
+                if (authenticatedUser?.user == null) {
+                    Log.e(ChannelCacheManager.TAG, "Could not find authenticated user ID.")
+                    return@launch
+                }
+                val storedMessages = messageRepository.getStoredMessages()
+                val hasChanged = messageRepository.isUpdateDue(storedMessages, messages)
+                val newMessages = storedMessages + messages
+                Log.i(ChannelCacheManager.TAG, "HAS CHANGED FORCED - $hasChanged")
+                if (hasChanged) {
+                    messageRepository.storeMessages(messages)
+                    _currentMessages.emit(newMessages)
+                    runCallback()
+                }
+            } catch (e: ServiceException) {
+                runErrorCallback(e.message)
+            } catch (e: Exception) {
+                runErrorCallback(ErrorMessages.UNKNOWN)
+            }
+        }
+    }
+
     override suspend fun registerCallback(callback: (newMessages: List<Message>) -> Unit) {
         Log.i(TAG, "Registering callback...")
         successCallback = callback

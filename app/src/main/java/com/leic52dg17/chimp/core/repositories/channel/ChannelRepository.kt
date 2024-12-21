@@ -22,6 +22,17 @@ class ChannelRepository(
         channelDao.insertAll(channelEntities)
     }
 
+    override suspend fun removeChannel(channel: Channel) {
+        val channelEntity = ChannelEntity(
+            channel.channelId,
+            channel.displayName,
+            channel.ownerId,
+            channel.isPrivate,
+            channel.channelIconUrl
+        )
+        channelDao.delete(channelEntity)
+    }
+
     override suspend fun getStoredChannels(): List<Channel> {
         val channelEntities = channelDao.getAll()
         val channels: MutableList<Channel> = emptyList<Channel>().toMutableList()
