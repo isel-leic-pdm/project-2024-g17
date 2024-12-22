@@ -23,6 +23,7 @@ import com.leic52dg17.chimp.http.services.registration_invitation.IRegistrationI
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
+import com.leic52dg17.chimp.receivers.ConnectivityObserver
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.CacheCallbacks
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
@@ -43,6 +44,7 @@ class MainViewSelectorViewModel(
     val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
     val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: ConnectivityObserver,
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
@@ -52,6 +54,7 @@ class MainViewSelectorViewModel(
 ) : ViewModel() {
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Loading)
+    val connectivityStatus = connectivityObserver.connectivityStatusFlow
 
     private val cacheCallbacks = CacheCallbacks(this)
     private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
@@ -225,6 +228,7 @@ class MainViewSelectorViewModelFactory(
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
     private val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: ConnectivityObserver,
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
@@ -242,6 +246,7 @@ class MainViewSelectorViewModelFactory(
             channelInvitationService,
             sseService,
             userInfoRepository,
+            connectivityObserver,
             onLogout,
             channelCacheManager,
             messageCacheManager,

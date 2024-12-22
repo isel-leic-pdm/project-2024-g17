@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
                 (application as ChimpApplication).channelInvitationService,
                 (application as ChimpApplication).sseService,
                 (application as ChimpApplication).userInfoRepository,
+                (application as ChimpApplication).connectivityObserver,
                 { onLogout() },
                 (application as ChimpApplication).channelCacheManager,
                 (application as ChimpApplication).messageCacheManager,

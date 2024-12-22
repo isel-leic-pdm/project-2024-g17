@@ -59,7 +59,7 @@ fun AuthenticationViewSelector(
         }
 
 
-        Scaffold() { innerPadding ->
+        Scaffold { innerPadding ->
             Column(
                 modifier = Modifier
                     .fillMaxSize()

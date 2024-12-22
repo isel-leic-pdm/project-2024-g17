@@ -5,8 +5,11 @@ import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -91,6 +94,7 @@ fun MainViewSelector(
         var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
         }
+
         var selectedNavIcon by rememberSaveable(saver = MainViewSelectorState.SelectedNavIconSaver) {
             mutableStateOf(SelectedNavIcon.Messages)
         }
@@ -123,6 +127,26 @@ fun MainViewSelector(
                 onConfirm = confirmationDialogConfirmFunction,
                 onCancel = {
                     handleConfirmationDialogVisibilitySwitch()
+                }
+            )
+        }
+
+        var showNoWifiDialog by rememberSaveable { mutableStateOf(false) }
+        val connectivityStatus by viewModel.connectivityStatus.collectAsState()
+
+        LaunchedEffect(connectivityStatus) {
+            showNoWifiDialog = !connectivityStatus
+        }
+
+        if (showNoWifiDialog) {
+            AlertDialog(
+                onDismissRequest = { showNoWifiDialog = false },
+                title = { Text(text = "No Wi-Fi Connection") },
+                text = { Text(text = "Please check your internet connection and try again.") },
+                confirmButton = {
+                    Button(onClick = { showNoWifiDialog = false }) {
+                        Text("OK")
+                    }
                 }
             )
         }
@@ -316,12 +340,16 @@ fun MainViewSelector(
                                 handleSharedAlertDialogVisibilitySwitch()
                             },
                             onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl ->
-                                viewModel.createChannel(
-                                    ownerId,
-                                    name,
-                                    isPrivate,
-                                    channelIconUrl
-                                )
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.createChannel(
+                                        ownerId,
+                                        name,
+                                        isPrivate,
+                                        channelIconUrl
+                                    )
+                                }
                             },
                             authenticatedUser = authenticatedUser
                         )
@@ -350,7 +378,11 @@ fun MainViewSelector(
                                 viewModel.loadChannelInfo(currentChannel.channelId)
                             },
                             onSendClick = { messageText ->
-                                viewModel.sendMessage(currentChannel.channelId, messageText)
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.sendMessage(currentChannel.channelId, messageText)
+                                }
                             },
                             hasWritePermissions = state.hasWritePermissions,
                             authenticatedUser = state.authenticatedUser
@@ -391,14 +423,24 @@ fun MainViewSelector(
                                 confirmationDialogConfirmText = "Yes"
                                 handleConfirmationDialogVisibilitySwitch()
                             },
-                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
+                            onUserClick = { userId ->
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.getUserProfile(userId)
+                                }
+                            },
                             onLeaveChannelClick = {
                                 confirmationDialogConfirmFunction = {
-                                    viewModel.leaveChannel(
-                                        state.authenticatedUser?.user?.id,
-                                        channel
-                                    )
-                                    handleConfirmationDialogVisibilitySwitch()
+                                    if (!connectivityStatus) {
+                                        showNoWifiDialog = true
+                                    } else {
+                                        viewModel.leaveChannel(
+                                            state.authenticatedUser?.user?.id,
+                                            channel
+                                        )
+                                        handleConfirmationDialogVisibilitySwitch()
+                                    }
                                 }
                                 confirmationDialogText =
                                     "Are you sure you want to leave the channel?\nThe oldest user will be assigned as the new owner.\nThis is not reversible."
@@ -440,7 +482,11 @@ fun MainViewSelector(
                                 )
                             },
                             onInvitationsClick = {
-                                viewModel.loadChannelInvitations(state.authenticatedUser)
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.loadChannelInvitations(state.authenticatedUser)
+                                }
                             },
                             onLogoutClick = { viewModel.logout() },
                             onChangePasswordClick = {
@@ -452,7 +498,11 @@ fun MainViewSelector(
                             },
                             onRegistrationInvitationClick = {
                                 if (state.authenticatedUser?.user != null) {
-                                    viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
+                                    if (!connectivityStatus) {
+                                        showNoWifiDialog = true
+                                    } else {
+                                        viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
+                                    }
                                 }
                             },
                         )
@@ -501,21 +551,29 @@ fun MainViewSelector(
                                 )
                             },
                             onInviteUserClick = { userId, channelId, permission, userDisplayName ->
-                                viewModel.inviteUserToChannel(
-                                    userId,
-                                    channelId,
-                                    permission,
-                                    userDisplayName
-                                )
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.inviteUserToChannel(
+                                        userId,
+                                        channelId,
+                                        permission,
+                                        userDisplayName
+                                    )
+                                }
                             },
                             users = state.users,
                             onSearch = { username ->
-                                viewModel.loadAvailableUsersToInvite(
-                                    channel = currentChannel,
-                                    limit = null, // Will default to 10 on the API
-                                    page = state.page,
-                                    username = username
-                                )
+                                if (!connectivityStatus) {
+                                  showNoWifiDialog = true
+                                } else {
+                                    viewModel.loadAvailableUsersToInvite(
+                                        channel = currentChannel,
+                                        limit = null, // Will default to 10 on the API
+                                        page = state.page,
+                                        username = username
+                                    )
+                                }
                             }
                         )
                     }
@@ -548,16 +606,24 @@ fun MainViewSelector(
                                 invitations = state.invitations,
                                 onBackClick = { viewModel.getUserProfile(state.authenticatedUser.user.id) },
                                 onAcceptClick = { invitationId ->
-                                    viewModel.acceptChannelInvitation(
-                                        invitationId,
-                                        state.authenticatedUser
-                                    )
+                                    if (!connectivityStatus) {
+                                        showNoWifiDialog = true
+                                    } else {
+                                        viewModel.acceptChannelInvitation(
+                                            invitationId,
+                                            state.authenticatedUser
+                                        )
+                                    }
                                 },
                                 onDeclineClick = { invitationId ->
-                                    viewModel.rejectChannelInvitation(
-                                        invitationId,
-                                        state.authenticatedUser
-                                    )
+                                    if (!connectivityStatus) {
+                                        showNoWifiDialog = true
+                                    } else {
+                                        viewModel.rejectChannelInvitation(
+                                            invitationId,
+                                            state.authenticatedUser
+                                        )
+                                    }
                                 }
                             )
                         }
