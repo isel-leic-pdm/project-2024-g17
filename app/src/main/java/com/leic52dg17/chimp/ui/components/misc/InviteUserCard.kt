@@ -38,7 +38,7 @@ fun InviteUserCard(
     user: User,
     channel: Channel,
     modifier: Modifier = Modifier,
-    onInviteUserClick: (Int, Int, PermissionLevel) -> Unit,
+    onInviteUserClick: (Int, Int, PermissionLevel, String) -> Unit,
 ) {
     var showDropdown by remember { mutableStateOf(false) }
     Row(
@@ -81,7 +81,8 @@ fun InviteUserCard(
                         onInviteUserClick(
                             user.id,
                             channel.channelId,
-                            PermissionLevel.RR
+                            PermissionLevel.RR,
+                            user.displayName
                         )
                         showDropdown = false
                     },
@@ -92,7 +93,8 @@ fun InviteUserCard(
                         onInviteUserClick(
                             user.id,
                             channel.channelId,
-                            PermissionLevel.RW
+                            PermissionLevel.RW,
+                            user.displayName
                         )
                         showDropdown = false
                     },

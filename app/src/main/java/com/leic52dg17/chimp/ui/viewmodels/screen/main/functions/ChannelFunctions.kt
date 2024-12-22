@@ -26,8 +26,6 @@ class ChannelFunctions(
 
             val channel = viewModel.channelService.getChannelById(channelId)
 
-            viewModel.transition(MainViewSelectorState.GettingChannelMessages(channel))
-
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
 
             try {
@@ -36,8 +34,12 @@ class ChannelFunctions(
                     return@launch
                 }
 
-                val channelMessages = messageCacheManager.getCachedMessage().filter { it.channelId == channel.channelId }
-                val userPermissions = viewModel.channelService.getUserPermissionsByChannelId(authenticatedUser.user.id, channel.channelId)
+                val channelMessages = messageCacheManager.getCachedMessage()
+                    .filter { it.channelId == channel.channelId }
+                val userPermissions = viewModel.channelService.getUserPermissionsByChannelId(
+                    authenticatedUser.user.id,
+                    channel.channelId
+                )
                 viewModel.transition(
                     MainViewSelectorState.ChannelMessages(
                         channel = channel.copy(messages = channelMessages),
@@ -69,7 +71,7 @@ class ChannelFunctions(
             val currentUser = viewModel.userInfoRepository.authenticatedUser.first()
 
             if (viewModel.stateFlow.value !is MainViewSelectorState.GettingChannelInfo) {
-                viewModel.transition(MainViewSelectorState.Loading)
+                viewModel.transition(MainViewSelectorState.GettingChannelInfo)
                 try {
                     if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
@@ -85,7 +87,7 @@ class ChannelFunctions(
                         )
                     }
                 } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
+                    Log.e(TAG, "${e.message} : Current State -> ${viewModel.stateFlow.value}")
                     if (e.type === ServiceErrorTypes.Unauthorized) {
                         viewModel.transition(MainViewSelectorState.Unauthenticated)
                     } else {
@@ -144,7 +146,12 @@ class ChannelFunctions(
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                     return@launch
                 }
-                viewModel.transition(MainViewSelectorState.CreatingChannel(authenticatedUser = authenticatedUser))
+                viewModel.transition(
+                    MainViewSelectorState.CreatingChannel(
+                        authenticatedUser = authenticatedUser,
+                        channelName = name
+                    )
+                )
 
                 if (!viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
@@ -191,12 +198,14 @@ class ChannelFunctions(
 
             val channel = viewModel.channelService.getChannelById(channelId)
             try {
+                viewModel.transition(
+                    MainViewSelectorState.RemovingUser
+                )
                 viewModel.channelService.removeUserFromChannel(userId, channelId)
                 viewModel.transition(
-                    MainViewSelectorState.ChannelInfo(
-                        channel = channel,
-                        authenticatedUser = currentUser
-                    )
+                    MainViewSelectorState.RemovedUser {
+                        viewModel.loadChannelInfo(channelId)
+                    }
                 )
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
@@ -218,7 +227,12 @@ class ChannelFunctions(
         }
     }
 
-    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel) {
+    fun inviteUserToChannel(
+        userId: Int,
+        channelId: Int,
+        permission: PermissionLevel,
+        userDisplayName: String
+    ) {
         Log.i(TAG, "Inviting user $userId to channel $channelId")
         viewModel.viewModelScope.launch {
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
@@ -227,6 +241,11 @@ class ChannelFunctions(
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
                 return@launch
             }
+            viewModel.transition(
+                MainViewSelectorState.InvitingUser(
+                    userDisplayName = userDisplayName
+                )
+            )
             val channel = viewModel.channelService.getChannelById(channelId)
 
             try {
@@ -237,13 +256,11 @@ class ChannelFunctions(
                     permission
                 )
                 viewModel.transition(
-                    MainViewSelectorState.InvitingUsers(
-                        channel = channel,
-                        showAlertDialog = true,
-                        dialogText = "User invited!",
-                        authenticatedUser = authenticatedUser,
-                        page = (viewModel.stateFlow.value as MainViewSelectorState.InvitingUsers).page,
-                        users = (viewModel.stateFlow.value as MainViewSelectorState.InvitingUsers).users
+                    MainViewSelectorState.InvitedUser(
+                        userDisplayName = userDisplayName,
+                        onBackClick = {
+                            viewModel.loadChannelInfo(channelId)
+                        },
                     )
                 )
             } catch (e: ServiceException) {

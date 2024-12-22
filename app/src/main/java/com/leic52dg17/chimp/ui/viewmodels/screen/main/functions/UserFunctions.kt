@@ -13,10 +13,13 @@ import kotlinx.coroutines.launch
 
 class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
     fun getUserProfile(id: Int) {
-        Log.i(TAG, "Getting user profile for user with ID: $id")
-        viewModel.transition(MainViewSelectorState.Loading)
         viewModel.viewModelScope.launch {
             val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+            Log.i(TAG, "Getting user profile for user with ID: $id")
+            viewModel.transition(MainViewSelectorState.GettingUserInfo(
+                onBackClick = { viewModel.loadSubscribedChannels() },
+                isCurrentUser = id == authenticatedUser?.user?.id
+            ))
             if (authenticatedUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
                 return@launch
