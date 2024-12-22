@@ -12,6 +12,7 @@
     <string name="search_icon_cd">Search Icon</string>
     <string name="profile_icon_cd">Profile Icon</string>
     <string name="messages_icon_cd">Messages Icon</string>
+    <string name="public_channels_icon_cd">Public Channels Icon</string>
     <string name="pin_icon_cd">Pin Icon</string>
     <string name="sign_up_username_icon_cd_en">Username</string>
     <string name="sign_up_password_icon_cd_en">Password</string>
@@ -76,6 +77,9 @@
     <!--Incoming invitations View-->
     <string name="no_invitations_en">You don\'t have any pending invitations</string>
 
+    <!--Public Channels View-->
+    <string name="public_channels_title_en">Public Channels</string>
+    <string name="join_confirmation_text_en">Are you sure you want to join this channel?</string>
 
     <!--Common-->
     <string name="back_button_text_cd">Back</string>
