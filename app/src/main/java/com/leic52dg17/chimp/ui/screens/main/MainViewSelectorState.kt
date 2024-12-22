@@ -38,6 +38,10 @@ sealed interface MainViewSelectorState {
     data class UserInvitations(val invitations: List<ChannelInvitationDetails>, val authenticatedUser: AuthenticatedUser?): MainViewSelectorState
     data object AcceptingInvitation: MainViewSelectorState
     data class AcceptedInvitation(val onBackClick: () -> Unit): MainViewSelectorState
+    data class PublicChannels(val channels: List<Channel>, val page: Int, val currentSearchValue: String): MainViewSelectorState
+    data class GettingPublicChannels(val textFieldValue: String, val onBackClick: () -> Unit): MainViewSelectorState
+    data class JoiningPublicChannel(val channel: Channel): MainViewSelectorState
+    data class JoinedPublicChannel(val channel: Channel): MainViewSelectorState
   
     companion object {
         val BooleanSaver: Saver<MutableState<Boolean>, *> = Saver(

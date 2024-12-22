@@ -157,6 +157,8 @@ class MainViewSelectorViewModel(
             cached
         }
     }
+    fun loadPublicChannels(channelName: String, page: Int) = channelFunctions.loadPublicChannels(channelName, page)
+    fun joinPublicChannel(channel: Channel) = channelFunctions.joinPublicChannel(channel)
 
     fun removeUserFromChannel(userId: Int, channelId: Int) =
         channelFunctions.removeUserFromChannel(userId, channelId)
@@ -179,7 +181,6 @@ class MainViewSelectorViewModel(
      */
     fun logout() {
         transition(MainViewSelectorState.Loading)
-
         viewModelScope.launch {
             authenticationService.logout()
             onLogout()

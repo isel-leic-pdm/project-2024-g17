@@ -25,8 +25,9 @@ class ChannelCacheManager(
     override fun forceUpdate(channel: Channel) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val authenticatedUser: AuthenticatedUser? = userInfoRepository.authenticatedUser.first()
-                if(authenticatedUser?.user == null) {
+                val authenticatedUser: AuthenticatedUser? =
+                    userInfoRepository.authenticatedUser.first()
+                if (authenticatedUser?.user == null) {
                     Log.e(TAG, "Could not find authenticated user ID.")
                     return@launch
                 }
@@ -42,6 +43,28 @@ class ChannelCacheManager(
                     _currentChannels.emit(newChannels)
                     runCallback()
                 }
+            } catch (e: ServiceException) {
+                runErrorCallback(e.message)
+            } catch (e: Exception) {
+                runErrorCallback(ErrorMessages.UNKNOWN)
+            }
+        }
+    }
+
+    override fun removeFromCache(channel: Channel) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val authenticatedUser: AuthenticatedUser? =
+                    userInfoRepository.authenticatedUser.first()
+                if (authenticatedUser?.user == null) {
+                    Log.e(TAG, "Could not find authenticated user ID.")
+                    return@launch
+                }
+                channelRepository.removeChannel(channel)
+                val storedChannels = channelRepository.getStoredChannels()
+                val newChannels = storedChannels.filter { it.channelId != channel.channelId }
+                _currentChannels.emit(newChannels)
+                runCallback()
             } catch (e: ServiceException) {
                 runErrorCallback(e.message)
             } catch (e: Exception) {

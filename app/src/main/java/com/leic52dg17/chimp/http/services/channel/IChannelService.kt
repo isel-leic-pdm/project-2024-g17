@@ -25,4 +25,12 @@ interface IChannelService {
     suspend fun removeUserFromChannel(userId: Int, channelId: Int): Int
 
     suspend fun getUserPermissionsByChannelId(userId: Int, channelId: Int): PermissionLevel
+
+    suspend fun getPublicChannels(
+        channelName: String,
+        page: Int? = 0,
+        limit: Int? = 10
+    ): List<Channel>
+
+    suspend fun addUserToChannel(userId: Int, channelId: Int)
 }

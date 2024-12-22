@@ -17,18 +17,20 @@ import com.leic52dg17.chimp.R
 @Composable
 fun BackButton(
     onBackClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true
 ) {
     Box(
         modifier = modifier
     ) {
         IconButton(
+            enabled = enabled,
             onClick = { onBackClick() },
             modifier = modifier.align(Alignment.BottomStart)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = if(enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
                 contentDescription = stringResource(R.string.back_button_text_cd)
             )
         }
