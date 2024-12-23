@@ -64,14 +64,14 @@ class ChannelInvitationFunctions(
     }
 
     fun acceptChannelInvitation(invitationId: Int, authenticatedUser: AuthenticatedUser) {
+        viewModel.transition(
+            MainViewSelectorState.AcceptingInvitation
+        )
         try {
             viewModel.viewModelScope.launch {
                 if (authenticatedUser.user == null || !viewModel.userInfoRepository.checkTokenValidity()) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
-                    viewModel.transition(
-                        MainViewSelectorState.AcceptingInvitation
-                    )
                     viewModel.channelInvitationService.acceptChannelInvitation(
                         invitationId,
                     )

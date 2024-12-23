@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.http.services.channel.implementations
 
+import android.util.Log
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -10,6 +11,7 @@ import com.leic52dg17.chimp.http.services.channel_invitations.responses.CreateCh
 import com.leic52dg17.chimp.http.services.channel.responses.CreateChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetChannelsResponse
+import com.leic52dg17.chimp.http.services.channel.responses.GetPublicChannelsResponse
 import com.leic52dg17.chimp.http.services.channel.responses.GetUserPermissionsResponse
 import com.leic52dg17.chimp.http.services.common.ApiEndpoints
 import com.leic52dg17.chimp.http.services.common.handleServiceResponse
@@ -20,6 +22,7 @@ import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
+import io.ktor.http.URLBuilder
 import kotlinx.serialization.json.Json
 import java.net.URL
 
@@ -137,10 +140,15 @@ class ChannelService(private val client: HttpClient) : IChannelService {
         return userId
     }
 
-    override suspend fun getUserPermissionsByChannelId(userId: Int, channelId: Int): PermissionLevel {
-        val uri = URL(ApiEndpoints.Channel.GET_USER_PERMISSIONS_IN_CHANNEL
+    override suspend fun getUserPermissionsByChannelId(
+        userId: Int,
+        channelId: Int
+    ): PermissionLevel {
+        val uri = URL(
+            ApiEndpoints.Channel.GET_USER_PERMISSIONS_IN_CHANNEL
                 .replace("{channelId}", channelId.toString())
-                .replace("{userId}", userId.toString()))
+                .replace("{userId}", userId.toString())
+        )
 
         val response = client.get(uri) {
             header("Content-Type", "application/json")
@@ -148,9 +156,62 @@ class ChannelService(private val client: HttpClient) : IChannelService {
 
         handleServiceResponse(response, json, TAG)
 
-        val getUserPermissionsResponse = json.decodeFromString<GetUserPermissionsResponse>(response.body())
+        val getUserPermissionsResponse =
+            json.decodeFromString<GetUserPermissionsResponse>(response.body())
 
         return getUserPermissionsResponse.permissionLevel
+    }
+
+    override suspend fun getPublicChannels(
+        channelName: String,
+        page: Int?,
+        limit: Int?
+    ): List<Channel> {
+        val uri = URLBuilder(
+            ApiEndpoints.Channel.GET_PUBLIC_BY_NAME
+                .replace("{name}", channelName)
+        ).apply {
+            page?.let { parameters.append("page", it.toString()) }
+            limit?.let { parameters.append("limit", it.toString()) }
+        }.build()
+
+        val response = client.get(uri) {
+            header("Content-Type", "application/json")
+        }
+
+        handleServiceResponse(response, json, TAG)
+
+        val responseBody = json.decodeFromString<GetPublicChannelsResponse>(response.body())
+
+        Log.i("DEBUG_CHANNELS", "Channels -> ${responseBody.channels}")
+        if (responseBody.channels.isEmpty()) return emptyList()
+        val channelsWithEmptyUsersAndMessages = responseBody.channels.map { channel ->
+            Channel(
+                channelId = channel.id,
+                displayName = channel.name,
+                ownerId = channel.ownerId,
+                isPrivate = channel.isPrivate,
+                users = emptyList(),
+                messages = emptyList(),
+                channelIconUrl = "https://picsum.photos/300/300"
+            )
+        }
+
+        return channelsWithEmptyUsersAndMessages
+    }
+
+    override suspend fun addUserToChannel(userId: Int, channelId: Int) {
+        val uri = URL(ApiEndpoints.Channel.ADD_USER_TO_CHANNEL)
+
+        val request = UpdateUserChannelRequest(userId, channelId)
+
+        val response = client.put(uri) {
+            header("Accept", "application/json")
+            header("Content-Type", "application/json")
+            setBody(request)
+        }
+
+        handleServiceResponse(response, json, TAG)
     }
 
     companion object {

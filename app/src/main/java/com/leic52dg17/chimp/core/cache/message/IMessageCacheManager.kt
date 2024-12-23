@@ -11,4 +11,5 @@ interface IMessageCacheManager {
     suspend fun runCallback()
     suspend fun runErrorCallback(errorMessage: String)
     fun getCachedMessage(): List<Message>
+    suspend fun clearCache()
 }

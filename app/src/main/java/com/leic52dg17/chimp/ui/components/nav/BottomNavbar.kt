@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +25,8 @@ fun BottomNavbar(
     rowModifier: Modifier? = Modifier,
     onClickProfile : () -> Unit = {},
     onClickMessages : () -> Unit = {},
-    onClickAbout : () -> Unit = {}
+    onClickAbout : () -> Unit = {},
+    onClickPublic: () -> Unit = {}
 ) {
     Row(
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -50,6 +52,18 @@ fun BottomNavbar(
             onClick = { onClickMessages() },
             imageVector = Icons.Default.Email,
             contentDescription = stringResource(id = R.string.messages_icon_cd)
+        )
+        NavigationIconButton(
+            onClick = {
+                onClickPublic()
+            },
+            buttonModifier = Modifier
+                .weight(1f),
+            iconModifier = Modifier
+                .size(40.dp),
+            iconTint = if(selectedIcon == SelectedNavIcon.PublicChannels) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+            imageVector = Icons.Outlined.Public,
+            contentDescription = stringResource(id = R.string.public_channels_icon_cd)
         )
         NavigationIconButton(
             buttonModifier = Modifier

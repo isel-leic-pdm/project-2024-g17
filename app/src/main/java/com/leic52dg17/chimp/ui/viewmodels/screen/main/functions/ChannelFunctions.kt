@@ -65,34 +65,32 @@ class ChannelFunctions(
     }
 
     fun loadChannelInfo(channelId: Int) {
+        viewModel.transition(MainViewSelectorState.GettingChannelInfo)
         viewModel.viewModelScope.launch {
             Log.i(TAG, "Loading channel info for channel with id $channelId")
             val channel = viewModel.channelService.getChannelById(channelId)
             val currentUser = viewModel.userInfoRepository.authenticatedUser.first()
 
-            if (viewModel.stateFlow.value !is MainViewSelectorState.GettingChannelInfo) {
-                viewModel.transition(MainViewSelectorState.GettingChannelInfo)
-                try {
-                    if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
-                        viewModel.transition(MainViewSelectorState.Unauthenticated)
-                        return@launch
-                    } else {
-                        val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
-                        val updatedChannel = channel.copy(users = channelUsers)
-                        viewModel.transition(
-                            MainViewSelectorState.ChannelInfo(
-                                channel = updatedChannel,
-                                authenticatedUser = currentUser
-                            )
+            try {
+                if (currentUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+                    viewModel.transition(MainViewSelectorState.Unauthenticated)
+                    return@launch
+                } else {
+                    val channelUsers = viewModel.userService.getChannelUsers(channel.channelId)
+                    val updatedChannel = channel.copy(users = channelUsers)
+                    viewModel.transition(
+                        MainViewSelectorState.ChannelInfo(
+                            channel = updatedChannel,
+                            authenticatedUser = currentUser
                         )
-                    }
-                } catch (e: ServiceException) {
-                    Log.e(TAG, "${e.message} : Current State -> ${viewModel.stateFlow.value}")
-                    if (e.type === ServiceErrorTypes.Unauthorized) {
-                        viewModel.transition(MainViewSelectorState.Unauthenticated)
-                    } else {
-                        loadChannelMessages(channel.channelId)
-                    }
+                    )
+                }
+            } catch (e: ServiceException) {
+                Log.e(TAG, "${e.message} : Current State -> ${viewModel.stateFlow.value}")
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    viewModel.transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    loadChannelMessages(channel.channelId)
                 }
             }
         }
@@ -122,6 +120,10 @@ class ChannelFunctions(
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
+                } else if (e.type === ServiceErrorTypes.NotFoundForbidden) {
+                    viewModel.transition(
+                        MainViewSelectorState.Unauthenticated
+                    )
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
@@ -305,13 +307,8 @@ class ChannelFunctions(
 
             try {
                 viewModel.channelService.removeUserFromChannel(userId, channel.channelId)
-                val channels = viewModel.channelService.getUserSubscribedChannels(userId)
-                viewModel.transition(
-                    MainViewSelectorState.SubscribedChannels(
-                        channels = channels,
-                        authenticatedUser = authenticatedUser
-                    )
-                )
+                channelCacheManager.removeFromCache(channel)
+                viewModel.loadSubscribedChannels()
                 return@launch
             } catch (e: ServiceException) {
                 Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
@@ -320,6 +317,73 @@ class ChannelFunctions(
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(e.message) {
+                            viewModel.loadSubscribedChannels()
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    fun loadPublicChannels(channelName: String, page: Int) {
+        viewModel.transition(MainViewSelectorState.GettingPublicChannels(
+            channelName
+        ) { viewModel.loadSubscribedChannels() })
+        viewModel.viewModelScope.launch {
+            try {
+                val channels = viewModel.channelService.getPublicChannels(channelName, page)
+                    .filter { !it.isPrivate }
+                val cachedChannels = channelCacheManager.getCachedChannels()
+                val filtered =
+                    channels.filterNot { channel -> cachedChannels.any { cached -> cached.channelId == channel.channelId } }
+                viewModel.transition(
+                    MainViewSelectorState.PublicChannels(
+                        filtered,
+                        page,
+                        channelName
+                    )
+                )
+            } catch (e: ServiceException) {
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    viewModel.transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    viewModel.transition(
+                        MainViewSelectorState.Error(message = e.message) {
+                            viewModel.loadSubscribedChannels()
+                        }
+                    )
+                }
+            }
+        }
+    }
+
+    fun joinPublicChannel(channel: Channel) {
+        viewModel.viewModelScope.launch {
+            try {
+                val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+                if (authenticatedUser?.user == null) {
+                    viewModel.transition(
+                        MainViewSelectorState.Unauthenticated
+                    )
+                    return@launch
+                }
+                viewModel.transition(MainViewSelectorState.JoiningPublicChannel(channel))
+                viewModel.channelService.addUserToChannel(
+                    authenticatedUser.user.id,
+                    channel.channelId
+                )
+                val messages = viewModel.messageService.getChannelMessages(channel.channelId)
+                messageCacheManager.forceUpdate(messages)
+                channelCacheManager.forceUpdate(channel)
+                viewModel.transition(MainViewSelectorState.JoinedPublicChannel(channel))
+            } catch (e: ServiceException) {
+                Log.e(TAG, "${e.message} : Current State -> $viewModel.state")
+                if (e.type === ServiceErrorTypes.Unauthorized) {
+                    viewModel.transition(MainViewSelectorState.Unauthenticated)
+                } else {
+                    viewModel.transition(
+                        MainViewSelectorState.Error(message = e.message) {
                             viewModel.loadSubscribedChannels()
                         }
                     )

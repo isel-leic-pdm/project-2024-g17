@@ -1,58 +1,144 @@
-/*
-package com.leic52dg17.chimp.ui.viewmodel
-
-import android.content.Context
-import androidx.test.core.app.ApplicationProvider
-import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.http.services.channel.implementations.FakeChannelService
-import com.leic52dg17.chimp.http.services.message.implementations.FakeMessageService
-import com.leic52dg17.chimp.http.services.sse.ISSEService
-import com.leic52dg17.chimp.http.services.user.implementations.FakeUserService
+import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
-import kotlinx.coroutines.runBlocking
-import org.junit.Before
+import com.leic52dg17.chimp.utils.ReplaceMainDispatcherRule
+import com.leic52dg17.chimp.utils.fakeAuthenticationService
+import com.leic52dg17.chimp.utils.fakeChannelCacheManager
+import com.leic52dg17.chimp.utils.fakeChannelInvitationService
+import com.leic52dg17.chimp.utils.fakeChannelRepository
+import com.leic52dg17.chimp.utils.fakeChannelService
+import com.leic52dg17.chimp.utils.fakeConnectivityObserver
+import com.leic52dg17.chimp.utils.fakeMessageCacheManager
+import com.leic52dg17.chimp.utils.fakeMessageRepository
+import com.leic52dg17.chimp.utils.fakeMessageService
+import com.leic52dg17.chimp.utils.fakeRegistrationInvitationService
+import com.leic52dg17.chimp.utils.fakeSseService
+import com.leic52dg17.chimp.utils.fakeUserInfoRepository
+import com.leic52dg17.chimp.utils.fakeUserService
+import com.leic52dg17.chimp.utils.testAuthenticatedUser
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.test.runTest
+import org.junit.Rule
 import org.junit.Test
 
 class MainViewSelectorViewModelTests {
-    private lateinit var vm: MainViewSelectorViewModel
-    private val authenticatedUser = AuthenticatedUser()
-    private val channelService = FakeChannelService()
-    private val messageService = FakeMessageService()
-    private val userService = FakeUserService()
-    private val isseService : ISSEService = TODO() //SSEService(_ , _)
-    private val context: Context = ApplicationProvider.getApplicationContext()
+    @get:Rule
+    val replaceMainDispatcherRule = ReplaceMainDispatcherRule()
 
-
-    @Before
-    fun setup() {
-        vm = MainViewSelectorViewModel(
-            channelService,
-            messageService,
-            userService,
-            isseService,
-            context
+    @Test
+    fun initial_state_is_initialized() {
+        // Given
+        val vm = MainViewSelectorViewModel(
+            authenticationService = fakeAuthenticationService,
+            channelService = fakeChannelService,
+            userService = fakeUserService,
+            messageService = fakeMessageService,
+            channelInvitationService = fakeChannelInvitationService,
+            channelCacheManager = fakeChannelCacheManager,
+            channelRepository = fakeChannelRepository,
+            messageRepository = fakeMessageRepository,
+            messageCacheManager = fakeMessageCacheManager,
+            onLogout = {},
+            openEmailApp = {},
+            sseService = fakeSseService,
+            registrationInvitationService = fakeRegistrationInvitationService,
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
         )
+        assert(vm.stateFlow.value is MainViewSelectorState.Initialized)
     }
 
     @Test
-    fun default_state_is_subscribed_channels() {
-        assert(vm.state is MainViewSelectorState.SubscribedChannels)
-    }
+    fun load_channel_info_transitions_to_loading_state() =
+        runTest(replaceMainDispatcherRule.testDispatcher) {
+            // Given
+            val vm = MainViewSelectorViewModel(
+                authenticationService = fakeAuthenticationService,
+                channelService = fakeChannelService,
+                userService = fakeUserService,
+                messageService = fakeMessageService,
+                channelInvitationService = fakeChannelInvitationService,
+                channelCacheManager = fakeChannelCacheManager,
+                channelRepository = fakeChannelRepository,
+                messageRepository = fakeMessageRepository,
+                messageCacheManager = fakeMessageCacheManager,
+                onLogout = {},
+                openEmailApp = {},
+                sseService = fakeSseService,
+                registrationInvitationService = fakeRegistrationInvitationService,
+                userInfoRepository = fakeUserInfoRepository,
+                connectivityObserver = fakeConnectivityObserver
+            )
 
-    @Test
-    fun can_transition_state() {
-        assert(vm.state is MainViewSelectorState.SubscribedChannels)
-        vm.transition(MainViewSelectorState.ChannelMessages(authenticatedUser = authenticatedUser))
-        assert(vm.state is MainViewSelectorState.ChannelMessages)
-    }
+            // When
+            vm.viewModelScope.launch {
+                vm.loadChannelInfo(1)
+            }.join()
 
-    @Test
-    fun load_channel_messages_transitions_to_loading_state() {
-        assert(vm.state is MainViewSelectorState.SubscribedChannels)
-        runBlocking {
-            vm.loadSubscribedChannels()
-            assert(vm.state is MainViewSelectorState.Loading)
+            // Then
+            println("Current state: ${vm.stateFlow.value}")
+            assert(vm.stateFlow.value is MainViewSelectorState.GettingChannelInfo)
         }
+
+    @Test
+    fun load_public_channels_transitions_to_loading_state() = runTest(replaceMainDispatcherRule.testDispatcher) {
+        // Given
+        val vm = MainViewSelectorViewModel(
+            authenticationService = fakeAuthenticationService,
+            channelService = fakeChannelService,
+            userService = fakeUserService,
+            messageService = fakeMessageService,
+            channelInvitationService = fakeChannelInvitationService,
+            channelCacheManager = fakeChannelCacheManager,
+            channelRepository = fakeChannelRepository,
+            messageRepository = fakeMessageRepository,
+            messageCacheManager = fakeMessageCacheManager,
+            onLogout = {},
+            openEmailApp = {},
+            sseService = fakeSseService,
+            registrationInvitationService = fakeRegistrationInvitationService,
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
+        )
+
+        // When
+        vm.viewModelScope.launch {
+            vm.loadPublicChannels("", 0)
+        }.join()
+
+        // Then
+        println("Current state: ${vm.stateFlow.value}")
+        assert(vm.stateFlow.value is MainViewSelectorState.GettingPublicChannels)
     }
-}*/
+
+    @Test
+    fun accept_channel_invitation_transitions_to_accepting() = runTest(replaceMainDispatcherRule.testDispatcher) {
+        // Given
+        val vm = MainViewSelectorViewModel(
+            authenticationService = fakeAuthenticationService,
+            channelService = fakeChannelService,
+            userService = fakeUserService,
+            messageService = fakeMessageService,
+            channelInvitationService = fakeChannelInvitationService,
+            channelCacheManager = fakeChannelCacheManager,
+            channelRepository = fakeChannelRepository,
+            messageRepository = fakeMessageRepository,
+            messageCacheManager = fakeMessageCacheManager,
+            onLogout = {},
+            openEmailApp = {},
+            sseService = fakeSseService,
+            registrationInvitationService = fakeRegistrationInvitationService,
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
+        )
+
+        // When
+        vm.viewModelScope.launch {
+            vm.acceptChannelInvitation(1, testAuthenticatedUser)
+        }.join()
+
+        // Then
+        println("Current state: ${vm.stateFlow.value}")
+        assert(vm.stateFlow.value is MainViewSelectorState.AcceptingInvitation)
+    }
+}

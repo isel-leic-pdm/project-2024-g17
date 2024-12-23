@@ -47,6 +47,10 @@ import com.leic52dg17.chimp.ui.views.channel_invitations.InvitingUserView
 import com.leic52dg17.chimp.ui.views.create_channel.CreateChannelView
 import com.leic52dg17.chimp.ui.views.create_channel.CreatingChannelView
 import com.leic52dg17.chimp.ui.views.error.ApplicationErrorView
+import com.leic52dg17.chimp.ui.views.public_channels.JoinedPublicChannelView
+import com.leic52dg17.chimp.ui.views.public_channels.JoiningPublicChannelView
+import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsLoadingView
+import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsView
 import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
@@ -175,6 +179,12 @@ fun MainViewSelector(
                                 )
                             }
                         },
+                        onClickPublic = {
+                            selectedNavIcon = SelectedNavIcon.PublicChannels
+                            viewModel.transition(
+                                MainViewSelectorState.PublicChannels(emptyList(), 0, "")
+                            )
+                        },
                         onClickAbout = {
                             selectedNavIcon = SelectedNavIcon.About
                             viewModel.transition(MainViewSelectorState.About)
@@ -228,12 +238,6 @@ fun MainViewSelector(
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
-                        Log.i(
-                            "DEBUG",
-                            "State channel messages -> ${
-                                viewModel.getSortedChannels().map { it.messages.lastOrNull() }
-                            }"
-                        )
                         selectedNavIcon = SelectedNavIcon.Messages
 
                         isNavBarShown = true
@@ -456,6 +460,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.RemovingUser -> {
                         RemovingUserView()
                     }
+
                     is MainViewSelectorState.RemovedUser -> {
                         RemovedUserView {
                             state.onBackClick()
@@ -589,7 +594,6 @@ fun MainViewSelector(
                     }
 
                     MainViewSelectorState.Unauthenticated -> {
-
                         ApplicationErrorView(
                             message = ErrorMessages.AUTHENTICATED_USER_NULL,
                             onDismiss = {
@@ -637,6 +641,48 @@ fun MainViewSelector(
                         AcceptedInvitationView {
                             state.onBackClick()
                         }
+                    }
+
+                    is MainViewSelectorState.PublicChannels -> {
+                        PublicChannelsView(
+                            currentSearchValue = state.currentSearchValue,
+                            onValueChange = { name ->
+                                if(name.isNotEmpty()) {
+                                    viewModel.loadPublicChannels(name, state.page)
+                                } else {
+                                    viewModel.transition(
+                                        MainViewSelectorState.PublicChannels(emptyList(), 0, name)
+                                    )
+                                }
+                            },
+                            onChannelJoin = { channel ->
+                                viewModel.joinPublicChannel(channel)
+                            },
+                            onBackClick = {
+                                viewModel.loadSubscribedChannels()
+                            },
+                            channels = state.channels,
+                            currentPage = state.page,
+                            onPageChange = { newPage, channelName ->
+                                viewModel.loadPublicChannels(channelName, newPage)
+                            }
+                        )
+                    }
+
+                    is MainViewSelectorState.GettingPublicChannels -> {
+                        PublicChannelsLoadingView(textFieldValue = state.textFieldValue) {
+                            state.onBackClick()
+                        }
+                    }
+                    is MainViewSelectorState.JoinedPublicChannel -> {
+                        JoinedPublicChannelView(
+                            state.channel.displayName
+                        ) {
+                            viewModel.loadSubscribedChannels()
+                        }
+                    }
+                    is MainViewSelectorState.JoiningPublicChannel -> {
+                        JoiningPublicChannelView(channelName = state.channel.displayName)
                     }
                 }
             }

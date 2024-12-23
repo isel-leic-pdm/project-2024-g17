@@ -32,6 +32,8 @@ suspend fun handleServiceResponse(response: HttpResponse, json: Json, tag: Strin
         } else if (response.status == HttpStatusCode.Unauthorized) {
             Log.e(tag, "Unauthorized: ${response.status}")
             throw ServiceException(ErrorMessages.UNAUTHORIZED, ServiceErrorTypes.Unauthorized)
+        } else if(response.status == HttpStatusCode.NotFound || response.status == HttpStatusCode.Forbidden) {
+            throw ServiceException(ErrorMessages.NOT_FOUND_FORBIDDEN, ServiceErrorTypes.NotFoundForbidden)
         } else {
             throw ServiceException(ErrorMessages.UNKNOWN, ServiceErrorTypes.Unknown)
         }

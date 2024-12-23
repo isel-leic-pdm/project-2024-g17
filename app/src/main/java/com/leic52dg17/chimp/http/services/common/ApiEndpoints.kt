@@ -19,8 +19,10 @@ object ApiEndpoints {
     object Channel {
         val CREATE = "$BASE_URL/channels"
         val GET_BY_ID = "$BASE_URL/channels/{id}"
+        val GET_PUBLIC_BY_NAME = "$BASE_URL/channels/by-name/{name}"
         val GET_USER_SUBSCRIBED = "$BASE_URL/channels/user/{id}"
         val REMOVE_USER_FROM_CHANNEL = "$BASE_URL/channels/remove-user"
+        val ADD_USER_TO_CHANNEL = "$BASE_URL/channels/add-user"
         val GET_USER_PERMISSIONS_IN_CHANNEL = "$BASE_URL/channels/{channelId}/users/{userId}/permissions"
     }
 
