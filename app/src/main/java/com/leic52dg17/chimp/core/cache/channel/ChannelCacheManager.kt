@@ -119,6 +119,10 @@ class ChannelCacheManager(
         return _currentChannels.value
     }
 
+    override suspend fun clearCache() {
+        _currentChannels.emit(emptyList())
+    }
+
     companion object {
         const val TAG = "CHANNEL_CACHE_MANAGER"
     }

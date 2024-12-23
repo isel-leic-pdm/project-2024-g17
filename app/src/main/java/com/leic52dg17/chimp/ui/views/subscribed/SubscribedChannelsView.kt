@@ -114,10 +114,6 @@ fun SubscribedChannelsView(
     onCreateChannelClick: () -> Unit = {},
     onChannelClick: (Int) -> Unit = {}
 ) {
-    Log.i(
-        "DEBUG_CHANNELS",
-        "SubscribedChannelsView recomposed with channels size: ${channels.size}, latest messages: ${channels.map { it.messages.lastOrNull()?.text }}"
-    )
     var searchValue by remember { mutableStateOf("") }
     val filteredChannels =
         remember(channels, searchValue) {  // Key on both channels and searchValue

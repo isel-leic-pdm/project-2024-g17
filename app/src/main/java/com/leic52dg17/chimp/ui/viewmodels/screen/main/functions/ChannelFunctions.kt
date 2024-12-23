@@ -123,6 +123,10 @@ class ChannelFunctions(
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     Log.i(TAG, "Transitioning to Unauthenticated")
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
+                } else if (e.type === ServiceErrorTypes.NotFoundForbidden) {
+                    viewModel.transition(
+                        MainViewSelectorState.Unauthenticated
+                    )
                 } else {
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
@@ -333,7 +337,8 @@ class ChannelFunctions(
                 val channels = viewModel.channelService.getPublicChannels(channelName, page)
                     .filter { !it.isPrivate }
                 val cachedChannels = channelCacheManager.getCachedChannels()
-                val filtered = channels.filterNot { channel -> cachedChannels.any { cached -> cached.channelId == channel.channelId } }
+                val filtered =
+                    channels.filterNot { channel -> cachedChannels.any { cached -> cached.channelId == channel.channelId } }
                 viewModel.transition(
                     MainViewSelectorState.PublicChannels(
                         filtered,

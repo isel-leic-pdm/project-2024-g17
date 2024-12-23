@@ -215,12 +215,6 @@ fun MainViewSelector(
                     is MainViewSelectorState.Loading -> {}
 
                     is MainViewSelectorState.SubscribedChannels -> {
-                        Log.i(
-                            "DEBUG",
-                            "State channel messages -> ${
-                                viewModel.getSortedChannels().map { it.messages.lastOrNull() }
-                            }"
-                        )
                         selectedNavIcon = SelectedNavIcon.Messages
 
                         isNavBarShown = true
