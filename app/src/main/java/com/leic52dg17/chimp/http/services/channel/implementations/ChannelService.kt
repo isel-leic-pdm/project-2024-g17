@@ -176,8 +176,6 @@ class ChannelService(private val client: HttpClient) : IChannelService {
             limit?.let { parameters.append("limit", it.toString()) }
         }.build()
 
-        Log.i("DEBUG", "URI - $uri")
-
         val response = client.get(uri) {
             header("Content-Type", "application/json")
         }

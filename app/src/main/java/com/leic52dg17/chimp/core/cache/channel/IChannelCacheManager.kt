@@ -11,4 +11,5 @@ interface IChannelCacheManager {
     suspend fun runCallback()
     suspend fun runErrorCallback(errorMessage: String)
     fun getCachedChannels(): List<Channel>
+    suspend fun clearCache()
 }

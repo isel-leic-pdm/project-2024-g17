@@ -4,6 +4,7 @@ object ErrorMessages {
     const val UNKNOWN = "An unknown error has occurred. Please try again later."
     const val USER_NOT_FOUND = "The requested user could not be found."
     const val CHANNEL_NOT_FOUND = "The requested channel could not be found."
+    const val NOT_FOUND_FORBIDDEN = "The requested resource could not be found or you don't have permission to view it.\n"
     const val AUTHENTICATED_USER_NULL = "Error retrieving information about the current authenticated user.\nYou'll now be logged out."
     const val UNAUTHORIZED = "You are unauthorized to perform these action.\nPlease sign in again."
     const val USER_NOT_IN_CHANNEL = "The requested user is not in the requested channel."
