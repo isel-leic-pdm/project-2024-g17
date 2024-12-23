@@ -47,6 +47,7 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
+                    Log.i(TAG, e.message)
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
                             viewModel.loadSubscribedChannels()
