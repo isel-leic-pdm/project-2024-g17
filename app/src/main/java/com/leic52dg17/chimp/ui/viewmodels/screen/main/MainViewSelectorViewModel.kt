@@ -5,8 +5,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
+import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
 import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
+import com.leic52dg17.chimp.core.cache.message.IMessageCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
@@ -50,18 +52,28 @@ class MainViewSelectorViewModel(
     private val messageRepository: IMessageRepository,
     private val openEmailApp: () -> Unit
 ) : ViewModel() {
-    val stateFlow: MutableStateFlow<MainViewSelectorState> =
-        MutableStateFlow(MainViewSelectorState.Loading)
-
     private val cacheCallbacks = CacheCallbacks(this)
     private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
     private val userFunctions = UserFunctions(this)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
-    private val channelInvitationFunctions = ChannelInvitationFunctions(this, channelCacheManager, messageCacheManager)
-    private val cacheInitializer = CacheInitializer(channelService, messageService, this, channelRepository, messageRepository, channelCacheManager, messageCacheManager)
+    private val channelInvitationFunctions =
+        ChannelInvitationFunctions(this, channelCacheManager, messageCacheManager)
+    private val cacheInitializer = CacheInitializer(
+        channelService,
+        messageService,
+        this,
+        channelRepository,
+        messageRepository,
+        channelCacheManager,
+        messageCacheManager
+    )
     val openEmail = { openEmailApp() }
+
+    val stateFlow: MutableStateFlow<MainViewSelectorState> =
+        MutableStateFlow(MainViewSelectorState.Initialized(null))
+
 
     init {
         viewModelScope.launch {
@@ -149,6 +161,7 @@ class MainViewSelectorViewModel(
     fun loadChannelInfo(channelId: Int) = channelFunctions.loadChannelInfo(channelId)
     fun createChannel(ownerId: Int, name: String, isPrivate: Boolean, channelIconUrl: String) =
         channelFunctions.createChannel(ownerId, name, isPrivate, channelIconUrl)
+
     fun getSortedChannels(): List<Channel> {
         val cached = cacheManager.getChannels()
         return if (cached.isNotEmpty()) {
@@ -157,13 +170,21 @@ class MainViewSelectorViewModel(
             cached
         }
     }
-    fun loadPublicChannels(channelName: String, page: Int) = channelFunctions.loadPublicChannels(channelName, page)
+
+    fun loadPublicChannels(channelName: String, page: Int) =
+        channelFunctions.loadPublicChannels(channelName, page)
+
     fun joinPublicChannel(channel: Channel) = channelFunctions.joinPublicChannel(channel)
 
     fun removeUserFromChannel(userId: Int, channelId: Int) =
         channelFunctions.removeUserFromChannel(userId, channelId)
 
-    fun inviteUserToChannel(userId: Int, channelId: Int, permission: PermissionLevel, userDisplayName: String) =
+    fun inviteUserToChannel(
+        userId: Int,
+        channelId: Int,
+        permission: PermissionLevel,
+        userDisplayName: String
+    ) =
         channelFunctions.inviteUserToChannel(userId, channelId, permission, userDisplayName)
 
     fun leaveChannel(userId: Int?, channel: Channel) =
@@ -173,7 +194,8 @@ class MainViewSelectorViewModel(
      *  Registration functions
      */
 
-    fun createRegistrationInvitation(creatorId: Int) = registrationInvitationFunctions.createRegistrationInvitation(creatorId)
+    fun createRegistrationInvitation(creatorId: Int) =
+        registrationInvitationFunctions.createRegistrationInvitation(creatorId)
 
 
     /**
@@ -191,7 +213,8 @@ class MainViewSelectorViewModel(
      * User functions
      */
     fun getUserProfile(id: Int) = userFunctions.getUserProfile(id)
-    fun loadAvailableUsersToInvite(channel: Channel, username: String, page: Int?, limit: Int?) = userFunctions.loadAvailableToInviteUsers(channel, username, page, limit)
+    fun loadAvailableUsersToInvite(channel: Channel, username: String, page: Int?, limit: Int?) =
+        userFunctions.loadAvailableToInviteUsers(channel, username, page, limit)
 
     /**
      * Message functions
