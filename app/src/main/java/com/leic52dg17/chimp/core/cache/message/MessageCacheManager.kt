@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.core.cache.message
 
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
@@ -43,6 +44,8 @@ class MessageCacheManager(
                 }
             } catch (e: ServiceException) {
                 runErrorCallback(e.message)
+            } catch (e: SQLiteConstraintException) {
+                Log.e(TAG, "SQL Exception -> ${e.message}")
             } catch (e: Exception) {
                 runErrorCallback(ErrorMessages.UNKNOWN)
             }
@@ -69,6 +72,8 @@ class MessageCacheManager(
                 }
             } catch (e: ServiceException) {
                 runErrorCallback(e.message)
+            } catch (e: SQLiteConstraintException) {
+                Log.e(TAG, "SQL Exception -> ${e.message}")
             } catch (e: Exception) {
                 runErrorCallback(ErrorMessages.UNKNOWN)
             }
@@ -114,6 +119,10 @@ class MessageCacheManager(
 
     override fun getCachedMessage(): List<Message> {
         return _currentMessages.value
+    }
+
+    override suspend fun clearCache() {
+        _currentMessages.emit(emptyList())
     }
 
     companion object {
