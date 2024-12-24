@@ -155,6 +155,14 @@ fun MainViewSelector(
             )
         }
 
+        fun ifWifiAvailable(action: () -> Unit) {
+            if (!connectivityStatus) {
+                showNoWifiDialog = true
+            } else {
+                action()
+            }
+        }
+
         Scaffold(
             bottomBar = {
                 if (isNavBarShown) {
@@ -257,9 +265,7 @@ fun MainViewSelector(
                                 )
                             },
                             onChannelClick = { channelId: Int ->
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.loadChannelMessages(channelId)
                                 }
                             }
@@ -271,7 +277,6 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.ChangePassword -> {
-
                         isNavBarShown = false
                         val currentState =
                             viewModel.stateFlow.collectAsState().value as MainViewSelectorState.ChangePassword
@@ -354,9 +359,7 @@ fun MainViewSelector(
                                 handleSharedAlertDialogVisibilitySwitch()
                             },
                             onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl ->
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.createChannel(
                                         ownerId,
                                         name,
@@ -392,9 +395,7 @@ fun MainViewSelector(
                                 viewModel.loadChannelInfo(currentChannel.channelId)
                             },
                             onSendClick = { messageText ->
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.sendMessage(currentChannel.channelId, messageText)
                                 }
                             },
@@ -444,9 +445,7 @@ fun MainViewSelector(
                             },
                             onLeaveChannelClick = {
                                 confirmationDialogConfirmFunction = {
-                                    if (!connectivityStatus) {
-                                        showNoWifiDialog = true
-                                    } else {
+                                    ifWifiAvailable {
                                         viewModel.leaveChannel(
                                             state.authenticatedUser?.user?.id,
                                             channel
@@ -495,9 +494,7 @@ fun MainViewSelector(
                                 )
                             },
                             onInvitationsClick = {
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.loadChannelInvitations(state.authenticatedUser)
                                 }
                             },
@@ -511,9 +508,7 @@ fun MainViewSelector(
                             },
                             onRegistrationInvitationClick = {
                                 if (state.authenticatedUser?.user != null) {
-                                    if (!connectivityStatus) {
-                                        showNoWifiDialog = true
-                                    } else {
+                                    ifWifiAvailable {
                                         viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
                                     }
                                 }
@@ -564,9 +559,7 @@ fun MainViewSelector(
                                 )
                             },
                             onInviteUserClick = { userId, channelId, permission, userDisplayName ->
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.inviteUserToChannel(
                                         userId,
                                         channelId,
@@ -577,9 +570,7 @@ fun MainViewSelector(
                             },
                             users = state.users,
                             onSearch = { username ->
-                                if (!connectivityStatus) {
-                                    showNoWifiDialog = true
-                                } else {
+                                ifWifiAvailable {
                                     viewModel.loadAvailableUsersToInvite(
                                         channel = currentChannel,
                                         limit = null, // Will default to 10 on the API
@@ -622,9 +613,7 @@ fun MainViewSelector(
                                     }
                                 },
                                 onAcceptClick = { invitationId ->
-                                    if (!connectivityStatus) {
-                                        showNoWifiDialog = true
-                                    } else {
+                                    ifWifiAvailable {
                                         viewModel.acceptChannelInvitation(
                                             invitationId,
                                             state.authenticatedUser
@@ -632,9 +621,7 @@ fun MainViewSelector(
                                     }
                                 },
                                 onDeclineClick = { invitationId ->
-                                    if (!connectivityStatus) {
-                                        showNoWifiDialog = true
-                                    } else {
+                                    ifWifiAvailable {
                                         viewModel.rejectChannelInvitation(
                                             invitationId,
                                             state.authenticatedUser
@@ -659,10 +646,8 @@ fun MainViewSelector(
                         PublicChannelsView(
                             currentSearchValue = state.currentSearchValue,
                             onValueChange = { name ->
-                                if (name.isNotEmpty()) {
-                                    if (connectivityStatus) {
-                                        viewModel.loadPublicChannels(name, state.page)
-                                    }
+                                if (name.isNotEmpty() && connectivityStatus) {
+                                    viewModel.loadPublicChannels(name, state.page)
                                 } else {
                                     viewModel.transition(
                                         MainViewSelectorState.PublicChannels(emptyList(), 0, name)
