@@ -8,6 +8,7 @@ import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
 import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
+import com.leic52dg17.chimp.core.cache.user.IUserCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
@@ -33,6 +34,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.RegistrationInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,7 @@ class MainViewSelectorViewModel(
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
+    val userCacheManager: IUserCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
     private val openEmailApp: () -> Unit
@@ -56,7 +59,7 @@ class MainViewSelectorViewModel(
     private val cacheCallbacks = CacheCallbacks(this)
     private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
-    private val userFunctions = UserFunctions(this)
+    private val userFunctions = UserFunctions(this, userCacheManager, connectivityObserver)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions =
@@ -99,6 +102,9 @@ class MainViewSelectorViewModel(
             )
         }
     }
+
+    private val _showNoWifiDialog = MutableStateFlow(false)
+    val showNoWifiDialog: StateFlow<Boolean> = _showNoWifiDialog
 
     fun transition(newState: MainViewSelectorState) {
         viewModelScope.launch {
@@ -214,7 +220,7 @@ class MainViewSelectorViewModel(
     /**
      * User functions
      */
-    fun getUserProfile(id: Int) = userFunctions.getUserProfile(id)
+    fun getUserProfile(id: Int, noWifiCallback: () -> Unit) = userFunctions.getUserProfile(id, noWifiCallback)
     fun loadAvailableUsersToInvite(channel: Channel, username: String, page: Int?, limit: Int?) =
         userFunctions.loadAvailableToInviteUsers(channel, username, page, limit)
 
@@ -255,6 +261,7 @@ class MainViewSelectorViewModelFactory(
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
+    private val userCacheManager: IUserCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
     private val openEmailApp: () -> Unit
@@ -273,6 +280,7 @@ class MainViewSelectorViewModelFactory(
             onLogout,
             channelCacheManager,
             messageCacheManager,
+            userCacheManager,
             channelRepository,
             messageRepository,
             openEmailApp

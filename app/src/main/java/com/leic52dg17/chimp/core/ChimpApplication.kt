@@ -10,6 +10,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
+import com.leic52dg17.chimp.core.cache.user.IUserCacheManager
+import com.leic52dg17.chimp.core.cache.user.UserCacheManager
 import com.leic52dg17.chimp.core.interceptors.AuthTokenInterceptor
 import com.leic52dg17.chimp.core.repositories.channel.ChannelRepository
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
@@ -62,6 +64,7 @@ interface DependenciesContainer {
     val sseService: ISSEService
     val channelCacheManager: ChannelCacheManager
     val messageCacheManager: MessageCacheManager
+    val userCacheManager: IUserCacheManager
     val applicationDatabaseManager: AppDatabaseManager
     val eventStreamService: EventStreamService
     val connectivityObserver: ConnectivityObserver
@@ -136,6 +139,10 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val channelCacheManager by lazy {
         ChannelCacheManager(channelRepository, userInfoRepository)
+    }
+
+    override val userCacheManager by lazy {
+        UserCacheManager()
     }
 
     override val messageCacheManager by lazy {

@@ -1,6 +1,5 @@
 package com.leic52dg17.chimp.ui.screens.main
 
-import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,10 +35,10 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoLoadingView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
-import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
-import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel.RemovedUserView
 import com.leic52dg17.chimp.ui.views.channel.RemovingUserView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InvitedUserView
@@ -52,6 +51,7 @@ import com.leic52dg17.chimp.ui.views.public_channels.JoiningPublicChannelView
 import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsView
 import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoLoadingView
@@ -164,7 +164,9 @@ fun MainViewSelector(
                             selectedNavIcon = SelectedNavIcon.Profile
                             val currentUser = authenticatedUser?.user
                             if (currentUser != null) {
-                                viewModel.getUserProfile(currentUser.id)
+                                viewModel.getUserProfile(currentUser.id) {
+                                    showNoWifiDialog = true
+                                }
                             }
                         },
                         onClickMessages = {
@@ -431,7 +433,9 @@ fun MainViewSelector(
                                 if (!connectivityStatus) {
                                     showNoWifiDialog = true
                                 } else {
-                                    viewModel.getUserProfile(userId)
+                                    viewModel.getUserProfile(userId) {
+                                        showNoWifiDialog = true
+                                    }
                                 }
                             },
                             onLeaveChannelClick = {
@@ -570,7 +574,7 @@ fun MainViewSelector(
                             users = state.users,
                             onSearch = { username ->
                                 if (!connectivityStatus) {
-                                  showNoWifiDialog = true
+                                    showNoWifiDialog = true
                                 } else {
                                     viewModel.loadAvailableUsersToInvite(
                                         channel = currentChannel,
@@ -608,7 +612,11 @@ fun MainViewSelector(
                         } else {
                             IncomingInvitationsView(
                                 invitations = state.invitations,
-                                onBackClick = { viewModel.getUserProfile(state.authenticatedUser.user.id) },
+                                onBackClick = {
+                                    viewModel.getUserProfile(state.authenticatedUser.user.id) {
+                                        showNoWifiDialog = true
+                                    }
+                                },
                                 onAcceptClick = { invitationId ->
                                     if (!connectivityStatus) {
                                         showNoWifiDialog = true
@@ -647,7 +655,7 @@ fun MainViewSelector(
                         PublicChannelsView(
                             currentSearchValue = state.currentSearchValue,
                             onValueChange = { name ->
-                                if(name.isNotEmpty()) {
+                                if (name.isNotEmpty()) {
                                     viewModel.loadPublicChannels(name, state.page)
                                 } else {
                                     viewModel.transition(
@@ -674,6 +682,7 @@ fun MainViewSelector(
                             state.onBackClick()
                         }
                     }
+
                     is MainViewSelectorState.JoinedPublicChannel -> {
                         JoinedPublicChannelView(
                             state.channel.displayName
@@ -681,6 +690,7 @@ fun MainViewSelector(
                             viewModel.loadSubscribedChannels()
                         }
                     }
+
                     is MainViewSelectorState.JoiningPublicChannel -> {
                         JoiningPublicChannelView(channelName = state.channel.displayName)
                     }

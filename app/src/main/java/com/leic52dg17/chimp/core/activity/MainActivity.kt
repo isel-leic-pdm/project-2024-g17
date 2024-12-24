@@ -82,6 +82,7 @@ class MainActivity : ComponentActivity() {
                 { onLogout() },
                 (application as ChimpApplication).channelCacheManager,
                 (application as ChimpApplication).messageCacheManager,
+                (application as ChimpApplication).userCacheManager,
                 (application as ChimpApplication).channelRepository,
                 (application as ChimpApplication).messageRepository,
                 { openEmailApp() }
