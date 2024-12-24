@@ -165,12 +165,12 @@ class ChimpApplication : Application(), DependenciesContainer {
         Log.i(TAG, "Registering connectivity observer")
         connectivityObserver.startObserving(
             onLostCallback = {
-                Log.i(TAG, "Stopped listening to server sent events")
+                Log.i(TAG, "Network lost, stopping event stream service")
                 sseService.stopListening()
                 stopEventStreamService()
             },
             onAvailableCallback = {
-                Log.i(TAG, "Listening to server sent events")
+                Log.i(TAG, "Network available, starting event stream service")
                 sseService.listen()
                 startEventStream()
             }
@@ -178,12 +178,13 @@ class ChimpApplication : Application(), DependenciesContainer {
     }
 
     fun stopEventStreamService() {
+        Log.i(TAG, "Stopping event stream service")
         val intent = Intent(this, EventStreamService::class.java)
         stopService(intent)
         eventStreamService.stopListening()
     }
 
-    fun startEventStream() {
+    private fun startEventStream() {
         Log.i(TAG, "Starting event stream service")
         val intent = Intent(this, EventStreamService::class.java)
         startService(intent)

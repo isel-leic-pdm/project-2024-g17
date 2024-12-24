@@ -214,14 +214,18 @@ fun MainViewSelector(
                 }
                 when (state) {
                     is MainViewSelectorState.Initialized -> {
-                        LaunchedEffect(Unit) {
-                            viewModel.getEventStream()
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    channels = viewModel.getSortedChannels(),
-                                    authenticatedUser = authenticatedUser
+                        if (!connectivityStatus) {
+                            showNoWifiDialog = true
+                        } else {
+                            LaunchedEffect(Unit) {
+                                viewModel.getEventStream()
+                                viewModel.transition(
+                                    MainViewSelectorState.SubscribedChannels(
+                                        channels = viewModel.getSortedChannels(),
+                                        authenticatedUser = authenticatedUser
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
 
