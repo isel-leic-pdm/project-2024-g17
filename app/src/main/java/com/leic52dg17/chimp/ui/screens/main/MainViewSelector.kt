@@ -253,7 +253,11 @@ fun MainViewSelector(
                                 )
                             },
                             onChannelClick = { channelId: Int ->
-                                viewModel.loadChannelMessages(channelId)
+                                if (!connectivityStatus) {
+                                    showNoWifiDialog = true
+                                } else {
+                                    viewModel.loadChannelMessages(channelId)
+                                }
                             }
                         )
                     }
@@ -652,7 +656,9 @@ fun MainViewSelector(
                             currentSearchValue = state.currentSearchValue,
                             onValueChange = { name ->
                                 if (name.isNotEmpty()) {
-                                    viewModel.loadPublicChannels(name, state.page)
+                                    if (connectivityStatus) {
+                                        viewModel.loadPublicChannels(name, state.page)
+                                    }
                                 } else {
                                     viewModel.transition(
                                         MainViewSelectorState.PublicChannels(emptyList(), 0, name)
