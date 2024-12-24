@@ -14,6 +14,9 @@ interface UserDAO {
     @Insert
     fun insertAll(users: List<UserEntity>)
 
+    @Insert
+    fun insert(user: UserEntity)
+
     @Delete
     fun delete(user: UserEntity)
 
@@ -21,5 +24,5 @@ interface UserDAO {
     fun deleteAll()
 
     @Query("SELECT * FROM user WHERE id = :id")
-    fun getById(id: Int): UserEntity
+    fun getById(id: Int): UserEntity?
 }

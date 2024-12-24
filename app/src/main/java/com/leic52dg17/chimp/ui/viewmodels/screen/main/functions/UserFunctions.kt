@@ -2,7 +2,7 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.core.cache.user.IUserCacheManager
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
@@ -17,7 +17,7 @@ import kotlinx.coroutines.launch
 
 class UserFunctions(
     private val viewModel: MainViewSelectorViewModel,
-    private val userCacheManager: IUserCacheManager,
+    private val userRepository: IUserRepository,
     private val connectivityObserver: IConnectivityObserver
 ) {
     fun getUserProfile(id: Int, noWifiCallback: () -> Unit) {
@@ -39,15 +39,13 @@ class UserFunctions(
             }
 
             try {
-                // If the user requested is the current user and it is in cache, return it
-                if (id == authenticatedUser.user.id) {
-                    val cachedUser = userCacheManager.getCachedUser()
+                // If the user requested is in cache, return it
+                val cachedUser = userRepository.getUserById(id)
 
-                    if (cachedUser != null) {
-                        Log.i(TAG, "Got user from cache")
-                        transitionToUserInfo(cachedUser, authenticatedUser)
-                        return@launch
-                    }
+                if (cachedUser != null) {
+                    Log.i(TAG, "Got user from cache")
+                    transitionToUserInfo(cachedUser, authenticatedUser)
+                    return@launch
                 }
 
                 // In case there is no internet connection
@@ -102,7 +100,7 @@ class UserFunctions(
 
         if (user != null) {
             Log.i(TAG, "Caching user")
-            userCacheManager.cacheUser(user)
+            userRepository.storeUser(user)
         }
 
         if (user != null) {

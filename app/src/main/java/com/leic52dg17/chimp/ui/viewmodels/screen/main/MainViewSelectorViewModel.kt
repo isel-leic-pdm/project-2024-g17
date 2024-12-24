@@ -8,10 +8,10 @@ import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
 import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
 import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
-import com.leic52dg17.chimp.core.cache.user.IUserCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
@@ -51,15 +51,15 @@ class MainViewSelectorViewModel(
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
-    val userCacheManager: IUserCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
+    private val userRepository: IUserRepository,
     private val openEmailApp: () -> Unit
 ) : ViewModel() {
     private val cacheCallbacks = CacheCallbacks(this)
     private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
-    private val userFunctions = UserFunctions(this, userCacheManager, connectivityObserver)
+    private val userFunctions = UserFunctions(this, userRepository, connectivityObserver)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions =
@@ -261,9 +261,9 @@ class MainViewSelectorViewModelFactory(
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
-    private val userCacheManager: IUserCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
+    private val userRepository: IUserRepository,
     private val openEmailApp: () -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -280,9 +280,9 @@ class MainViewSelectorViewModelFactory(
             onLogout,
             channelCacheManager,
             messageCacheManager,
-            userCacheManager,
             channelRepository,
             messageRepository,
+            userRepository,
             openEmailApp
         ) as T
     }

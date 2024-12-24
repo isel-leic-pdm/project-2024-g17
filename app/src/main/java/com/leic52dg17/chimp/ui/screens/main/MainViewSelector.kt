@@ -430,12 +430,8 @@ fun MainViewSelector(
                                 handleConfirmationDialogVisibilitySwitch()
                             },
                             onUserClick = { userId ->
-                                if (!connectivityStatus) {
+                                viewModel.getUserProfile(userId) {
                                     showNoWifiDialog = true
-                                } else {
-                                    viewModel.getUserProfile(userId) {
-                                        showNoWifiDialog = true
-                                    }
                                 }
                             },
                             onLeaveChannelClick = {
