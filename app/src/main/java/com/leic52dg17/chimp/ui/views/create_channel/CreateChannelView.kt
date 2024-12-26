@@ -1,5 +1,6 @@
 package com.leic52dg17.chimp.ui.views.create_channel
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
@@ -15,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.LabelAndInputWithSuggestion
@@ -61,6 +64,29 @@ fun CreateChannelView(
 
     var isPrivate by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
         mutableStateOf(false)
+    }
+
+    var channelNameError by rememberSaveable {
+        mutableStateOf("")
+    }
+
+    var isError by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    fun validateName(): Boolean {
+        if (channelNameInputValue.isBlank()) {
+            channelNameError = ErrorMessages.CHANNEL_NAME_BLANK
+            isError = true
+            return false
+        }
+        if (channelNameInputValue.length < 2 || channelNameInputValue.length > 50) {
+            channelNameError = ErrorMessages.CHANNEL_NAME_SIZE
+            isError = true
+            return false
+        }
+        isError = false
+        return true
     }
 
     val privateText = stringResource(id = R.string.visibility_private_en)
@@ -111,14 +137,20 @@ fun CreateChannelView(
                         inputValue = channelNameInputValue,
                         textModifier = Modifier.padding(horizontal = 16.dp),
                         inputModifier = Modifier
-                            .height(90.dp)
+                            .height(120.dp)
                             .fillMaxWidth()
                             .padding(16.dp),
                         onInfoClick = { onChannelNameInfoClick(channelNameInfoText) },
-                        onValueChange = { channelNameInputValue = it },
+                        onValueChange = {
+                            isError = false
+                            channelNameError = ""
+                            channelNameInputValue = it
+                        },
+                        isError = isError,
+                        supportingText = channelNameError,
                         fontFamily = MaterialTheme.typography.titleLarge.fontFamily!!,
                         fontSize = MaterialTheme.typography.titleLarge.fontSize,
-                        fontWeight = MaterialTheme.typography.bodyMedium.fontWeight!!
+                        fontWeight = MaterialTheme.typography.bodyMedium.fontWeight!!,
                     )
                     ToggleWithLabel(
                         text = isPrivateToggleText,
@@ -137,19 +169,22 @@ fun CreateChannelView(
                 Button(
                     modifier = Modifier.padding(16.dp),
                     onClick = {
-                        Log.i("CreateChannelView", "Create channel button clicked")
-                        Log.i("CreateChannelView", "Authenticated user: $authenticatedUser")
-                        if (authenticatedUser?.user == null) {
-                            onError(userInformationErrorText)
-                            return@Button
+                        val isValid = validateName()
+                        if(isValid) {
+                            Log.i("CreateChannelView", "Create channel button clicked")
+                            Log.i("CreateChannelView", "Authenticated user: $authenticatedUser")
+                            if (authenticatedUser?.user == null) {
+                                onError(userInformationErrorText)
+                                return@Button
+                            }
+                            Log.i("CreateChannelView", "Creating channel")
+                            onCreateChannelRequest(
+                                authenticatedUser.user.id,
+                                channelNameInputValue,
+                                isPrivate,
+                                ""
+                            )
                         }
-                        Log.i("CreateChannelView", "Creating channel")
-                        onCreateChannelRequest(
-                            authenticatedUser.user.id,
-                            channelNameInputValue,
-                            isPrivate,
-                            ""
-                        )
                     }
                 ) {
                     Text(text = "Create")

@@ -44,8 +44,8 @@ class AuthenticationService(private val client: HttpClient, private val applicat
         return AuthenticatedUser(responseBody.token, user, responseBody.expirationDate)
     }
 
-    override suspend fun signUpUser(username: String, displayName: String, password: String): AuthenticatedUser {
-        val source = URL(ApiEndpoints.Users.CREATE_USER)
+    override suspend fun signUpUser(registrationInvitation: String, username: String, displayName: String, password: String): AuthenticatedUser {
+        val source = URL(ApiEndpoints.Users.CREATE_USER + "?token=$registrationInvitation")
         Log.i(TAG, "Signup: $source")
         val requestBody = UserSignUpRequest(username, displayName, password)
 

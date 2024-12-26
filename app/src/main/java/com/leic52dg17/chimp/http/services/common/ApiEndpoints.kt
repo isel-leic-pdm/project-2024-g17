@@ -11,7 +11,7 @@ object ApiEndpoints {
         val GET_BY_ID = "$BASE_URL/users/{id}"
         val GET_TOKEN = "$BASE_URL/users/token"
         val GET_BY_TOKEN = "$BASE_URL/users/token/{token}"
-        val CREATE_USER = "$BASE_URL/users"
+        val CREATE_USER = "$BASE_URL/users/invite"
         val CHANGE_PASSWORD = "$BASE_URL/users/{user}"
         val GET_BY_CHANNEL = "$BASE_URL/users/channel/{id}"
     }
