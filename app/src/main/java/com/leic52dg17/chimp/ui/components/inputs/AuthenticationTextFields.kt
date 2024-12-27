@@ -33,6 +33,8 @@ fun AuthenticationField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector,
     leadingIconContentDescription: String = "",
+    isError: Boolean = false,
+    supportingText: String = ""
 ) {
     TextField(
         value = value,
@@ -43,7 +45,8 @@ fun AuthenticationField(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            focusedIndicatorColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = if (isError) MaterialTheme.colorScheme.error else Color.Gray,
             focusedTextColor = Color.Black
         ),
         leadingIcon = {
@@ -52,6 +55,11 @@ fun AuthenticationField(
                 tint = MaterialTheme.colorScheme.secondary,
                 contentDescription = leadingIconContentDescription
             )
+        },
+        supportingText = {
+            if(isError) {
+                Text(text = supportingText, color = MaterialTheme.colorScheme.error)
+            }
         },
         modifier = modifier.fillMaxWidth()
     )
@@ -65,6 +73,8 @@ fun AuthenticationPasswordField(
     modifier: Modifier = Modifier,
     leadingIcon: ImageVector,
     leadingIconContentDescription: String = "",
+    isError: Boolean = false,
+    supportingText: String = ""
 ) {
     var showPassword by remember { mutableStateOf(false) }
     var passwordVisibilityIcon by remember { mutableStateOf(Icons.Outlined.Visibility) }
@@ -78,7 +88,8 @@ fun AuthenticationPasswordField(
             focusedContainerColor = Color.Transparent,
             unfocusedContainerColor = Color.Transparent,
             disabledIndicatorColor = Color.Transparent,
-            focusedIndicatorColor = MaterialTheme.colorScheme.primary,
+            focusedIndicatorColor = if (isError) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
+            unfocusedIndicatorColor = if (isError) MaterialTheme.colorScheme.error else Color.Gray,
             focusedTextColor = Color.Black
         ),
         leadingIcon = {
@@ -101,6 +112,11 @@ fun AuthenticationPasswordField(
                     tint = MaterialTheme.colorScheme.secondary,
                     contentDescription = stringResource(R.string.sign_up_visibility_icon_cd_en)
                 )
+            }
+        },
+        supportingText = {
+            if(isError) {
+                Text(text = supportingText, color = MaterialTheme.colorScheme.error)
             }
         },
         modifier = modifier.fillMaxWidth(),

@@ -77,13 +77,13 @@ class AuthenticationViewSelectorViewModel(
         }
     }
 
-    fun signUpUser(username: String, displayName: String, password: String) {
+    fun signUpUser(registrationInvitation: String, username: String, displayName: String, password: String) {
         if (state is AuthenticationViewSelectorState.SignUp) {
             transition(AuthenticationViewSelectorState.AuthenticationLoading)
             viewModelScope.launch {
                 try {
                     val authenticatedUser =
-                        authenticationService.signUpUser(username, displayName, password)
+                        authenticationService.signUpUser(registrationInvitation, username, displayName, password)
 
                     viewModelScope.launch {
                         userInfoRepository.saveAuthenticatedUser(authenticatedUser)
