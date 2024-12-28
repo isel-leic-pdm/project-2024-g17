@@ -49,6 +49,7 @@ class SubscribedChannelsViewTests {
             composeTestRule.onNodeWithTag(testTag = CHANNEL_NAME_TAG + "_${channel.channelId}", useUnmergedTree = true).assertTextEquals(channel.displayName)
 
             composeTestRule.onNodeWithTag(testTag = LAST_MESSAGE_TAG + "_${channel.channelId}", useUnmergedTree = true).assertExists()
+
             if (channel.messages.isEmpty()) {
                 composeTestRule.onNodeWithTag(testTag = LAST_MESSAGE_TAG + "_${channel.channelId}", useUnmergedTree = true).assertTextEquals("")
             } else {
