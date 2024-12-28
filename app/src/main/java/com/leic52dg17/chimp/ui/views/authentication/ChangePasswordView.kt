@@ -31,13 +31,14 @@ import com.leic52dg17.chimp.ui.components.inputs.AuthenticationPasswordField
 import com.leic52dg17.chimp.ui.components.misc.AuthenticationTitle
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.buttons.ForgotPasswordButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun ChangePasswordView(
     onChangePassword: (String, String, String, String) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier
-){
+) {
 
     var username by remember { mutableStateOf("") }
     var currentPassword by remember { mutableStateOf("") }
@@ -107,7 +108,14 @@ fun ChangePasswordView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = { onChangePassword(username, currentPassword, newPassword, confirmPassword) },
+                    onClick = {
+                        onChangePassword(
+                            username,
+                            currentPassword,
+                            newPassword,
+                            confirmPassword
+                        )
+                    },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.change_password_text_en),
@@ -121,9 +129,11 @@ fun ChangePasswordView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChangePasswordViewPreview() {
+    ChIMPTheme {
         ChangePasswordView(
             onChangePassword = { _, _, _, _ -> },
             onBackClick = { }
         )
+    }
 }
 

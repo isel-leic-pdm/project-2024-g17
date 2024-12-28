@@ -33,7 +33,7 @@ fun ChannelInfoLoadingView() {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -83,12 +83,17 @@ fun ChannelInfoLoadingView() {
                         .padding(bottom = 15.dp)
                 ) {
                     for (i in 0..15) {
-                        Skeleton(
-                            sizeModifier = Modifier
-                                .width(400.dp)
-                                .height(64.dp)
-                                .bottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
-                        )
+                        Row (
+                            modifier = Modifier
+                                .padding(bottom = 8.dp)
+                        ){
+                            Skeleton(
+                                sizeModifier = Modifier
+                                    .width(400.dp)
+                                    .height(64.dp)
+                                    .bottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
+                            )
+                        }
                     }
                 }
             }

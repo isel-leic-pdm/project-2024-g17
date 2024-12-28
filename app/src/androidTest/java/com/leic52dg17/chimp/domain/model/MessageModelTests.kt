@@ -19,8 +19,8 @@ class MessageModelTests {
     @Test(expected = IllegalArgumentException::class)
     fun instantiation_fails_with_zero_user_id() {
         Message(
-            0,
             1,
+            0,
             1,
             MESSAGE_TEXT,
             TIMESTAMP

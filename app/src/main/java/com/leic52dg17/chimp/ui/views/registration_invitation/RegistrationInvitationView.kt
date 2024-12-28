@@ -12,8 +12,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun RegistrationInvitationView(
@@ -70,6 +72,16 @@ fun RegistrationInvitationView(
             ) {
                 Text("Copy Token")
             }
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun RegistrationInvitationPreview() {
+    ChIMPTheme {
+        RegistrationInvitationView(onBackClick = { /*TODO*/ }, token = "aaaaaaaaaaaaa") {
+
         }
     }
 }

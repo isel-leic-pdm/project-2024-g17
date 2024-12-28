@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
@@ -58,6 +59,8 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.utils.formatHours
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.domain.utils.deriveDateFrom
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 const val BACK_BUTTON_TAG = "back_button"
 const val CHANNEL_NAME_TAG = "channel_name"
@@ -98,14 +101,7 @@ fun ChannelMessageView(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onBackClick) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBackIosNew,
-                    contentDescription = "Back",
-                    modifier = Modifier.size(35.dp).testTag(BACK_BUTTON_TAG),
-                    tint = Color.Black,
-                )
-            }
+            BackButton(onBackClick = onBackClick, color = MaterialTheme.colorScheme.onPrimary)
             Row(
                 modifier = Modifier
                     .clickable { onChannelNameClick() }
@@ -124,7 +120,7 @@ fun ChannelMessageView(
                         imageVector = Icons.Filled.Circle,
                         contentDescription = stringResource(id = R.string.back_button_text_cd),
                         modifier = Modifier.size(35.dp),
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -169,8 +165,11 @@ fun ChannelMessageView(
                         color = backgroundColor
                     ) {
                         // TODO: Refactor so we get the actual users name
-                       val userDisplayName = channel.users.firstOrNull { it.id == message.userId }?.displayName ?: "User ${message.userId}"
-                        val alignment = if (message.userId == authenticatedUser?.user?.id) Alignment.End else Alignment.Start
+                        val userDisplayName =
+                            channel.users.firstOrNull { it.id == message.userId }?.displayName
+                                ?: "User ${message.userId}"
+                        val alignment =
+                            if (message.userId == authenticatedUser?.user?.id) Alignment.End else Alignment.Start
                         Column(
                             horizontalAlignment = alignment,
                             modifier = Modifier.padding(8.dp)
@@ -180,7 +179,7 @@ fun ChannelMessageView(
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSecondary
                             )
-                            Row (
+                            Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier,
@@ -280,20 +279,21 @@ fun ChannelMessageView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChannelMessageViewLayoutPreview() {
-    ChannelMessageView(
-        onBackClick = {},
-        channel = FakeData.channels[0],
-        onChannelNameClick = {},
-        onSendClick = {},
-        hasWritePermissions = false,
-        authenticatedUser = AuthenticatedUser(
-            "",
-            User(
-                1,
-                "username",
-                "display_name"
-            ),
+    ChIMPTheme {
+        ChannelMessageView(
+            onBackClick = {},
+            channel = FakeData.channels[0],
+            onChannelNameClick = {},
+            onSendClick = {},
+            hasWritePermissions = false,
+            authenticatedUser = AuthenticatedUser(
+                "",
+                User(
+                    1,
+                    "username",
+                    "display_name"
+                ),
+            )
         )
-    )
-
+    }
 }

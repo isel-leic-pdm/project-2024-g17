@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.ui.views.authentication
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.ui.components.buttons.AuthenticationButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun LandingView(
@@ -30,7 +32,10 @@ fun LandingView(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceAround,
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.primary)
+        ,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -54,8 +59,9 @@ fun LandingView(
             Column {
                 Text(
                     text = stringResource(R.string.landing_welcome_message_en),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
-                    fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                    fontSize = MaterialTheme.typography.displaySmall.fontSize,
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -65,6 +71,7 @@ fun LandingView(
                     text = stringResource(R.string.landing_description_en),
                     fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                     fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
+                    color = MaterialTheme.colorScheme.onPrimary,
                     modifier = modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
@@ -100,8 +107,10 @@ fun LandingView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LandingViewPreview() {
-    LandingView(
-        onLogInClick = { },
-        onSignUpClick = { }
-    )
+    ChIMPTheme {
+        LandingView(
+            onLogInClick = { },
+            onSignUpClick = { }
+        )
+    }
 }

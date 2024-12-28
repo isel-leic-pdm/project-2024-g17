@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -124,7 +126,7 @@ fun SubscribedChannelsView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.tertiary)
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()
     ) {
         // Top section
@@ -139,7 +141,7 @@ fun SubscribedChannelsView(
             Image(
                 modifier = Modifier
                     .size(40.dp),
-                painter = painterResource(id = R.drawable.chimp_blue_final),
+                painter = painterResource(id = R.drawable.chimp_white_final),
                 contentDescription = stringResource(id = R.string.app_logo_cd)
             )
             Text(
@@ -147,6 +149,7 @@ fun SubscribedChannelsView(
                 fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                 fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
                 text = stringResource(id = R.string.subscribed_channel_title_text_en),
+                color = MaterialTheme.colorScheme.onPrimary
             )
             IconButton(
                 onClick = {
@@ -154,8 +157,8 @@ fun SubscribedChannelsView(
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Default.Create,
-                    tint = MaterialTheme.colorScheme.primary,
+                    imageVector = Icons.Filled.Create,
+                    tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = stringResource(id = R.string.search_icon_cd)
                 )
             }
@@ -173,7 +176,8 @@ fun SubscribedChannelsView(
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
                 onValueChange = { newValue -> searchValue = newValue },
-                searchValue = searchValue
+                searchValue = searchValue,
+                color = MaterialTheme.colorScheme.background
             )
         }
         // Chats section
@@ -182,7 +186,7 @@ fun SubscribedChannelsView(
             verticalArrangement = Arrangement.Top,
             modifier = Modifier
                 .verticalScroll(rememberScrollState())
-                .background(MaterialTheme.colorScheme.background)
+                .background(Color.White)
                 .topBottomBorder(2.dp, MaterialTheme.colorScheme.secondary)
                 .heightIn(min = 800.dp)
                 .fillMaxHeight()
