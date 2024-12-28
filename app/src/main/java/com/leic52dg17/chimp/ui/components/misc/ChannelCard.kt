@@ -21,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +34,10 @@ import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 
+const val CHANNEL_CARD_TAG = "channel_card"
+const val CHANNEL_NAME_TAG = "channel_name"
+const val LAST_MESSAGE_TAG = "last_message"
+
 @Composable
 fun ChannelCard (
     channel: Channel,
@@ -44,6 +49,7 @@ fun ChannelCard (
             .clickable { onChannelClick(channel) }
             .fillMaxWidth()
             .padding(16.dp)
+            .testTag(CHANNEL_CARD_TAG + "_${channel.channelId}")
     ) {
         Image(
             painter = painterResource(id = R.drawable.chimp_blue_final),
@@ -73,6 +79,7 @@ fun ChannelCard (
                     fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 1,
+                    modifier = Modifier.testTag(CHANNEL_NAME_TAG + "_${channel.channelId}")
                 )
                 Text(
                     fontFamily = MaterialTheme.typography.bodyMedium.fontFamily,
@@ -82,6 +89,7 @@ fun ChannelCard (
                     modifier = Modifier
                         .padding(bottom = 16.dp)
                         .alpha(0.60f)
+                        .testTag(LAST_MESSAGE_TAG + "_${channel.channelId}")
                 )
             }
             IconButton(
