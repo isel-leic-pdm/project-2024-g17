@@ -160,7 +160,7 @@ fun SubscribedChannelsLoadingView() {
                 .fillMaxWidth()
         ) {
             SearchBar(
-                textFieldModifier = Modifier
+                modifier = Modifier
                     .padding(horizontal = 32.dp)
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
