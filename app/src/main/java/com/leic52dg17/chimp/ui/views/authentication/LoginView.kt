@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.domain.common.ErrorMessages
 import com.leic52dg17.chimp.ui.components.buttons.AuthenticationButton
 import com.leic52dg17.chimp.ui.components.inputs.AuthenticationField
 import com.leic52dg17.chimp.ui.components.misc.AuthenticationOrDivider
@@ -39,8 +41,30 @@ fun LoginView(
     onForgotPasswordClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by rememberSaveable { mutableStateOf("") }
+    var password by rememberSaveable { mutableStateOf("") }
+    var currentErrors by rememberSaveable {
+        mutableStateOf<Map<String, Pair<Boolean, String?>>>(emptyMap())
+    }
+
+    fun removeErrorsForKey(key: String) {
+        currentErrors = currentErrors.filterNot { it.key == key }
+    }
+
+    fun validateForm(): Boolean {
+        val errors = mutableMapOf<String, Pair<Boolean, String?>>()
+
+        if (username.isBlank()) {
+            errors["username"] = Pair(true, ErrorMessages.USERNAME_BLANK)
+        }
+        if (password.isBlank()) {
+            errors["password"] = Pair(true, ErrorMessages.PASSWORD_BLANK)
+        }
+
+        currentErrors = errors
+
+        return errors.isEmpty()
+    }
 
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
@@ -75,19 +99,29 @@ fun LoginView(
             ) {
                 AuthenticationField(
                     value = username,
-                    onValueChange = { username = it },
+                    onValueChange = {
+                        removeErrorsForKey("username")
+                        username = it
+                    },
                     label = stringResource(R.string.login_username_field_label_en),
                     leadingIcon = Icons.Outlined.PersonOutline,
                     leadingIconContentDescription = stringResource(R.string.login_username_icon_cd_en),
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier.fillMaxWidth(),
+                    isError = currentErrors.keys.any { it == "username" },
+                    supportingText = currentErrors["username"]?.second ?: ""
                 )
                 AuthenticationPasswordField(
                     value = password,
-                    onValueChange = { password = it },
+                    onValueChange = {
+                        removeErrorsForKey("password")
+                        password = it
+                    },
                     label = stringResource(R.string.login_password_field_label_en),
                     leadingIcon = Icons.Outlined.Lock,
                     leadingIconContentDescription = stringResource(R.string.login_password_icon_cd_en),
-                    modifier = modifier.fillMaxWidth()
+                    modifier = modifier.fillMaxWidth(),
+                    isError = currentErrors.keys.any { it == "password" },
+                    supportingText = currentErrors["password"]?.second ?: ""
                 )
 
                 Column(
@@ -109,7 +143,12 @@ fun LoginView(
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
-                    onClick = { onLogInClick(username, password) },
+                    onClick = {
+                        val isValid = validateForm()
+                        if (isValid) {
+                            onLogInClick(username, password)
+                        }
+                    },
                     backgroundColor = MaterialTheme.colorScheme.primary,
                     textColor = MaterialTheme.colorScheme.onPrimary,
                     text = stringResource(R.string.log_in_button_text_en),

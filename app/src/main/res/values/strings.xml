@@ -56,6 +56,7 @@
     <string name="sign_up_username_field_label_en">Username</string>
     <string name="sign_up_displayName_field_label_en">Display Name</string>
     <string name="sign_up_password_field_label_en">Password</string>
+    <string name="sign_up_registration_code_label_en">Registration Code</string>
 
     <!--Log In View-->
     <string name="login_welcome_en">Welcome Back!</string>
