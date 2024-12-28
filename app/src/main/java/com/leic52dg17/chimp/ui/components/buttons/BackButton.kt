@@ -16,6 +16,8 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.leic52dg17.chimp.R
 
+const val BACK_BUTTON_TAG = "back_button"
+
 @Composable
 fun BackButton(
     onBackClick: () -> Unit,
@@ -29,7 +31,7 @@ fun BackButton(
         IconButton(
             enabled = enabled,
             onClick = { onBackClick() },
-            modifier = modifier.align(Alignment.BottomStart).testTag("back_button")
+            modifier = modifier.align(Alignment.BottomStart).testTag(BACK_BUTTON_TAG)
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
