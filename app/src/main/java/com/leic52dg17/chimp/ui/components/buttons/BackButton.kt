@@ -11,6 +11,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import com.leic52dg17.chimp.R
@@ -21,7 +22,8 @@ const val BACK_BUTTON_TAG = "back_button"
 fun BackButton(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    enabled: Boolean = true
+    enabled: Boolean = true,
+    color: Color = MaterialTheme.colorScheme.primary
 ) {
     Box(
         modifier = modifier
@@ -33,7 +35,7 @@ fun BackButton(
         ) {
             Icon(
                 imageVector = Icons.AutoMirrored.Filled.ArrowBackIos,
-                tint = if(enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                tint = if(enabled) color else MaterialTheme.colorScheme.secondary,
                 contentDescription = stringResource(R.string.back_button_text_cd)
             )
         }

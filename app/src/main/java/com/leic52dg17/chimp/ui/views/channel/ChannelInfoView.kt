@@ -43,6 +43,7 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.message.Message
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
 import java.math.BigInteger
@@ -62,7 +63,9 @@ fun ChannelInfoView(
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween,
-        modifier = modifier.fillMaxSize()
+        modifier = modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.onPrimary)
     ) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -120,7 +123,7 @@ fun ChannelInfoView(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = modifier
                         .verticalScroll(rememberScrollState())
-                        .background(MaterialTheme.colorScheme.background)
+                        .background(MaterialTheme.colorScheme.onPrimary)
                         .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
                         .heightIn(min = 300.dp, max = 300.dp)
                         .padding(bottom = 15.dp)
@@ -149,7 +152,7 @@ fun ChannelInfoView(
                                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
                                             fontSize = MaterialTheme.typography.bodyLarge.fontSize,
                                         )
-                                        if(user.id == authenticatedUser?.user?.id) {
+                                        if (user.id == authenticatedUser?.user?.id) {
                                             Text(
                                                 modifier = Modifier
                                                     .padding(horizontal = 8.dp),
@@ -228,26 +231,28 @@ fun ChannelInfoView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChannelInfoViewPreview() {
-    ChannelInfoView(
-        Channel(
-            channelId = 1,
-            displayName = "Channel Name",
-            channelIconUrl = "https://picsum.photos/300/300",
-            users = listOf(
-                User(1, "User1", "displayName1"),
-                User(2, "User2", "displayName2"),
+    ChIMPTheme {
+        ChannelInfoView(
+            Channel(
+                channelId = 1,
+                displayName = "Channel Name",
+                channelIconUrl = "https://picsum.photos/300/300",
+                users = listOf(
+                    User(1, "User1", "displayName1"),
+                    User(2, "User2", "displayName2"),
+                ),
+                messages = listOf(
+                    Message(1, 1, 1, "Hello", Instant.now().toEpochMilli()),
+                    Message(2, 2, 1, "Hi", Instant.now().toEpochMilli()),
+                    Message(3, 1, 1, "How are you", Instant.now().toEpochMilli())
+                ),
+                isPrivate = true,
+                ownerId = 1
             ),
-            messages = listOf(
-                Message(1, 1, 1, "Hello", Instant.now().toEpochMilli()),
-                Message(2, 2, 1, "Hi", Instant.now().toEpochMilli()),
-                Message(3, 1, 1, "How are you", Instant.now().toEpochMilli())
-            ),
-            isPrivate = true,
-            ownerId = 1
-        ),
-        authenticatedUser = AuthenticatedUser(
-            "abc",
-            User(1, "User1", "displayName1")
+            authenticatedUser = AuthenticatedUser(
+                "abc",
+                User(1, "User1", "displayName1")
+            )
         )
-    )
+    }
 }

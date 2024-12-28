@@ -2,6 +2,7 @@ package com.leic52dg17.chimp.ui.views.authentication
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -94,12 +95,13 @@ fun SignUpView(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize(),
     ) {
         Column(
             modifier = modifier
         ) {
-            BackButton(modifier = modifier, onBackClick = onBackClick)
+            BackButton(modifier = modifier, onBackClick = onBackClick, color = MaterialTheme.colorScheme.onPrimary)
         }
 
         Column(
@@ -109,19 +111,20 @@ fun SignUpView(
             AuthenticationTitle(
                 title = stringResource(R.string.sign_up_welcome_en),
                 modifier = modifier,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = modifier
-                .padding(bottom = 64.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 32.dp)
+                    .padding(vertical = 48.dp)
             ) {
                 AuthenticationField(
                     value = registrationInvitation,
@@ -178,6 +181,7 @@ fun SignUpView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier
+                    .padding(bottom = 32.dp)
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(

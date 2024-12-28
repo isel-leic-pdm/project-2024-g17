@@ -34,6 +34,7 @@ fun SearchBar(
     placeHolderFontWeight: FontWeight = FontWeight.Medium,
     onValueChange : (String) -> Unit,
     searchValue: String,
+    color: Color = MaterialTheme.colorScheme.onSecondaryContainer
 ) {
     TextField(
         textStyle = TextStyle(
@@ -43,7 +44,7 @@ fun SearchBar(
             color = MaterialTheme.colorScheme.onBackground
         ),
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = color,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
