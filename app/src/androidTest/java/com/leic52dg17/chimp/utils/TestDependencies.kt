@@ -24,10 +24,8 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.sse.results.SSEServiceResult
 import com.leic52dg17.chimp.http.services.user.IUserService
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import java.time.Instant
 
@@ -47,17 +45,18 @@ val fakeAuthenticationService by lazy {
         override suspend fun loginUser(username: String, password: String): AuthenticatedUser =
             testAuthenticatedUser
 
+        override suspend fun signUpUser(
+            registrationInvitation: String,
+            username: String,
+            displayName: String,
+            password: String
+        ): AuthenticatedUser = testAuthenticatedUser
+
         override suspend fun changePassword(
             username: String,
             currentPassword: String,
             newPassword: String,
             confirmPassword: String
-        ): AuthenticatedUser = testAuthenticatedUser
-
-        override suspend fun signUpUser(
-            username: String,
-            displayName: String,
-            password: String
         ): AuthenticatedUser = testAuthenticatedUser
     }
 }
