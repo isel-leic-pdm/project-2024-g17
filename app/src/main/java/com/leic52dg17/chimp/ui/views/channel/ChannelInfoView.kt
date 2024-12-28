@@ -1,6 +1,5 @@
 package com.leic52dg17.chimp.ui.views.channel
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -33,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,17 +45,25 @@ import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 import com.leic52dg17.chimp.ui.theme.custom.bottomBorder
 import com.leic52dg17.chimp.ui.theme.custom.topBottomBorder
-import java.math.BigInteger
 import java.time.Instant
+
+const val CHANNEL_IMAGE_TAG = "channel_image"
+const val USER_INFO_CHANNEL_NAME_TAG = "channel_name"
+const val USERS_LIST_TAG = "users_list"
+const val USER_CARD_TAG = "user_card"
+const val REMOVE_USER_BUTTON_TAG = "remove_user_button"
+const val ADD_USER_BUTTON_TAG = "add_user_button"
+const val LEAVE_CHANNEL_BUTTON_TAG = "leave_channel_button"
+const val USER_CARD_DISPLAY_NAME_TAG = "user_card_display_name"
 
 @Composable
 fun ChannelInfoView(
     channel: Channel,
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onAddToUserChannelClick: () -> Unit = {},
     onRemoveUser: (Int, Int) -> Unit = { _, _ -> },
     onUserClick: (Int) -> Unit = {},
-    modifier: Modifier = Modifier,
     authenticatedUser: AuthenticatedUser? = null,
     onLeaveChannelClick: () -> Unit = {}
 ) {
@@ -88,6 +95,7 @@ fun ChannelInfoView(
                     modifier = modifier
                         .clip(RoundedCornerShape(10))
                         .size(200.dp)
+                        .testTag(CHANNEL_IMAGE_TAG)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
@@ -97,6 +105,7 @@ fun ChannelInfoView(
                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     modifier = modifier
                         .align(alignment = Alignment.CenterHorizontally)
+                        .testTag(USER_INFO_CHANNEL_NAME_TAG)
                 )
             }
         }
@@ -127,6 +136,7 @@ fun ChannelInfoView(
                         .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
                         .heightIn(min = 300.dp, max = 300.dp)
                         .padding(bottom = 15.dp)
+                        .testTag(USERS_LIST_TAG)
                 ) {
                     for (user in channel.users) {
                         Box(
@@ -135,6 +145,7 @@ fun ChannelInfoView(
                                 .padding(horizontal = 16.dp)
                                 .clickable(onClick = { onUserClick(user.id) })
                                 .bottomBorder(0.2.dp, MaterialTheme.colorScheme.secondary)
+                                .testTag(USER_CARD_TAG + "_${user.id}")
                         ) {
                             Row(
                                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -147,6 +158,7 @@ fun ChannelInfoView(
                                         horizontalArrangement = Arrangement.Center
                                     ) {
                                         Text(
+                                            modifier = Modifier.testTag(USER_CARD_DISPLAY_NAME_TAG + "_${user.id}"),
                                             text = user.displayName,
                                             fontFamily = MaterialTheme.typography.bodyLarge.fontFamily,
                                             fontWeight = MaterialTheme.typography.bodyLarge.fontWeight,
@@ -178,6 +190,7 @@ fun ChannelInfoView(
                                 Column {
                                     if (authenticatedUser?.user?.id != user.id && authenticatedUser?.user?.id == channel.ownerId) {
                                         IconButton(
+                                            modifier = Modifier.testTag(REMOVE_USER_BUTTON_TAG + "_${user.id}"),
                                             onClick = {
                                                 onRemoveUser(user.id, channel.channelId)
                                             }) {
@@ -204,6 +217,7 @@ fun ChannelInfoView(
                             modifier = modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 10.dp)
+                                .testTag(ADD_USER_BUTTON_TAG)
                         ) {
                             Text(stringResource(R.string.add_user_to_channel_en))
                         }
@@ -218,7 +232,7 @@ fun ChannelInfoView(
                         modifier = modifier
                             .fillMaxWidth()
                             .padding(horizontal = 10.dp)
-
+                            .testTag(LEAVE_CHANNEL_BUTTON_TAG)
                     ) {
                         Text(stringResource(id = R.string.leave_channel_en))
                     }
