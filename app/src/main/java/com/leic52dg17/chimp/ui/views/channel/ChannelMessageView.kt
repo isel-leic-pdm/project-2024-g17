@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -58,6 +59,11 @@ import com.leic52dg17.chimp.domain.utils.formatHours
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.domain.utils.deriveDateFrom
 
+const val BACK_BUTTON_TAG = "back_button"
+const val CHANNEL_NAME_TAG = "channel_name"
+const val MESSAGES_COLUMN_TAG = "messages_column"
+const val MESSAGE_BOX_TAG = "message_box"
+const val SEND_BUTTON_TAG = "send_button"
 
 @Composable
 fun ChannelMessageView(
@@ -96,15 +102,16 @@ fun ChannelMessageView(
                 Icon(
                     imageVector = Icons.Filled.ArrowBackIosNew,
                     contentDescription = "Back",
-                    modifier = Modifier.size(35.dp),
+                    modifier = Modifier.size(35.dp).testTag(BACK_BUTTON_TAG),
                     tint = Color.Black,
                 )
             }
             Row(
                 modifier = Modifier
-                    .clickable { onChannelNameClick() },
+                    .clickable { onChannelNameClick() }
+                    .testTag(CHANNEL_NAME_TAG),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = channel.displayName,
@@ -127,7 +134,8 @@ fun ChannelMessageView(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp),
+                .padding(top = 100.dp)
+                .testTag(MESSAGES_COLUMN_TAG),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 256.dp)
         ) {
@@ -242,7 +250,8 @@ fun ChannelMessageView(
             MessageTextField(
                 modifier = Modifier
                     .width(textFieldWidth)
-                    .heightIn(min = 56.dp, max = 128.dp),
+                    .heightIn(min = 56.dp, max = 128.dp)
+                    .testTag(MESSAGE_BOX_TAG),
                 messageText = messageText,
                 enabled = hasWritePermissions,
                 onMessageTextChange = { messageText = it },
@@ -250,6 +259,7 @@ fun ChannelMessageView(
             val imageResource3 = painterResource((R.drawable.send_icon))
             if (isSendIconVisible) {
                 IconButton(
+                    modifier = Modifier.testTag(SEND_BUTTON_TAG),
                     onClick = {
                         onSendClick(messageText)
                         messageText = ""
