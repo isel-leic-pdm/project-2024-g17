@@ -92,16 +92,6 @@ fun ChannelCard (
                         .testTag(LAST_MESSAGE_TAG + "_${channel.channelId}")
                 )
             }
-            IconButton(
-                onClick = { /*TODO*/ }
-            ) {
-                Icon(
-                    modifier = Modifier
-                        .size(20.dp),
-                    imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(id = R.string.pin_icon_cd)
-                )
-            }
         }
     }
 }

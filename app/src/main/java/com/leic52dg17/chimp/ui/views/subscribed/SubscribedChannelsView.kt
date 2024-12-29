@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.Icon
@@ -95,7 +96,7 @@ fun SubscribedChannelsView(
                 }
             ) {
                 Icon(
-                    imageVector = Icons.Filled.Create,
+                    imageVector = Icons.Filled.Add,
                     tint = MaterialTheme.colorScheme.onPrimary,
                     contentDescription = stringResource(id = R.string.search_icon_cd)
                 )
