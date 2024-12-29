@@ -42,8 +42,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,7 +59,14 @@ import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.utils.formatHours
 import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.domain.utils.deriveDateFrom
+import com.leic52dg17.chimp.ui.components.buttons.BackButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
+const val BACK_BUTTON_TAG = "back_button"
+const val CHANNEL_NAME_TAG = "channel_name"
+const val MESSAGES_COLUMN_TAG = "messages_column"
+const val MESSAGE_BOX_TAG = "message_box"
+const val SEND_BUTTON_TAG = "send_button"
 
 @Composable
 fun ChannelMessageView(
@@ -92,19 +101,13 @@ fun ChannelMessageView(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onBackClick) {
-                Icon(
-                    imageVector = Icons.Filled.ArrowBackIosNew,
-                    contentDescription = "Back",
-                    modifier = Modifier.size(35.dp),
-                    tint = Color.Black,
-                )
-            }
+            BackButton(onBackClick = onBackClick, color = MaterialTheme.colorScheme.onPrimary)
             Row(
                 modifier = Modifier
-                    .clickable { onChannelNameClick() },
+                    .clickable { onChannelNameClick() }
+                    .testTag(CHANNEL_NAME_TAG),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = channel.displayName,
@@ -117,7 +120,7 @@ fun ChannelMessageView(
                         imageVector = Icons.Filled.Circle,
                         contentDescription = stringResource(id = R.string.back_button_text_cd),
                         modifier = Modifier.size(35.dp),
-                        tint = Color.Black,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                     )
                 }
             }
@@ -127,7 +130,8 @@ fun ChannelMessageView(
             state = listState,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 100.dp),
+                .padding(top = 100.dp)
+                .testTag(MESSAGES_COLUMN_TAG),
             verticalArrangement = Arrangement.spacedBy(8.dp),
             contentPadding = PaddingValues(bottom = 256.dp)
         ) {
@@ -161,8 +165,11 @@ fun ChannelMessageView(
                         color = backgroundColor
                     ) {
                         // TODO: Refactor so we get the actual users name
-                       val userDisplayName = channel.users.firstOrNull { it.id == message.userId }?.displayName ?: "User ${message.userId}"
-                        val alignment = if (message.userId == authenticatedUser?.user?.id) Alignment.End else Alignment.Start
+                        val userDisplayName =
+                            channel.users.firstOrNull { it.id == message.userId }?.displayName
+                                ?: "User ${message.userId}"
+                        val alignment =
+                            if (message.userId == authenticatedUser?.user?.id) Alignment.End else Alignment.Start
                         Column(
                             horizontalAlignment = alignment,
                             modifier = Modifier.padding(8.dp)
@@ -172,7 +179,7 @@ fun ChannelMessageView(
                                 fontSize = 18.sp,
                                 color = MaterialTheme.colorScheme.onSecondary
                             )
-                            Row (
+                            Row(
                                 verticalAlignment = Alignment.CenterVertically,
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 modifier = Modifier,
@@ -242,7 +249,8 @@ fun ChannelMessageView(
             MessageTextField(
                 modifier = Modifier
                     .width(textFieldWidth)
-                    .heightIn(min = 56.dp, max = 128.dp),
+                    .heightIn(min = 56.dp, max = 128.dp)
+                    .testTag(MESSAGE_BOX_TAG),
                 messageText = messageText,
                 enabled = hasWritePermissions,
                 onMessageTextChange = { messageText = it },
@@ -250,6 +258,7 @@ fun ChannelMessageView(
             val imageResource3 = painterResource((R.drawable.send_icon))
             if (isSendIconVisible) {
                 IconButton(
+                    modifier = Modifier.testTag(SEND_BUTTON_TAG),
                     onClick = {
                         onSendClick(messageText)
                         messageText = ""
@@ -270,20 +279,21 @@ fun ChannelMessageView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ChannelMessageViewLayoutPreview() {
-    ChannelMessageView(
-        onBackClick = {},
-        channel = FakeData.channels[0],
-        onChannelNameClick = {},
-        onSendClick = {},
-        hasWritePermissions = false,
-        authenticatedUser = AuthenticatedUser(
-            "",
-            User(
-                1,
-                "username",
-                "display_name"
-            ),
+    ChIMPTheme {
+        ChannelMessageView(
+            onBackClick = {},
+            channel = FakeData.channels[0],
+            onChannelNameClick = {},
+            onSendClick = {},
+            hasWritePermissions = false,
+            authenticatedUser = AuthenticatedUser(
+                "",
+                User(
+                    1,
+                    "username",
+                    "display_name"
+                ),
+            )
         )
-    )
-
+    }
 }

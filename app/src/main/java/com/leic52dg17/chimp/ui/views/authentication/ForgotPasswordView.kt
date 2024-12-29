@@ -24,6 +24,7 @@ import com.leic52dg17.chimp.ui.components.buttons.AuthenticationButton
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.inputs.AuthenticationField
 import com.leic52dg17.chimp.ui.components.misc.AuthenticationTitle
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun ForgotPasswordView(
@@ -49,8 +50,11 @@ fun ForgotPasswordView(
             modifier = modifier
                 .fillMaxWidth()
         ) {
-            AuthenticationTitle(
-                title = stringResource(R.string.forgot_password_text_en),
+            Text(
+                text = stringResource(R.string.forgot_password_text_en),
+                fontSize = MaterialTheme.typography.titleLarge.fontSize,
+                fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
+                fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                 modifier = modifier
             )
         }
@@ -93,8 +97,10 @@ fun ForgotPasswordView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun ForgotPasswordViewPreview() {
-    ForgotPasswordView(
-        onForgotPassword = { _ -> },
-        onBackClick = { }
-    )
+    ChIMPTheme {
+        ForgotPasswordView(
+            onForgotPassword = { _ -> },
+            onBackClick = { }
+        )
+    }
 }

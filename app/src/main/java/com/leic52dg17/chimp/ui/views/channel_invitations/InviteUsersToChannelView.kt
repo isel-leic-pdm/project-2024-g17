@@ -83,7 +83,7 @@ fun InviteUsersToChannelView(
                 searchValue = searchValue,
                 onValueChange = { searchUsers(it) },
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
-                textFieldModifier = Modifier
+                modifier = Modifier
                     .width(356.dp)
             )
         }

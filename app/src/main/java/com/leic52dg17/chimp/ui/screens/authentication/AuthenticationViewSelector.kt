@@ -117,11 +117,12 @@ fun AuthenticationViewSelector(
                     is AuthenticationViewSelectorState.SignUp -> {
                         isLoading = false
                         SignUpView(
-                            onSignUpClick = { username, displayName, password ->
+                            onSignUpClick = { registrationInvitation, username, displayName, password ->
                                 if (!connectivityStatus) {
                                     showNoWifiDialog = true
                                 } else {
                                     viewModel.signUpUser(
+                                        registrationInvitation,
                                         username,
                                         displayName,
                                         password

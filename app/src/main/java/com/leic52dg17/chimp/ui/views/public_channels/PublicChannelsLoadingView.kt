@@ -62,7 +62,7 @@ fun PublicChannelsLoadingView(
                 text = stringResource(id = R.string.public_channels_title_en)
             )
             SearchBar(
-                textFieldModifier = Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
                     .height(48.dp),

@@ -21,7 +21,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.leic52dg17.chimp.R
+import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
+import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
@@ -108,7 +110,7 @@ fun IncomingInvitationsView(
                     }
                 } else {
                     Text(
-                        color = MaterialTheme.colorScheme.secondary,
+                        color = MaterialTheme.colorScheme.onBackground,
                         text = stringResource(id = R.string.no_invitations_en)
                     )
                 }
@@ -122,7 +124,7 @@ fun IncomingInvitationsView(
 fun IncomingInvitationsPreview() {
     ChIMPTheme {
         IncomingInvitationsView(
-            invitations = emptyList(),
+            invitations = listOf(ChannelInvitationDetails(1,1,1,1,PermissionLevel.RW,"test","Test channel")),
             onBackClick = { /*TODO*/ },
             onAcceptClick = {},
             onDeclineClick = {}

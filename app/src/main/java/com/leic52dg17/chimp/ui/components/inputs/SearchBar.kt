@@ -29,11 +29,12 @@ import com.leic52dg17.chimp.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchBar(
-    textFieldModifier: Modifier = Modifier,
+    modifier: Modifier = Modifier,
     placeHolderFontSize: TextUnit = 16.sp,
     placeHolderFontWeight: FontWeight = FontWeight.Medium,
     onValueChange : (String) -> Unit,
     searchValue: String,
+    color: Color = MaterialTheme.colorScheme.onSecondaryContainer
 ) {
     TextField(
         textStyle = TextStyle(
@@ -43,11 +44,11 @@ fun SearchBar(
             color = MaterialTheme.colorScheme.onBackground
         ),
         colors = TextFieldDefaults.textFieldColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
+            containerColor = color,
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
         ),
-        modifier = textFieldModifier,
+        modifier = modifier,
         shape = RoundedCornerShape(10.dp),
         value = searchValue,
         placeholder = {
