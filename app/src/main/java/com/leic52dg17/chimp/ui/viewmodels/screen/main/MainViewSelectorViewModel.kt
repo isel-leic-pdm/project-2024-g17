@@ -73,7 +73,10 @@ class MainViewSelectorViewModel(
         channelCacheManager,
         messageCacheManager
     )
-    val openEmail = { openEmailApp() }
+    val openEmail = {
+        Log.i(TAG, "Opening email application")
+        openEmailApp()
+    }
 
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Initialized(null))

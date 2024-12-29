@@ -14,6 +14,7 @@ import com.leic52dg17.chimp.utils.fakeMessageService
 import com.leic52dg17.chimp.utils.fakeRegistrationInvitationService
 import com.leic52dg17.chimp.utils.fakeSseService
 import com.leic52dg17.chimp.utils.fakeUserInfoRepository
+import com.leic52dg17.chimp.utils.fakeUserRepository
 import com.leic52dg17.chimp.utils.fakeUserService
 import com.leic52dg17.chimp.utils.testAuthenticatedUser
 import kotlinx.coroutines.launch
@@ -43,7 +44,8 @@ class MainViewSelectorViewModelTests {
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
             userInfoRepository = fakeUserInfoRepository,
-            connectivityObserver = fakeConnectivityObserver
+            connectivityObserver = fakeConnectivityObserver,
+            userRepository = fakeUserRepository
         )
         assert(vm.stateFlow.value is MainViewSelectorState.Initialized)
     }
@@ -67,7 +69,8 @@ class MainViewSelectorViewModelTests {
                 sseService = fakeSseService,
                 registrationInvitationService = fakeRegistrationInvitationService,
                 userInfoRepository = fakeUserInfoRepository,
-                connectivityObserver = fakeConnectivityObserver
+                connectivityObserver = fakeConnectivityObserver,
+                userRepository = fakeUserRepository
             )
 
             // When
@@ -98,7 +101,8 @@ class MainViewSelectorViewModelTests {
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
             userInfoRepository = fakeUserInfoRepository,
-            connectivityObserver = fakeConnectivityObserver
+            connectivityObserver = fakeConnectivityObserver,
+            userRepository = fakeUserRepository
         )
 
         // When
@@ -129,7 +133,8 @@ class MainViewSelectorViewModelTests {
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
             userInfoRepository = fakeUserInfoRepository,
-            connectivityObserver = fakeConnectivityObserver
+            connectivityObserver = fakeConnectivityObserver,
+            userRepository = fakeUserRepository
         )
 
         // When

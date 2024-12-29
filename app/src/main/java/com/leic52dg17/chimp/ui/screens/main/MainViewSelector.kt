@@ -526,7 +526,7 @@ fun MainViewSelector(
                     is MainViewSelectorState.About -> {
                         isNavBarShown = true
                         AboutView(
-                            onEmailClick = { viewModel.openEmail },
+                            onEmailClick = { viewModel.openEmail() },
                             onPrivacyClick = {
                                 viewModel.transition(
                                     MainViewSelectorState.PrivacyPolicy

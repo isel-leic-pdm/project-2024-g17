@@ -5,6 +5,7 @@ import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitation
@@ -27,6 +28,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -261,6 +263,21 @@ val fakeConnectivityObserver by lazy {
                 onAvailableCallback()
             }
         }
+
+    }
+}
+
+val fakeUserRepository by lazy {
+    object : IUserRepository {
+        override suspend fun storeUsers(users: List<User>) {}
+
+        override suspend fun storeUser(user: User) {}
+
+        override suspend fun removeUser(user: User) {}
+
+        override suspend fun getStoredUsers(): List<User> = FakeData.users
+
+        override suspend fun getUserById(id: Int): User? = FakeData.users.firstOrNull { it.id == id }
 
     }
 }
