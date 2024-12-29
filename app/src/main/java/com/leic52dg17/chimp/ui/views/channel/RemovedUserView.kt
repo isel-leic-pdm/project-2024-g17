@@ -65,7 +65,7 @@ fun RemovedUserView(
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun RemovedUserPreiew() {
+fun RemovedUserPreview() {
     ChIMPTheme {
         RemovedUserView {
 

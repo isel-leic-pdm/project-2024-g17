@@ -5,14 +5,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
-import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
 import com.leic52dg17.chimp.core.cache.common.initializer.CacheInitializer
 import com.leic52dg17.chimp.core.cache.common.manager.CommonCacheManager
-import com.leic52dg17.chimp.core.cache.message.IMessageCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
 import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.channel.ChannelInvitationDetails
@@ -25,6 +24,8 @@ import com.leic52dg17.chimp.http.services.registration_invitation.IRegistrationI
 import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.user.IUserService
+import com.leic52dg17.chimp.receivers.ConnectivityObserver
+import com.leic52dg17.chimp.receivers.IConnectivityObserver
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.CacheCallbacks
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.ChannelFunctions
@@ -33,6 +34,7 @@ import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.MessageFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.RegistrationInvitationFunctions
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.functions.UserFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
@@ -45,17 +47,19 @@ class MainViewSelectorViewModel(
     val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
     val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: IConnectivityObserver,
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
+    private val userRepository: IUserRepository,
     private val openEmailApp: () -> Unit
 ) : ViewModel() {
     private val cacheCallbacks = CacheCallbacks(this)
     private val cacheManager = CommonCacheManager(channelCacheManager, messageCacheManager)
     private val channelFunctions = ChannelFunctions(this, channelCacheManager, messageCacheManager)
-    private val userFunctions = UserFunctions(this)
+    private val userFunctions = UserFunctions(this, userRepository, connectivityObserver)
     private val registrationInvitationFunctions = RegistrationInvitationFunctions(this)
     private val messageFunctions = MessageFunctions(this, messageCacheManager)
     private val channelInvitationFunctions =
@@ -74,6 +78,7 @@ class MainViewSelectorViewModel(
     val stateFlow: MutableStateFlow<MainViewSelectorState> =
         MutableStateFlow(MainViewSelectorState.Initialized(null))
 
+    val connectivityStatus = connectivityObserver.connectivityStatusFlow
 
     init {
         viewModelScope.launch {
@@ -97,6 +102,9 @@ class MainViewSelectorViewModel(
             )
         }
     }
+
+    private val _showNoWifiDialog = MutableStateFlow(false)
+    val showNoWifiDialog: StateFlow<Boolean> = _showNoWifiDialog
 
     fun transition(newState: MainViewSelectorState) {
         viewModelScope.launch {
@@ -212,7 +220,7 @@ class MainViewSelectorViewModel(
     /**
      * User functions
      */
-    fun getUserProfile(id: Int) = userFunctions.getUserProfile(id)
+    fun getUserProfile(id: Int, noWifiCallback: () -> Unit) = userFunctions.getUserProfile(id, noWifiCallback)
     fun loadAvailableUsersToInvite(channel: Channel, username: String, page: Int?, limit: Int?) =
         userFunctions.loadAvailableToInviteUsers(channel, username, page, limit)
 
@@ -249,11 +257,13 @@ class MainViewSelectorViewModelFactory(
     private val channelInvitationService: IChannelInvitationService,
     private val sseService: ISSEService,
     private val userInfoRepository: IUserInfoRepository,
+    private val connectivityObserver: ConnectivityObserver,
     private val onLogout: () -> Unit,
     private val channelCacheManager: ChannelCacheManager,
     private val messageCacheManager: MessageCacheManager,
     private val channelRepository: IChannelRepository,
     private val messageRepository: IMessageRepository,
+    private val userRepository: IUserRepository,
     private val openEmailApp: () -> Unit
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -266,11 +276,13 @@ class MainViewSelectorViewModelFactory(
             channelInvitationService,
             sseService,
             userInfoRepository,
+            connectivityObserver,
             onLogout,
             channelCacheManager,
             messageCacheManager,
             channelRepository,
             messageRepository,
+            userRepository,
             openEmailApp
         ) as T
     }

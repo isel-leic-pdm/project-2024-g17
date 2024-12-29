@@ -119,7 +119,7 @@ fun SubscribedChannelsLoadingView() {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
         modifier = Modifier
-            .background(MaterialTheme.colorScheme.tertiary)
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()
     ) {
         // Top section
@@ -134,7 +134,7 @@ fun SubscribedChannelsLoadingView() {
             Image(
                 modifier = Modifier
                     .size(40.dp),
-                painter = painterResource(id = R.drawable.chimp_blue_final),
+                painter = painterResource(id = R.drawable.chimp_white_final),
                 contentDescription = stringResource(id = R.string.app_logo_cd)
             )
             Row(
@@ -145,6 +145,7 @@ fun SubscribedChannelsLoadingView() {
                 Text(
                     modifier = Modifier
                         .padding(end = 32.dp),
+                    color = MaterialTheme.colorScheme.onPrimary,
                     fontSize = MaterialTheme.typography.titleLarge.fontSize,
                     fontWeight = MaterialTheme.typography.titleLarge.fontWeight,
                     fontFamily = MaterialTheme.typography.titleLarge.fontFamily,
@@ -160,12 +161,13 @@ fun SubscribedChannelsLoadingView() {
                 .fillMaxWidth()
         ) {
             SearchBar(
-                textFieldModifier = Modifier
+                modifier = Modifier
                     .padding(horizontal = 32.dp)
                     .size(500.dp, 50.dp),
                 placeHolderFontSize = MaterialTheme.typography.bodySmall.fontSize,
                 onValueChange = { },
-                searchValue = ""
+                searchValue = "",
+                color = MaterialTheme.colorScheme.background
             )
         }
         // Chats section
@@ -173,8 +175,8 @@ fun SubscribedChannelsLoadingView() {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.background)
-                .topBottomBorder(2.dp, MaterialTheme.colorScheme.secondary)
+                .background(Color.White)
+                .topBottomBorder(1.dp, MaterialTheme.colorScheme.secondary)
                 .heightIn(min = 800.dp)
                 .fillMaxHeight()
                 .fillMaxWidth()

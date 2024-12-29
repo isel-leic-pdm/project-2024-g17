@@ -42,7 +42,6 @@ import com.leic52dg17.chimp.R
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.http.services.fake.FakeData
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
-import com.leic52dg17.chimp.ui.components.inputs.SearchBar
 import com.leic52dg17.chimp.ui.components.misc.ChannelCard
 import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 

@@ -1,7 +1,6 @@
 package com.leic52dg17.chimp.http.services.channel.implementations
 
 import android.util.Log
-import androidx.datastore.preferences.protobuf.Api
 import com.leic52dg17.chimp.domain.model.channel.Channel
 import com.leic52dg17.chimp.domain.model.common.PermissionLevel
 import com.leic52dg17.chimp.http.services.channel.IChannelService

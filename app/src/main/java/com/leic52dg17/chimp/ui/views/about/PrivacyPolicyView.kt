@@ -95,7 +95,7 @@ fun PrivacyPolicyView(
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PrivacyPolicyPreview() {
     ChIMPTheme {

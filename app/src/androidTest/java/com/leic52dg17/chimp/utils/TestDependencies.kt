@@ -1,8 +1,6 @@
 package com.leic52dg17.chimp.utils
 
 import com.leic52dg17.chimp.core.cache.channel.ChannelCacheManager
-import com.leic52dg17.chimp.core.cache.channel.IChannelCacheManager
-import com.leic52dg17.chimp.core.cache.message.IMessageCacheManager
 import com.leic52dg17.chimp.core.cache.message.MessageCacheManager
 import com.leic52dg17.chimp.core.repositories.channel.IChannelRepository
 import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
@@ -24,9 +22,13 @@ import com.leic52dg17.chimp.http.services.sse.ISSEService
 import com.leic52dg17.chimp.http.services.sse.events.Events
 import com.leic52dg17.chimp.http.services.sse.results.SSEServiceResult
 import com.leic52dg17.chimp.http.services.user.IUserService
+import com.leic52dg17.chimp.receivers.IConnectivityObserver
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import java.time.Instant
 
 val testAuthenticatedUser = AuthenticatedUser(
@@ -236,5 +238,29 @@ val fakeUserInfoRepository by lazy {
         override suspend fun clearAuthenticatedUser() {}
 
         override suspend fun checkTokenValidity(): Boolean = true
+    }
+}
+
+val fakeConnectivityObserver by lazy {
+    object : IConnectivityObserver {
+        override val connectivityStatusFlow: MutableStateFlow<Boolean>
+            get() = MutableStateFlow(true)
+
+        override fun startObserving(
+            onLostCallback: () -> Unit,
+            onAvailableCallback: () -> Unit,
+            scope: CoroutineScope
+        ) {
+            scope.launch {
+                delay(2000)
+                connectivityStatusFlow.value = false
+                onLostCallback()
+
+                delay(2000)
+                connectivityStatusFlow.value = true
+                onAvailableCallback()
+            }
+        }
+
     }
 }

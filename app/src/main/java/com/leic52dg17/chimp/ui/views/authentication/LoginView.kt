@@ -1,8 +1,10 @@
 package com.leic52dg17.chimp.ui.views.authentication
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,6 +34,7 @@ import com.leic52dg17.chimp.ui.components.inputs.AuthenticationPasswordField
 import com.leic52dg17.chimp.ui.components.misc.AuthenticationTitle
 import com.leic52dg17.chimp.ui.components.buttons.BackButton
 import com.leic52dg17.chimp.ui.components.buttons.ForgotPasswordButton
+import com.leic52dg17.chimp.ui.theme.ChIMPTheme
 
 @Composable
 fun LoginView(
@@ -69,33 +72,37 @@ fun LoginView(
     Column(
         verticalArrangement = Arrangement.SpaceBetween,
         modifier = modifier
+            .background(MaterialTheme.colorScheme.primary)
             .fillMaxSize()
     ) {
         Column(
             modifier = modifier
         ) {
-            BackButton(modifier = modifier, onBackClick = onBackClick)
+            BackButton(modifier = modifier, onBackClick = onBackClick, color = MaterialTheme.colorScheme.onPrimary)
         }
 
         Column(
+            verticalArrangement = Arrangement.Center,
             modifier = modifier
+                .height(300.dp)
                 .fillMaxWidth()
         ) {
             AuthenticationTitle(
                 title = stringResource(R.string.login_welcome_en),
-                modifier = modifier
+                modifier = modifier,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
 
         Column(
             verticalArrangement = Arrangement.SpaceBetween,
             modifier = modifier
-                .padding(bottom = 64.dp)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             Column(
                 modifier = modifier
                     .padding(horizontal = 16.dp)
-                    .padding(bottom = 32.dp)
+                    .padding(vertical = 64.dp)
             ) {
                 AuthenticationField(
                     value = username,
@@ -140,6 +147,7 @@ fun LoginView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = modifier
+                    .padding(bottom = 32.dp)
                     .fillMaxWidth()
             ) {
                 AuthenticationButton(
@@ -169,10 +177,12 @@ fun LoginView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun LoginViewPreview() {
-    LoginView(
-        onSignUpClick = {},
-        onLogInClick = { username, password -> println(username); println(password) },
-        onBackClick = {},
-        onForgotPasswordClick = {}
-    )
+    ChIMPTheme {
+        LoginView(
+            onSignUpClick = {},
+            onLogInClick = { username, password -> println(username); println(password) },
+            onBackClick = {},
+            onForgotPasswordClick = {}
+        )
+    }
 }

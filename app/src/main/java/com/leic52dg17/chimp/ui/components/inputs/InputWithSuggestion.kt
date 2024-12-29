@@ -31,7 +31,7 @@ fun InputWithSuggestion(
     inputModifier: Modifier = Modifier,
     onInfoClick: () -> Unit = {},
     inputBoxColor: Color = MaterialTheme.colorScheme.secondaryContainer,
-    textColor: Color = MaterialTheme.colorScheme.onSecondaryContainer,
+    textColor: Color = MaterialTheme.colorScheme.onBackground,
     isError: Boolean = false,
     supportingText: String = ""
 ) {
@@ -45,7 +45,7 @@ fun InputWithSuggestion(
                 focusedTextColor = textColor,
                 containerColor = inputBoxColor,
                 focusedIndicatorColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent
+                unfocusedIndicatorColor = Color.Transparent,
             ),
             onValueChange = onValueChange,
             shape = RoundedCornerShape(10.dp),
