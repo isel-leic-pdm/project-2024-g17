@@ -19,6 +19,8 @@ import com.leic52dg17.chimp.core.repositories.messages.IMessageRepository
 import com.leic52dg17.chimp.core.repositories.messages.MessageRepository
 import com.leic52dg17.chimp.core.repositories.user.UserInfoPreferencesRepository
 import com.leic52dg17.chimp.core.repositories.user.IUserInfoRepository
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
+import com.leic52dg17.chimp.core.repositories.user.UserRepository
 import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.http.services.auth.implementations.AuthenticationService
 import com.leic52dg17.chimp.http.services.channel.IChannelService
@@ -53,6 +55,7 @@ interface DependenciesContainer {
     val userInfoRepository: IUserInfoRepository
     val channelRepository: IChannelRepository
     val messageRepository: IMessageRepository
+    val userRepository: IUserRepository
     val registrationInvitationService: IRegistrationInvitationService
     val channelService: IChannelService
     val messageService: IMessageService
@@ -98,6 +101,9 @@ class ChimpApplication : Application(), DependenciesContainer {
 
     override val messageRepository by lazy {
         MessageRepository(roomDatabase.messageDao())
+    }
+    override val userRepository: IUserRepository by lazy {
+        UserRepository(roomDatabase.userDao())
     }
 
     override val channelRepository: IChannelRepository by lazy {
@@ -159,12 +165,12 @@ class ChimpApplication : Application(), DependenciesContainer {
         Log.i(TAG, "Registering connectivity observer")
         connectivityObserver.startObserving(
             onLostCallback = {
-                Log.i(TAG, "Stopped listening to server sent events")
+                Log.i(TAG, "Network lost, stopping event stream service")
                 sseService.stopListening()
                 stopEventStreamService()
             },
             onAvailableCallback = {
-                Log.i(TAG, "Listening to server sent events")
+                Log.i(TAG, "Network available, starting event stream service")
                 sseService.listen()
                 startEventStream()
             }
@@ -172,12 +178,13 @@ class ChimpApplication : Application(), DependenciesContainer {
     }
 
     fun stopEventStreamService() {
+        Log.i(TAG, "Stopping event stream service")
         val intent = Intent(this, EventStreamService::class.java)
         stopService(intent)
         eventStreamService.stopListening()
     }
 
-    fun startEventStream() {
+    private fun startEventStream() {
         Log.i(TAG, "Starting event stream service")
         val intent = Intent(this, EventStreamService::class.java)
         startService(intent)

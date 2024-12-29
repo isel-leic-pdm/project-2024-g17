@@ -6,7 +6,6 @@ import android.net.ConnectivityManager.NetworkCallback
 import android.net.Network
 import android.util.Log
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
@@ -14,13 +13,13 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
-class ConnectivityObserver(context: Context) {
+class ConnectivityObserver(context: Context): IConnectivityObserver {
     private val connectivityManager by lazy {
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     }
 
     private val _connectivityStatusFlow = MutableStateFlow(false)
-    val connectivityStatusFlow: MutableStateFlow<Boolean> get() = _connectivityStatusFlow
+    override val connectivityStatusFlow: MutableStateFlow<Boolean> get() = _connectivityStatusFlow
 
     private fun observe() = callbackFlow {
         val callback = object : NetworkCallback() {
@@ -45,10 +44,10 @@ class ConnectivityObserver(context: Context) {
         }
     }
 
-    fun startObserving(
+    override fun startObserving(
         onLostCallback: () -> Unit,
         onAvailableCallback: () -> Unit,
-        scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+        scope: CoroutineScope
     ) {
         scope.launch {
             observe().collectLatest { isConnected ->

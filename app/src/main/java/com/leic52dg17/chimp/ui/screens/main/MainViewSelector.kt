@@ -1,12 +1,14 @@
 package com.leic52dg17.chimp.ui.screens.main
 
-import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -33,10 +35,10 @@ import com.leic52dg17.chimp.ui.views.authentication.ChangePasswordView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoLoadingView
 import com.leic52dg17.chimp.ui.views.channel.ChannelInfoView
 import com.leic52dg17.chimp.ui.views.channel.ChannelMessageView
-import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
-import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel.RemovedUserView
 import com.leic52dg17.chimp.ui.views.channel.RemovingUserView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptedInvitationView
+import com.leic52dg17.chimp.ui.views.channel_invitations.AcceptingInvitationView
 import com.leic52dg17.chimp.ui.views.channel_invitations.IncomingInvitationsView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InviteUsersToChannelView
 import com.leic52dg17.chimp.ui.views.channel_invitations.InvitedUserView
@@ -49,11 +51,11 @@ import com.leic52dg17.chimp.ui.views.public_channels.JoiningPublicChannelView
 import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.public_channels.PublicChannelsView
 import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationLoadingView
+import com.leic52dg17.chimp.ui.views.registration_invitation.RegistrationInvitationView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsLoadingView
 import com.leic52dg17.chimp.ui.views.subscribed.SubscribedChannelsView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoLoadingView
 import com.leic52dg17.chimp.ui.views.user_info.UserInfoView
-import kotlinx.coroutines.flow.first
 
 @Composable
 fun MainViewSelector(
@@ -96,6 +98,7 @@ fun MainViewSelector(
         var isNavBarShown by rememberSaveable(saver = MainViewSelectorState.BooleanSaver) {
             mutableStateOf(true)
         }
+
         var selectedNavIcon by rememberSaveable(saver = MainViewSelectorState.SelectedNavIconSaver) {
             mutableStateOf(SelectedNavIcon.Messages)
         }
@@ -132,6 +135,34 @@ fun MainViewSelector(
             )
         }
 
+        var showNoWifiDialog by rememberSaveable { mutableStateOf(false) }
+        val connectivityStatus by viewModel.connectivityStatus.collectAsState()
+
+        LaunchedEffect(connectivityStatus) {
+            showNoWifiDialog = !connectivityStatus
+        }
+
+        if (showNoWifiDialog) {
+            AlertDialog(
+                onDismissRequest = { showNoWifiDialog = false },
+                title = { Text(text = "No Wi-Fi Connection") },
+                text = { Text(text = "Please check your internet connection and try again.") },
+                confirmButton = {
+                    Button(onClick = { showNoWifiDialog = false }) {
+                        Text("OK")
+                    }
+                }
+            )
+        }
+
+        fun ifWifiAvailable(action: () -> Unit) {
+            if (!connectivityStatus) {
+                showNoWifiDialog = true
+            } else {
+                action()
+            }
+        }
+
         Scaffold(
             bottomBar = {
                 if (isNavBarShown) {
@@ -141,7 +172,9 @@ fun MainViewSelector(
                             selectedNavIcon = SelectedNavIcon.Profile
                             val currentUser = authenticatedUser?.user
                             if (currentUser != null) {
-                                viewModel.getUserProfile(currentUser.id)
+                                viewModel.getUserProfile(currentUser.id) {
+                                    showNoWifiDialog = true
+                                }
                             }
                         },
                         onClickMessages = {
@@ -189,14 +222,18 @@ fun MainViewSelector(
                 }
                 when (state) {
                     is MainViewSelectorState.Initialized -> {
-                        LaunchedEffect(Unit) {
-                            viewModel.getEventStream()
-                            viewModel.transition(
-                                MainViewSelectorState.SubscribedChannels(
-                                    channels = viewModel.getSortedChannels(),
-                                    authenticatedUser = authenticatedUser
+                        if (!connectivityStatus) {
+                            showNoWifiDialog = true
+                        } else {
+                            LaunchedEffect(Unit) {
+                                viewModel.getEventStream()
+                                viewModel.transition(
+                                    MainViewSelectorState.SubscribedChannels(
+                                        channels = viewModel.getSortedChannels(),
+                                        authenticatedUser = authenticatedUser
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
 
@@ -228,7 +265,9 @@ fun MainViewSelector(
                                 )
                             },
                             onChannelClick = { channelId: Int ->
-                                viewModel.loadChannelMessages(channelId)
+                                ifWifiAvailable {
+                                    viewModel.loadChannelMessages(channelId)
+                                }
                             }
                         )
                     }
@@ -238,7 +277,6 @@ fun MainViewSelector(
                     }
 
                     is MainViewSelectorState.ChangePassword -> {
-
                         isNavBarShown = false
                         val currentState =
                             viewModel.stateFlow.collectAsState().value as MainViewSelectorState.ChangePassword
@@ -321,12 +359,14 @@ fun MainViewSelector(
                                 handleSharedAlertDialogVisibilitySwitch()
                             },
                             onCreateChannelRequest = { ownerId, name, isPrivate, channelIconUrl ->
-                                viewModel.createChannel(
-                                    ownerId,
-                                    name,
-                                    isPrivate,
-                                    channelIconUrl
-                                )
+                                ifWifiAvailable {
+                                    viewModel.createChannel(
+                                        ownerId,
+                                        name,
+                                        isPrivate,
+                                        channelIconUrl
+                                    )
+                                }
                             },
                             authenticatedUser = authenticatedUser
                         )
@@ -355,7 +395,9 @@ fun MainViewSelector(
                                 viewModel.loadChannelInfo(currentChannel.channelId)
                             },
                             onSendClick = { messageText ->
-                                viewModel.sendMessage(currentChannel.channelId, messageText)
+                                ifWifiAvailable {
+                                    viewModel.sendMessage(currentChannel.channelId, messageText)
+                                }
                             },
                             hasWritePermissions = state.hasWritePermissions,
                             authenticatedUser = state.authenticatedUser
@@ -396,14 +438,20 @@ fun MainViewSelector(
                                 confirmationDialogConfirmText = "Yes"
                                 handleConfirmationDialogVisibilitySwitch()
                             },
-                            onUserClick = { userId -> viewModel.getUserProfile(userId) },
+                            onUserClick = { userId ->
+                                viewModel.getUserProfile(userId) {
+                                    showNoWifiDialog = true
+                                }
+                            },
                             onLeaveChannelClick = {
                                 confirmationDialogConfirmFunction = {
-                                    viewModel.leaveChannel(
-                                        state.authenticatedUser?.user?.id,
-                                        channel
-                                    )
-                                    handleConfirmationDialogVisibilitySwitch()
+                                    ifWifiAvailable {
+                                        viewModel.leaveChannel(
+                                            state.authenticatedUser?.user?.id,
+                                            channel
+                                        )
+                                        handleConfirmationDialogVisibilitySwitch()
+                                    }
                                 }
                                 confirmationDialogText =
                                     "Are you sure you want to leave the channel?\nThe oldest user will be assigned as the new owner.\nThis is not reversible."
@@ -446,7 +494,9 @@ fun MainViewSelector(
                                 )
                             },
                             onInvitationsClick = {
-                                viewModel.loadChannelInvitations(state.authenticatedUser)
+                                ifWifiAvailable {
+                                    viewModel.loadChannelInvitations(state.authenticatedUser)
+                                }
                             },
                             onLogoutClick = { viewModel.logout() },
                             onChangePasswordClick = {
@@ -458,7 +508,9 @@ fun MainViewSelector(
                             },
                             onRegistrationInvitationClick = {
                                 if (state.authenticatedUser?.user != null) {
-                                    viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
+                                    ifWifiAvailable {
+                                        viewModel.createRegistrationInvitation(state.authenticatedUser.user.id)
+                                    }
                                 }
                             },
                         )
@@ -507,21 +559,25 @@ fun MainViewSelector(
                                 )
                             },
                             onInviteUserClick = { userId, channelId, permission, userDisplayName ->
-                                viewModel.inviteUserToChannel(
-                                    userId,
-                                    channelId,
-                                    permission,
-                                    userDisplayName
-                                )
+                                ifWifiAvailable {
+                                    viewModel.inviteUserToChannel(
+                                        userId,
+                                        channelId,
+                                        permission,
+                                        userDisplayName
+                                    )
+                                }
                             },
                             users = state.users,
                             onSearch = { username ->
-                                viewModel.loadAvailableUsersToInvite(
-                                    channel = currentChannel,
-                                    limit = null, // Will default to 10 on the API
-                                    page = state.page,
-                                    username = username
-                                )
+                                ifWifiAvailable {
+                                    viewModel.loadAvailableUsersToInvite(
+                                        channel = currentChannel,
+                                        limit = null, // Will default to 10 on the API
+                                        page = state.page,
+                                        username = username
+                                    )
+                                }
                             }
                         )
                     }
@@ -551,18 +607,26 @@ fun MainViewSelector(
                         } else {
                             IncomingInvitationsView(
                                 invitations = state.invitations,
-                                onBackClick = { viewModel.getUserProfile(state.authenticatedUser.user.id) },
+                                onBackClick = {
+                                    viewModel.getUserProfile(state.authenticatedUser.user.id) {
+                                        showNoWifiDialog = true
+                                    }
+                                },
                                 onAcceptClick = { invitationId ->
-                                    viewModel.acceptChannelInvitation(
-                                        invitationId,
-                                        state.authenticatedUser
-                                    )
+                                    ifWifiAvailable {
+                                        viewModel.acceptChannelInvitation(
+                                            invitationId,
+                                            state.authenticatedUser
+                                        )
+                                    }
                                 },
                                 onDeclineClick = { invitationId ->
-                                    viewModel.rejectChannelInvitation(
-                                        invitationId,
-                                        state.authenticatedUser
-                                    )
+                                    ifWifiAvailable {
+                                        viewModel.rejectChannelInvitation(
+                                            invitationId,
+                                            state.authenticatedUser
+                                        )
+                                    }
                                 }
                             )
                         }
@@ -582,7 +646,7 @@ fun MainViewSelector(
                         PublicChannelsView(
                             currentSearchValue = state.currentSearchValue,
                             onValueChange = { name ->
-                                if(name.isNotEmpty()) {
+                                if (name.isNotEmpty() && connectivityStatus) {
                                     viewModel.loadPublicChannels(name, state.page)
                                 } else {
                                     viewModel.transition(
@@ -609,6 +673,7 @@ fun MainViewSelector(
                             state.onBackClick()
                         }
                     }
+
                     is MainViewSelectorState.JoinedPublicChannel -> {
                         JoinedPublicChannelView(
                             state.channel.displayName
@@ -616,6 +681,7 @@ fun MainViewSelector(
                             viewModel.loadSubscribedChannels()
                         }
                     }
+
                     is MainViewSelectorState.JoiningPublicChannel -> {
                         JoiningPublicChannelView(channelName = state.channel.displayName)
                     }

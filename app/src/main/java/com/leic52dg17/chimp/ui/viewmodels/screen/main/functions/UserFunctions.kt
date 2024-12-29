@@ -2,51 +2,64 @@ package com.leic52dg17.chimp.ui.viewmodels.screen.main.functions
 
 import android.util.Log
 import androidx.lifecycle.viewModelScope
+import com.leic52dg17.chimp.core.repositories.user.IUserRepository
 import com.leic52dg17.chimp.domain.common.ErrorMessages
+import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
 import com.leic52dg17.chimp.domain.model.channel.Channel
+import com.leic52dg17.chimp.domain.model.user.User
 import com.leic52dg17.chimp.http.services.common.ServiceErrorTypes
 import com.leic52dg17.chimp.http.services.common.ServiceException
+import com.leic52dg17.chimp.receivers.IConnectivityObserver
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
-    fun getUserProfile(id: Int) {
+class UserFunctions(
+    private val viewModel: MainViewSelectorViewModel,
+    private val userRepository: IUserRepository,
+    private val connectivityObserver: IConnectivityObserver
+) {
+    fun getUserProfile(id: Int, noWifiCallback: () -> Unit) {
         viewModel.viewModelScope.launch {
-            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
             Log.i(TAG, "Getting user profile for user with ID: $id")
-            viewModel.transition(MainViewSelectorState.GettingUserInfo(
-                onBackClick = { viewModel.loadSubscribedChannels() },
-                isCurrentUser = id == authenticatedUser?.user?.id
-            ))
-            if (authenticatedUser == null || !viewModel.userInfoRepository.checkTokenValidity()) {
+
+            val authenticatedUser = viewModel.userInfoRepository.authenticatedUser.first()
+
+            viewModel.transition(
+                MainViewSelectorState.GettingUserInfo(
+                    onBackClick = { viewModel.loadSubscribedChannels() },
+                    isCurrentUser = id == authenticatedUser?.user?.id
+                )
+            )
+
+            if (authenticatedUser == null || !viewModel.userInfoRepository.checkTokenValidity() || authenticatedUser.user == null) {
                 viewModel.transition(MainViewSelectorState.Unauthenticated)
                 return@launch
             }
+
             try {
-                val user = viewModel.userService.getUserById(id)
-                if (user != null) {
-                    Log.i(TAG, "Fetched user profile for user with ID: ${user.id}")
-                    viewModel.transition(
-                        MainViewSelectorState.UserInfo(
-                            user,
-                            authenticatedUser = authenticatedUser,
-                            isCurrentUser = user.id == authenticatedUser.user?.id
-                        )
-                    )
-                } else {
-                    Log.e(TAG, "Error fetching user profile for user with ID: $id")
-                    viewModel.transition(
-                        MainViewSelectorState.Error(message = ErrorMessages.UNKNOWN) {
-                            viewModel.loadSubscribedChannels()
-                        }
-                    )
+                // If the user requested is in cache, return it
+                val cachedUser = userRepository.getUserById(id)
+
+                if (cachedUser != null) {
+                    Log.i(TAG, "Got user from cache")
+                    transitionToUserInfo(cachedUser, authenticatedUser)
+                    return@launch
                 }
+
+                // In case there is no internet connection
+                if (!connectivityObserver.connectivityStatusFlow.value) {
+                    noWifiCallback()
+                    return@launch
+                }
+
+                getUserFromService(id, authenticatedUser)
             } catch (e: ServiceException) {
                 if (e.type === ServiceErrorTypes.Unauthorized) {
                     viewModel.transition(MainViewSelectorState.Unauthenticated)
                 } else {
+                    Log.i(TAG, e.message)
                     viewModel.transition(
                         MainViewSelectorState.Error(message = e.message) {
                             viewModel.loadSubscribedChannels()
@@ -80,6 +93,39 @@ class UserFunctions(private val viewModel: MainViewSelectorViewModel) {
             )
         }
     }
+
+    private suspend fun getUserFromService(id: Int, authenticatedUser: AuthenticatedUser) {
+        // Otherwise call the service and update the cache
+        val user = viewModel.userService.getUserById(id)
+
+        if (user != null) {
+            Log.i(TAG, "Caching user")
+            userRepository.storeUser(user)
+        }
+
+        if (user != null) {
+            Log.i(TAG, "Fetched user profile for user with ID: ${user.id}")
+            transitionToUserInfo(user, authenticatedUser)
+        } else {
+            Log.e(TAG, "Error fetching user profile for user with ID: $id")
+            viewModel.transition(
+                MainViewSelectorState.Error(message = ErrorMessages.UNKNOWN) {
+                    viewModel.loadSubscribedChannels()
+                }
+            )
+        }
+    }
+
+    private fun transitionToUserInfo(user: User, authenticatedUser: AuthenticatedUser) {
+        viewModel.transition(
+            MainViewSelectorState.UserInfo(
+                user,
+                authenticatedUser = authenticatedUser,
+                isCurrentUser = user.id == authenticatedUser.user?.id
+            )
+        )
+    }
+
     companion object {
         const val TAG = "USER_FUNCTIONS"
     }

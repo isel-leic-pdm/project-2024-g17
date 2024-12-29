@@ -1,7 +1,4 @@
 import androidx.lifecycle.viewModelScope
-import com.leic52dg17.chimp.domain.model.auth.AuthenticatedUser
-import com.leic52dg17.chimp.domain.model.user.User
-import com.leic52dg17.chimp.http.services.auth.IAuthenticationService
 import com.leic52dg17.chimp.ui.screens.main.MainViewSelectorState
 import com.leic52dg17.chimp.ui.viewmodels.screen.main.MainViewSelectorViewModel
 import com.leic52dg17.chimp.utils.ReplaceMainDispatcherRule
@@ -10,6 +7,7 @@ import com.leic52dg17.chimp.utils.fakeChannelCacheManager
 import com.leic52dg17.chimp.utils.fakeChannelInvitationService
 import com.leic52dg17.chimp.utils.fakeChannelRepository
 import com.leic52dg17.chimp.utils.fakeChannelService
+import com.leic52dg17.chimp.utils.fakeConnectivityObserver
 import com.leic52dg17.chimp.utils.fakeMessageCacheManager
 import com.leic52dg17.chimp.utils.fakeMessageRepository
 import com.leic52dg17.chimp.utils.fakeMessageService
@@ -18,12 +16,8 @@ import com.leic52dg17.chimp.utils.fakeSseService
 import com.leic52dg17.chimp.utils.fakeUserInfoRepository
 import com.leic52dg17.chimp.utils.fakeUserService
 import com.leic52dg17.chimp.utils.testAuthenticatedUser
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
-import okhttp3.internal.wait
 import org.junit.Rule
 import org.junit.Test
 
@@ -48,7 +42,8 @@ class MainViewSelectorViewModelTests {
             openEmailApp = {},
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
-            userInfoRepository = fakeUserInfoRepository
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
         )
         assert(vm.stateFlow.value is MainViewSelectorState.Initialized)
     }
@@ -71,7 +66,8 @@ class MainViewSelectorViewModelTests {
                 openEmailApp = {},
                 sseService = fakeSseService,
                 registrationInvitationService = fakeRegistrationInvitationService,
-                userInfoRepository = fakeUserInfoRepository
+                userInfoRepository = fakeUserInfoRepository,
+                connectivityObserver = fakeConnectivityObserver
             )
 
             // When
@@ -101,7 +97,8 @@ class MainViewSelectorViewModelTests {
             openEmailApp = {},
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
-            userInfoRepository = fakeUserInfoRepository
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
         )
 
         // When
@@ -131,7 +128,8 @@ class MainViewSelectorViewModelTests {
             openEmailApp = {},
             sseService = fakeSseService,
             registrationInvitationService = fakeRegistrationInvitationService,
-            userInfoRepository = fakeUserInfoRepository
+            userInfoRepository = fakeUserInfoRepository,
+            connectivityObserver = fakeConnectivityObserver
         )
 
         // When
